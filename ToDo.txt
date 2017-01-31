@@ -1,3 +1,0 @@
-Ideas:
-  Power-ups/Items that spawn in visible (by both sides) locations.
-  
