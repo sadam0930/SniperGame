@@ -215,6 +215,7 @@ var game;
 angular.module('myApp', ['gameServices'])
     .run(['$rootScope', '$timeout',
     function ($rootScope, $timeout) {
+        log.info("Started app");
         $rootScope['game'] = game;
         game.init($rootScope, $timeout);
     }]);

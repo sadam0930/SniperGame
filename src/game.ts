@@ -230,6 +230,7 @@ module game {
 angular.module('myApp', ['gameServices'])
   .run(['$rootScope', '$timeout',
     function ($rootScope: angular.IScope, $timeout: angular.ITimeoutService) {
+      log.info("Started app");
       $rootScope['game'] = game;
       game.init($rootScope, $timeout);
     }]);
