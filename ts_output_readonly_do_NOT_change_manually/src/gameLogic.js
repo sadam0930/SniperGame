@@ -8,7 +8,16 @@ var gameLogic;
 (function (gameLogic) {
     gameLogic.ROWS = 10;
     gameLogic.COLS = 3;
-    /** Returns the initial TicTacToe board, which is a ROWSxCOLS matrix containing ''. */
+    gameLogic.NUMPLAYERS = 2;
+    /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */
+    function getInitialBoards() {
+        var boards = [];
+        for (var i = 0; i < gameLogic.NUMPLAYERS; i++) {
+            boards[i] = getInitialBoard();
+        }
+        return boards;
+    }
+    gameLogic.getInitialBoards = getInitialBoards;
     function getInitialBoard() {
         var board = [];
         for (var i = 0; i < gameLogic.ROWS; i++) {

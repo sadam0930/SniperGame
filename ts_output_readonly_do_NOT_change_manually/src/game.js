@@ -212,11 +212,18 @@ var game;
     }
     game.shouldSlowlyAppear = shouldSlowlyAppear;
 })(game || (game = {}));
-angular.module('myApp', ['gameServices'])
-    .run(['$rootScope', '$timeout',
+var app = angular.module('myApp', ['gameServices']);
+app.run(['$rootScope', '$timeout',
     function ($rootScope, $timeout) {
         log.info("Started app");
         $rootScope['game'] = game;
         game.init($rootScope, $timeout);
+    }]);
+app.controller('MainController', ['$scope', function ($scope) {
+        var rows_as_list = [];
+        for (var i = 0; i < gameLogic.ROWS; i++) {
+            rows_as_list[i] = i;
+        }
+        $scope.num_rows = rows_as_list;
     }]);
 //# sourceMappingURL=game.js.map

@@ -24,10 +24,11 @@
   <!-- /build -->
   <!-- ng-class="{r: col < 2, b: row >= 0}"-->
 </head>
-<body ng-cloak>
+<body ng-cloak
+      ng-controller="MainController">
 <div id="gameArea">
   <div class="gameBoard" id="enemyBoard">
-    <div ng-repeat="row in [0, 1, 2, 3, 4]"
+    <div ng-repeat="row in num_rows"
         style="position:absolute; top:{{row * 10}}%; left:0; width:100%; height:10%;">
       <div ng-repeat="col in [0, 1, 2]"
           style="position:absolute; top:0; left:{{col * 33}}%; width:33%; height:100%;"

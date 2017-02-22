@@ -227,10 +227,17 @@ module game {
   }
 }
 
-angular.module('myApp', ['gameServices'])
-  .run(['$rootScope', '$timeout',
+var app = angular.module('myApp', ['gameServices']);
+app.run(['$rootScope', '$timeout',
     function ($rootScope: angular.IScope, $timeout: angular.ITimeoutService) {
       log.info("Started app");
       $rootScope['game'] = game;
       game.init($rootScope, $timeout);
     }]);
+app.controller('MainController', ['$scope', function($scope: any) {
+  let rows_as_list: number[] = [];
+  for (let i = 0; i < gameLogic.ROWS; i++) {
+      rows_as_list[i] = i;
+  }  
+  $scope.num_rows = rows_as_list;
+}]);
