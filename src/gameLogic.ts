@@ -23,6 +23,7 @@ module gameLogic {
 
   /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */
   export function getInitialBoards(): Board[] {
+    console.log("creating new boards")
     let boards: Board[] = [];
     for (let i = 0; i < NUMPLAYERS; i++) {
       boards[i] = getInitialBoard();

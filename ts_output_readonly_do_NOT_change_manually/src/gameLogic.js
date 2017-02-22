@@ -11,6 +11,7 @@ var gameLogic;
     gameLogic.NUMPLAYERS = 2;
     /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */
     function getInitialBoards() {
+        console.log("creating new boards");
         var boards = [];
         for (var i = 0; i < gameLogic.NUMPLAYERS; i++) {
             boards[i] = getInitialBoard();
