@@ -17,10 +17,19 @@ import log = gamingPlatform.log;
 import dragAndDropService = gamingPlatform.dragAndDropService;
 
 module gameLogic {
-  export const ROWS = 3;
+  export const ROWS = 10;
   export const COLS = 3;
+  export const NUMPLAYERS = 2;
 
-  /** Returns the initial TicTacToe board, which is a ROWSxCOLS matrix containing ''. */
+  /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */
+  export function getInitialBoards(): Board[] {
+    let boards: Board[] = [];
+    for (let i = 0; i < NUMPLAYERS; i++) {
+      boards[i] = getInitialBoard();
+    }
+    return boards;
+  }
+
   export function getInitialBoard(): Board {
     let board: Board = [];
     for (let i = 0; i < ROWS; i++) {
