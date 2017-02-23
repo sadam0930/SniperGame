@@ -17,7 +17,7 @@ import log = gamingPlatform.log;
 import dragAndDropService = gamingPlatform.dragAndDropService;
 
 module gameLogic {
-  export const ROWS = 10;
+  export const ROWS = 5;
   export const COLS = 3;
   export const NUMPLAYERS = 2;
 

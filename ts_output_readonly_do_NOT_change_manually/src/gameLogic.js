@@ -6,7 +6,7 @@ var log = gamingPlatform.log;
 var dragAndDropService = gamingPlatform.dragAndDropService;
 var gameLogic;
 (function (gameLogic) {
-    gameLogic.ROWS = 10;
+    gameLogic.ROWS = 5;
     gameLogic.COLS = 3;
     gameLogic.NUMPLAYERS = 2;
     /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */

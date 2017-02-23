@@ -220,10 +220,32 @@ app.run(['$rootScope', '$timeout',
         game.init($rootScope, $timeout);
     }]);
 app.controller('MainController', ['$scope', function ($scope) {
+        // BOARD ATTRIBUTES //
+        var board_size = .6;
+        $scope.is_attacking = false;
+        $scope.pressed_attack_button = function () {
+            $scope.$apply(function () {
+                $scope.is_attacking = !$scope.is_attacking;
+            });
+        };
+        // ROWS //
         var rows_as_list = [];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             rows_as_list[i] = i;
         }
-        $scope.num_rows = rows_as_list;
+        $scope.num_rows_as_list = rows_as_list;
+        $scope.num_rows = gameLogic.ROWS;
+        $scope.row_size = ((100 / gameLogic.ROWS) * board_size);
+        // COLUMNS //
+        var cols_as_list = [];
+        for (var i = 0; i < gameLogic.COLS; i++) {
+            cols_as_list[i] = i;
+        }
+        $scope.num_cols_as_list = cols_as_list;
+        $scope.num_cols = gameLogic.COLS;
+        $scope.col_size = (100 / gameLogic.COLS);
+        // CONTROLS ATTRIBUTES //
+        var controls_size = .3;
+        $scope.controls_top_pos = ((board_size * 100));
     }]);
 //# sourceMappingURL=game.js.map
