@@ -240,13 +240,21 @@ app.controller('MainController', ['$scope', function($scope: any) {
 
   let board_size = .6;
   $scope.is_attacking = false;
+  $scope.is_moving = true;
 
   $scope.pressed_attack_button = function() {
     $scope.$apply(function() {
-      $scope.is_attacking = !$scope.is_attacking;
+      $scope.is_attacking = true;
+      $scope.is_moving = false;
     });
   };
 
+  $scope.pressed_move_button = function() {
+    $scope.$apply(function() {
+      $scope.is_moving = true;
+      $scope.is_attacking = false;
+    });
+  };
                   // ROWS //
   let rows_as_list: number[] = [];
   for (let i = 0; i < gameLogic.ROWS; i++) {

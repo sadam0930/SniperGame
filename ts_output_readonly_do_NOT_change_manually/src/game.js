@@ -223,9 +223,17 @@ app.controller('MainController', ['$scope', function ($scope) {
         // BOARD ATTRIBUTES //
         var board_size = .6;
         $scope.is_attacking = false;
+        $scope.is_moving = true;
         $scope.pressed_attack_button = function () {
             $scope.$apply(function () {
-                $scope.is_attacking = !$scope.is_attacking;
+                $scope.is_attacking = true;
+                $scope.is_moving = false;
+            });
+        };
+        $scope.pressed_move_button = function () {
+            $scope.$apply(function () {
+                $scope.is_moving = true;
+                $scope.is_attacking = false;
             });
         };
         // ROWS //

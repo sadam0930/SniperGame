@@ -62,6 +62,22 @@
           </div>
         </div>
       </div>
+      <div class="board" id="moveBoard" ng-show="is_moving">
+      <!-- <div class="board" id="attackBoard" ng-if="is_attacking"> -->
+        <div ng-repeat="row in num_rows_as_list"
+            style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
+          <div ng-repeat="col in num_cols_as_list"
+              style="position:absolute; top:0; left:{{col * col_size}}%; width:{{col_size}}%; height:100%;"
+              ng-class="{border_top_right: col >= 0, 
+                         border_left: col == 0, 
+                         border_bottom: row == {{num_rows - 1}}}"
+              ng-click="game.cellClicked(row, col)"
+              id="{{'moveBoard' + row + 'x' + col}}">
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="controlArea"
          style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{row_size}}%;">
@@ -70,6 +86,7 @@
               style="position:absolute; top:{{controls_top_pos}}%; left:30%; width:20%; height:40%;">
         ATTACK</button>
             <button type="button" 
+              ng-click="pressed_move_button()"
               style="position:absolute; top:{{controls_top_pos}}%; left:50%; width:20%; height:40%;">
         MOVE</button>
     </div>
