@@ -206,11 +206,11 @@ module game {
   }
 
   export function shouldShowImage(row: number, col: number): boolean {
-    return state.board[row][col] !== "" || isProposal(row, col);
+    return state.board[0][row][col] !== "" || isProposal(row, col);
   }
 
   function isPiece(row: number, col: number, turnIndex: number, pieceKind: string): boolean {
-    return state.board[row][col] === pieceKind || (isProposal(row, col) && currentUpdateUI.turnIndex == turnIndex);
+    return state.board[0][row][col] === pieceKind || (isProposal(row, col) && currentUpdateUI.turnIndex == turnIndex);
   }
   
   export function isPieceX(row: number, col: number): boolean {

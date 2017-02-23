@@ -6,13 +6,22 @@ var log = gamingPlatform.log;
 var dragAndDropService = gamingPlatform.dragAndDropService;
 var gameLogic;
 (function (gameLogic) {
-    gameLogic.ROWS = 10;
+    gameLogic.ROWS = 5;
     gameLogic.COLS = 3;
     gameLogic.NUMPLAYERS = 2;
-    /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */
+    /**
+    * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''.
+    * There are 4 boards. P1 is even boards. P2 is odd boards.
+    * This makes it easy to track turns with (turnIndex%2 === 0)
+    * boards[0] = P1 view of P2
+    * boards[1] = P2 view of P1
+    * boards[2] = P1 view of self to move position
+    * boards[3] = P2 view of self to move position
+    */
     function getInitialBoards() {
+        log.log("creating new boards");
         var boards = [];
-        for (var i = 0; i < gameLogic.NUMPLAYERS; i++) {
+        for (var i = 0; i < gameLogic.NUMPLAYERS * 2; i++) {
             boards[i] = getInitialBoard();
         }
         return boards;
@@ -30,7 +39,7 @@ var gameLogic;
     }
     gameLogic.getInitialBoard = getInitialBoard;
     function getInitialState() {
-        return { board: getInitialBoard(), delta: null };
+        return { board: getInitialBoards(), delta: null };
     }
     gameLogic.getInitialState = getInitialState;
     /**
@@ -99,14 +108,16 @@ var gameLogic;
         if (!stateBeforeMove) {
             stateBeforeMove = getInitialState();
         }
-        var board = stateBeforeMove.board;
+        var boards = stateBeforeMove.board;
+        var board = boards[0]; //hack for tic tac toe to work
         if (board[row][col] !== '') {
             throw new Error("One can only make a move in an empty position!");
         }
         if (getWinner(board) !== '' || isTie(board)) {
             throw new Error("Can only make a move if the game is not over!");
         }
-        var boardAfterMove = angular.copy(board);
+        var boardsAfterMove = angular.copy(boards);
+        var boardAfterMove = boardsAfterMove[0]; //hack for tic tac toe to work
         boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
         var winner = getWinner(boardAfterMove);
         var endMatchScores;
@@ -122,7 +133,7 @@ var gameLogic;
             endMatchScores = null;
         }
         var delta = { row: row, col: col };
-        var state = { delta: delta, board: boardAfterMove };
+        var state = { delta: delta, board: boardsAfterMove };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;
