@@ -5,7 +5,7 @@ interface BoardDelta {
 }
 type IProposalData = BoardDelta;
 interface IState {
-  board: Board;
+  board: Board[];
   delta: BoardDelta;
 }
 
@@ -21,10 +21,19 @@ module gameLogic {
   export const COLS = 3;
   export const NUMPLAYERS = 2;
 
-  /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */
+  /** 
+  * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. 
+  * There are 4 boards. P1 is even boards. P2 is odd boards.
+  * This makes it easy to track turns with (turnIndex%2 === 0)
+  * boards[0] = P1 view of P2
+  * boards[1] = P2 view of P1
+  * boards[2] = P1 view of self to move position
+  * boards[3] = P2 view of self to move position
+  */
   export function getInitialBoards(): Board[] {
+    log.log("creating new boards")
     let boards: Board[] = [];
-    for (let i = 0; i < NUMPLAYERS; i++) {
+    for (let i = 0; i < NUMPLAYERS*2; i++) {
       boards[i] = getInitialBoard();
     }
     return boards;
@@ -42,7 +51,7 @@ module gameLogic {
   }
 
   export function getInitialState(): IState {
-    return {board: getInitialBoard(), delta: null};
+    return {board: getInitialBoards(), delta: null};
   }
 
   /**
@@ -113,14 +122,16 @@ module gameLogic {
     if (!stateBeforeMove) {
       stateBeforeMove = getInitialState();
     }
-    let board: Board = stateBeforeMove.board;
+    let boards: Board[] = stateBeforeMove.board;
+    let board: Board = boards[0]; //hack for tic tac toe to work
     if (board[row][col] !== '') {
       throw new Error("One can only make a move in an empty position!");
     }
     if (getWinner(board) !== '' || isTie(board)) {
       throw new Error("Can only make a move if the game is not over!");
     }
-    let boardAfterMove = angular.copy(board);
+    let boardsAfterMove = angular.copy(boards);
+    let boardAfterMove = boardsAfterMove[0]; //hack for tic tac toe to work
     boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
     let winner = getWinner(boardAfterMove);
     let endMatchScores: number[];
@@ -135,7 +146,7 @@ module gameLogic {
       endMatchScores = null;
     }
     let delta: BoardDelta = {row: row, col: col};
-    let state: IState = {delta: delta, board: boardAfterMove};
+    let state: IState = {delta: delta, board: boardsAfterMove};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
   }
   
