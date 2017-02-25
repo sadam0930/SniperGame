@@ -17,8 +17,8 @@ import log = gamingPlatform.log;
 import dragAndDropService = gamingPlatform.dragAndDropService;
 
 module gameLogic {
-  export const ROWS = 5;
-  export const COLS = 3;
+  export const ROWS = 6;
+  export const COLS = 5;
   export const NUMPLAYERS = 2;
 
   /** Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. */

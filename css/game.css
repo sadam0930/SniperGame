@@ -32,16 +32,16 @@ body {
 }
 
 .border_top_right {
-  border-top: 4pt solid black;
-  border-right: 4pt solid black;
+  border-top: 8px solid black;
+  border-right: 8px solid black;
 }
 
 .border_left {
-  border-left: 4pt solid black;
+  border-left: 8px solid black;
 }
 
 .border_bottom {
-  border-bottom: 4pt solid black;
+  border-bottom: 8px solid black;
 }
 
 .slowlyAppear {
