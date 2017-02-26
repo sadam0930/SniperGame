@@ -221,6 +221,10 @@ module game {
     return isPiece(row, col, 1, 'O');
   }
 
+  export function isBlank(row: number, col: number): boolean {
+    return isPiece(row, col, 1, '');
+  }
+
   export function shouldSlowlyAppear(row: number, col: number): boolean {
     return state.delta &&
         state.delta.row === row && state.delta.col === col;
@@ -238,7 +242,7 @@ app.controller('MainController', ['$scope', function($scope: any) {
 
                   // BOARD ATTRIBUTES //
 
-  let board_size = .6;
+  $scope.board_size = .6;
   $scope.is_attacking = false;
   $scope.is_moving = true;
 
@@ -262,7 +266,7 @@ app.controller('MainController', ['$scope', function($scope: any) {
   }  
   $scope.num_rows_as_list = rows_as_list;
   $scope.num_rows = gameLogic.ROWS;
-  $scope.row_size = ((100 / gameLogic.ROWS) * board_size);
+  $scope.row_size = ((100 / gameLogic.ROWS) * $scope.board_size);
 
                   // COLUMNS //
   let cols_as_list: number[] = [];
@@ -275,7 +279,7 @@ app.controller('MainController', ['$scope', function($scope: any) {
 
                   // CONTROLS ATTRIBUTES //
 
-  let controls_size = .3;
-  $scope.controls_top_pos = ((board_size * 100));
+  $scope.controls_size = .4;
+  $scope.controls_top_pos = (($scope.board_size * 100));
 
 }]);

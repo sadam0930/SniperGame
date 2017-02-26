@@ -206,6 +206,10 @@ var game;
         return isPiece(row, col, 1, 'O');
     }
     game.isPieceO = isPieceO;
+    function isBlank(row, col) {
+        return isPiece(row, col, 1, '');
+    }
+    game.isBlank = isBlank;
     function shouldSlowlyAppear(row, col) {
         return game.state.delta &&
             game.state.delta.row === row && game.state.delta.col === col;
@@ -221,7 +225,7 @@ app.run(['$rootScope', '$timeout',
     }]);
 app.controller('MainController', ['$scope', function ($scope) {
         // BOARD ATTRIBUTES //
-        var board_size = .6;
+        $scope.board_size = .6;
         $scope.is_attacking = false;
         $scope.is_moving = true;
         $scope.pressed_attack_button = function () {
@@ -243,7 +247,7 @@ app.controller('MainController', ['$scope', function ($scope) {
         }
         $scope.num_rows_as_list = rows_as_list;
         $scope.num_rows = gameLogic.ROWS;
-        $scope.row_size = ((100 / gameLogic.ROWS) * board_size);
+        $scope.row_size = ((100 / gameLogic.ROWS) * $scope.board_size);
         // COLUMNS //
         var cols_as_list = [];
         for (var i = 0; i < gameLogic.COLS; i++) {
@@ -253,7 +257,7 @@ app.controller('MainController', ['$scope', function ($scope) {
         $scope.num_cols = gameLogic.COLS;
         $scope.col_size = (100 / gameLogic.COLS);
         // CONTROLS ATTRIBUTES //
-        var controls_size = .3;
-        $scope.controls_top_pos = ((board_size * 100));
+        $scope.controls_size = .4;
+        $scope.controls_top_pos = (($scope.board_size * 100));
     }]);
 //# sourceMappingURL=game.js.map
