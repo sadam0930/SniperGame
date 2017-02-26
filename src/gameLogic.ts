@@ -36,6 +36,13 @@ module gameLogic {
     for (let i = 0; i < NUMPLAYERS*2; i++) {
       boards[i] = getInitialBoard();
     }
+    
+    log.log("generating player positions")
+    let p1_pos = getRandomPosition();
+    boards[2][p1_pos[0]][p1_pos[1]] = 'P';
+    let p2_pos = getRandomPosition();
+    boards[2][p2_pos[0]][p2_pos[1]] = 'P';
+    
     return boards;
   }
 
@@ -52,6 +59,16 @@ module gameLogic {
 
   export function getInitialState(): IState {
     return {board: getInitialBoards(), delta: null};
+  }
+
+  function getRandomPosition(): number[] {
+    return [getRandomIntInclusive(ROWS), getRandomIntInclusive(COLS)];
+  }
+
+  function getRandomIntInclusive(maxVal: number): number {
+    let min = Math.ceil(0);
+    let max = Math.floor(maxVal);
+    return Math.floor(Math.random() * (max - min)) + min;
   }
 
   /**
