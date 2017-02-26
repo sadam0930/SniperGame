@@ -195,19 +195,19 @@ var game;
         return game.state.board[row][col] !== "" || isProposal(row, col);
     }
     game.shouldShowImage = shouldShowImage;
-    function isPiece(row, col, turnIndex, pieceKind) {
-        return game.state.board[row][col] === pieceKind || (isProposal(row, col) && game.currentUpdateUI.turnIndex == turnIndex);
+    function isPiece(row, col, pieceKind) {
+        return game.state.board[row][col] === pieceKind;
     }
-    function isPieceX(row, col) {
-        return isPiece(row, col, 0, 'X');
+    function isPos(row, col) {
+        return isPiece(row, col, ('' + yourPlayerIndex()));
     }
-    game.isPieceX = isPieceX;
-    function isPieceO(row, col) {
-        return isPiece(row, col, 1, 'O');
+    game.isPos = isPos;
+    function isBroken(row, col) {
+        return isPiece(row, col, 'b');
     }
-    game.isPieceO = isPieceO;
+    game.isBroken = isBroken;
     function isBlank(row, col) {
-        return isPiece(row, col, 1, '');
+        return isPiece(row, col, '');
     }
     game.isBlank = isBlank;
     function shouldSlowlyAppear(row, col) {
@@ -225,7 +225,7 @@ app.run(['$rootScope', '$timeout',
     }]);
 app.controller('MainController', ['$scope', function ($scope) {
         // BOARD ATTRIBUTES //
-        $scope.board_size = .6;
+        $scope.board_size = .75;
         $scope.is_attacking = false;
         $scope.is_moving = true;
         $scope.pressed_attack_button = function () {
@@ -257,13 +257,7 @@ app.controller('MainController', ['$scope', function ($scope) {
         $scope.num_cols = gameLogic.COLS;
         $scope.col_size = (100 / gameLogic.COLS);
         // CONTROLS ATTRIBUTES //
-        $scope.controls_size = .4;
+        $scope.controls_size = (1.0 - $scope.board_size);
         $scope.controls_top_pos = (($scope.board_size * 100));
-        // LOGIC //
-        $scope.isBroken = function () {
-            $scope.$apply(function () {
-                return false;
-            });
-        };
     }]);
 //# sourceMappingURL=game.js.map
