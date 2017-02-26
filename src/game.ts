@@ -282,4 +282,12 @@ app.controller('MainController', ['$scope', function($scope: any) {
   $scope.controls_size = .4;
   $scope.controls_top_pos = (($scope.board_size * 100));
 
+                  // LOGIC //
+  $scope.isBroken = function() {
+    $scope.$apply(function() {
+      
+      return false;
+    });
+  };
+
 }]);
