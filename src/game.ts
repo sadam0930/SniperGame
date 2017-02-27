@@ -206,7 +206,7 @@ module game {
   }
 
   export function shouldShowImage(row: number, col: number): boolean {
-    return state.board[row][col] !== "" || isProposal(row, col);
+    return state.board[0][row][col] !== "" || isProposal(row, col);
   }
 
   function isPiece(row: number, col: number, pieceKind: string): boolean {

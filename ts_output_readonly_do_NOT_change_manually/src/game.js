@@ -192,7 +192,7 @@ var game;
     }
     game.cellClicked = cellClicked;
     function shouldShowImage(row, col) {
-        return game.state.board[row][col] !== "" || isProposal(row, col);
+        return game.state.board[0][row][col] !== "" || isProposal(row, col);
     }
     game.shouldShowImage = shouldShowImage;
     function isPiece(row, col, pieceKind) {
