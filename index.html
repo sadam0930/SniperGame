@@ -54,11 +54,11 @@
 			                		style="fill:rgb(201,219,220); stroke-width:16px; stroke:rgb(115,115,115)" />
 <!-- WINDOW EFFECTS -->
 	<!-- WINDOW PANE -->
-		                		<rect ng-if="game.isBlank(row, col)" x="20%" y="25%" 
+		                		<rect ng-if="game.isBlank(2, row, col)" x="20%" y="25%" 
 		                			ng-click="game.cellClicked(row, col, 'move')"
 		                			width="60%" height="50%" style="fill:rgb(0,0,255); stroke-width:2px; stroke:rgb(0,0,0)" />
 	<!-- BROKEN GLASS -->
-			                	<rect ng-if="game.isBroken(row, col)" x="20%" y="25%" 
+			                	<rect ng-if="game.isBroken(2, row, col)" x="20%" y="25%" 
 			                		ng-click="game.cellClicked(row, col, 'move')"
 			                		width="60%" height="50%" style="fill:rgb(0,0,255); stroke-width:2px; stroke:rgb(0,0,0)" />
 	<!-- CHARACTER MARKER -->
@@ -81,7 +81,7 @@
 	        		  	style="width:80%; height:80%; fill:rgb(115,115,115); stroke-width:2px; stroke:rgb(0,0,0)" />
 	      		</svg>
 <!-- BUILDING -->
-      			<div style="position:absolute; top:15%; left:15%; width:70%; height:100%;">
+      			<div style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 <!-- ROWS -->
 		        	<div ng-repeat="row in num_rows_as_list"
 		            	style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
@@ -98,11 +98,11 @@
 				                	style="fill:rgb(201,219,220); stroke-width:16px; stroke:rgb(115,115,115)" />
 <!-- WINDOW EFFECTS -->
 	<!-- WINDOW PANE -->
-			                	<rect ng-if="game.isBlank(row, col)" x="20%" y="25%" 
+			                	<rect ng-if="game.isBlank(0, row, col)" x="20%" y="25%" 
 			                		ng-click="game.cellClicked(row, col, 'attack')"
 			                		width="60%" height="50%" style="fill:rgb(0,0,200); stroke-width:2px; stroke:rgb(0,0,0)" />
 	<!-- BROKEN GLASS -->
-			                	<rect ng-if="game.isBroken(row, col)" x="20%" y="25%" 
+			                	<rect ng-if="game.isBroken(0, row, col)" x="20%" y="25%" 
 			                		ng-click="game.cellClicked(row, col, 'attack')"
 			                		width="60%" height="50%" style="fill:rgb(0,0,255); stroke-width:2px; stroke:rgb(0,0,0)" />
 	<!-- CHARACTER MARKER -->
