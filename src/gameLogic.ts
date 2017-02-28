@@ -2,6 +2,7 @@ type Board = string[][];
 interface BoardDelta {
   row: number;
   col: number;
+  moveType: string;
 }
 type IProposalData = BoardDelta;
 interface IState {
@@ -34,12 +35,19 @@ module gameLogic {
     log.log("creating new boards")
     let boards: Board[] = [];
     for (let i = 0; i < NUMPLAYERS*2; i++) {
-      boards[i] = getInitialBoard();
+      boards[i] = getBlankBoard();
     }
+    
+    log.log("generating player positions")
+    let p1_pos = getRandomPosition();
+    boards[2][p1_pos[0]][p1_pos[1]] = 'P';
+    let p2_pos = getRandomPosition();
+    boards[3][p2_pos[0]][p2_pos[1]] = 'P';
+    
     return boards;
   }
 
-  export function getInitialBoard(): Board {
+  export function getBlankBoard(): Board {
     let board: Board = [];
     for (let i = 0; i < ROWS; i++) {
       board[i] = [];
@@ -54,62 +62,24 @@ module gameLogic {
     return {board: getInitialBoards(), delta: null};
   }
 
-  /**
-   * Returns true if the game ended in a tie because there are no empty cells.
-   * E.g., isTie returns true for the following board:
-   *     [['X', 'O', 'X'],
-   *      ['X', 'O', 'O'],
-   *      ['O', 'X', 'X']]
-   */
-  function isTie(board: Board): boolean {
-    for (let i = 0; i < ROWS; i++) {
-      for (let j = 0; j < COLS; j++) {
-        if (board[i][j] === '') {
-          // If there is an empty cell then we do not have a tie.
-          return false;
-        }
-      }
-    }
-    // No empty cells, so we have a tie!
-    return true;
+  function getRandomPosition(): number[] {
+    return [getRandomIntInclusive(ROWS), getRandomIntInclusive(COLS)];
+  }
+
+  function getRandomIntInclusive(maxVal: number): number {
+    let min = Math.ceil(0);
+    let max = Math.floor(maxVal);
+    return Math.floor(Math.random() * (max - min)) + min;
   }
 
   /**
-   * Return the winner (either 'X' or 'O') or '' if there is no winner.
-   * The board is a matrix of size 3x3 containing either 'X', 'O', or ''.
-   * E.g., getWinner returns 'X' for the following board:
-   *     [['X', 'O', ''],
-   *      ['X', 'O', ''],
-   *      ['X', '', '']]
+   * Return the winner (either 'P1' or 'P2') or '' if there is no winner.
+   * Compares the coordinates the player attacked 
+   * with the opponents position board
    */
-  function getWinner(board: Board): string {
-    let boardString = '';
-    for (let i = 0; i < ROWS; i++) {
-      for (let j = 0; j < COLS; j++) {
-        let cell = board[i][j];
-        boardString += cell === '' ? ' ' : cell;
-      }
-    }
-    let win_patterns = [
-      'XXX......',
-      '...XXX...',
-      '......XXX',
-      'X..X..X..',
-      '.X..X..X.',
-      '..X..X..X',
-      'X...X...X',
-      '..X.X.X..'
-    ];
-    for (let win_pattern of win_patterns) {
-      let x_regexp = new RegExp(win_pattern);
-      let o_regexp = new RegExp(win_pattern.replace(/X/g, 'O'));
-      if (x_regexp.test(boardString)) {
-        return 'X';
-      }
-      if (o_regexp.test(boardString)) {
-        return 'O';
-      }
-    }
+  function getWinner(row: number, col: number, isP1Turn: boolean, boards: Board[]): string {
+    if(isP1Turn && boards[3][row][col] === 'P'){ return 'P1'; }
+    if(!isP1Turn && boards[1][row][col] === 'P'){ return 'P2'; }
     return '';
   }
 
@@ -118,34 +88,69 @@ module gameLogic {
    * with index turnIndexBeforeMove makes a move in cell row X col.
    */
   export function createMove(
-      stateBeforeMove: IState, row: number, col: number, turnIndexBeforeMove: number): IMove {
+      stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number): IMove {
     if (!stateBeforeMove) {
       stateBeforeMove = getInitialState();
     }
+
     let boards: Board[] = stateBeforeMove.board;
-    let board: Board = boards[0]; //hack for tic tac toe to work
+    let board: Board;
+    /*
+    * Based on the turnindex and the moveType 
+    * we can figure out which board to use
+    */
+    let isP1Turn = (turnIndexBeforeMove%2 === 0);
+    let isP2Turn = !isP1Turn;
+    let boardIdx: number;
+    if(isP1Turn && 'attack' === moveType){
+      boardIdx = 0;
+    } else if (isP1Turn && 'move' === moveType){
+      boardIdx = 2;
+    } else if (isP2Turn && 'attack' === moveType){
+      boardIdx = 1;
+    } else if (isP2Turn && 'move' === moveType){
+      boardIdx = 3;
+    }
+    board = boards[boardIdx];
+
     if (board[row][col] !== '') {
       throw new Error("One can only make a move in an empty position!");
     }
-    if (getWinner(board) !== '' || isTie(board)) {
-      throw new Error("Can only make a move if the game is not over!");
-    }
-    let boardsAfterMove = angular.copy(boards);
-    let boardAfterMove = boardsAfterMove[0]; //hack for tic tac toe to work
-    boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
-    let winner = getWinner(boardAfterMove);
+    
+    //check if move is a hit, then game over
+    let winner = getWinner(row, col, isP1Turn, boards);
     let endMatchScores: number[];
     let turnIndex: number;
-    if (winner !== '' || isTie(boardAfterMove)) {
-      // Game over.
+
+    if (winner !== '') {
+      // Game over
+      // throw new Error("Can only make a move if the game is not over!");
       turnIndex = -1;
-      endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
-    } else {
-      // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-      turnIndex = 1 - turnIndexBeforeMove;
-      endMatchScores = null;
+      endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
     }
-    let delta: BoardDelta = {row: row, col: col};
+
+    // Game continues. Now it's the opponent's turn 
+    // (the turn switches from 0 to 1 and 1 to 0).
+    endMatchScores = null;
+    turnIndex = 1 - turnIndexBeforeMove;
+    let boardsAfterMove = angular.copy(boards);
+    /*
+    * Depending on the action update the board for movement or broken window.
+    * Update both the view of opponent and the opponents movement boards
+    */
+    if(isP1Turn && 'attack' === moveType) { 
+      boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = 'B';
+    } else if (isP1Turn && 'move' === moveType){
+      boardsAfterMove[2] = getBlankBoard();
+      boardsAfterMove[2][row][col] = 'P';
+    } else if (isP2Turn && 'attack' === moveType){
+      boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = 'B';
+    } else if (isP2Turn && 'move' === moveType){
+      boardsAfterMove[3] = getBlankBoard();
+      boardsAfterMove[3][row][col] = 'P';
+    }
+
+    let delta: BoardDelta = {row: row, col: col, moveType: moveType};
     let state: IState = {delta: delta, board: boardsAfterMove};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
   }
