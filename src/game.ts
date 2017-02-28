@@ -190,13 +190,13 @@ module game {
       currentUpdateUI.yourPlayerIndex === currentUpdateUI.turnIndex; // it's my turn
   }
 
-  export function cellClicked(row: number, col: number): void {
+  export function cellClicked(row: number, col: number, moveType: string): void {
     log.info("Clicked on cell:", row, col);
     if (!isHumanTurn()) return;
     let nextMove: IMove = null;
     try {
       nextMove = gameLogic.createMove(
-          state, row, col, currentUpdateUI.turnIndex);
+          state, row, col, moveType, currentUpdateUI.turnIndex);
     } catch (e) {
       log.info(["Cell is already full in position:", row, col]);
       return;
