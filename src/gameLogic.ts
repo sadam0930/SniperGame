@@ -161,7 +161,7 @@ module gameLogic {
   }
 
   export function forSimpleTestHtml() {
-    var move = gameLogic.createMove(null, 0, 0, 0);
+    var move = gameLogic.createMove(null, 0, 0, 'attack', 0);
     log.log("move=", move);
   }
 }
