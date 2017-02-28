@@ -209,20 +209,20 @@ module game {
     return state.board[0][row][col] !== "" || isProposal(row, col);
   }
 
-  function isPiece(row: number, col: number, turnIndex: number, pieceKind: string): boolean {
-    return state.board[0][row][col] === pieceKind || (isProposal(row, col) && currentUpdateUI.turnIndex == turnIndex);
-  }
-  
-  export function isPieceX(row: number, col: number): boolean {
-    return isPiece(row, col, 0, 'X');
+  function isPiece(row: number, col: number, pieceKind: string): boolean {
+    return state.board[row][col] === pieceKind;
   }
 
-  export function isPieceO(row: number, col: number): boolean {
-    return isPiece(row, col, 1, 'O');
+  export function isPos(row: number, col: number): boolean {
+    return isPiece(row, col,('' + yourPlayerIndex()));
+  }
+  
+  export function isBroken(row: number, col: number): boolean {
+    return isPiece(row, col, 'b');
   }
 
   export function isBlank(row: number, col: number): boolean {
-    return isPiece(row, col, 1, '');
+    return isPiece(row, col, '');
   }
 
   export function shouldSlowlyAppear(row: number, col: number): boolean {
@@ -242,7 +242,7 @@ app.controller('MainController', ['$scope', function($scope: any) {
 
                   // BOARD ATTRIBUTES //
 
-  $scope.board_size = .6;
+  $scope.board_size = .75;
   $scope.is_attacking = false;
   $scope.is_moving = true;
 
@@ -278,16 +278,7 @@ app.controller('MainController', ['$scope', function($scope: any) {
   $scope.col_size = (100 / gameLogic.COLS);
 
                   // CONTROLS ATTRIBUTES //
-
-  $scope.controls_size = .4;
+  $scope.controls_size = (1.0 - $scope.board_size);
   $scope.controls_top_pos = (($scope.board_size * 100));
-
-                  // LOGIC //
-  $scope.isBroken = function() {
-    $scope.$apply(function() {
-      
-      return false;
-    });
-  };
 
 }]);
