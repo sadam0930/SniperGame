@@ -209,20 +209,29 @@ module game {
     return state.board[0][row][col] !== "" || isProposal(row, col);
   }
 
-  function isPiece(row: number, col: number, pieceKind: string): boolean {
-    return state.board[row][col] === pieceKind;
+  function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
+    return state.board[board][row][col] === pieceKind;
   }
 
-  export function isPos(row: number, col: number): boolean {
-    return isPiece(row, col,('' + yourPlayerIndex()));
+  export function isPos(board: number, row: number, col: number): boolean {
+    
+    let board_number: number = (board + yourPlayerIndex());    
+    return isPiece(board_number, row, col, 'P');
+
   }
   
-  export function isBroken(row: number, col: number): boolean {
-    return isPiece(row, col, 'b');
+  export function isBroken(board: number, row: number, col: number): boolean {
+    
+    let board_number: number = (board + yourPlayerIndex());    
+    return isPiece(board_number, row, col, 'B');
+
   }
 
-  export function isBlank(row: number, col: number): boolean {
-    return isPiece(row, col, '');
+  export function isBlank(board: number, row: number, col: number): boolean {
+    
+    let board_number: number = (board + yourPlayerIndex());    
+    return isPiece(board_number, row, col, '');
+   
   }
 
   export function shouldSlowlyAppear(row: number, col: number): boolean {

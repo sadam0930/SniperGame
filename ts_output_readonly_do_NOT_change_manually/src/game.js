@@ -175,13 +175,13 @@ var game;
             game.currentUpdateUI.turnIndex >= 0 &&
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.turnIndex; // it's my turn
     }
-    function cellClicked(row, col) {
+    function cellClicked(row, col, moveType) {
         log.info("Clicked on cell:", row, col);
         if (!isHumanTurn())
             return;
         var nextMove = null;
         try {
-            nextMove = gameLogic.createMove(game.state, row, col, game.currentUpdateUI.turnIndex);
+            nextMove = gameLogic.createMove(game.state, row, col, moveType, game.currentUpdateUI.turnIndex);
         }
         catch (e) {
             log.info(["Cell is already full in position:", row, col]);
@@ -195,19 +195,22 @@ var game;
         return game.state.board[0][row][col] !== "" || isProposal(row, col);
     }
     game.shouldShowImage = shouldShowImage;
-    function isPiece(row, col, pieceKind) {
-        return game.state.board[row][col] === pieceKind;
+    function isPiece(board, row, col, pieceKind) {
+        return game.state.board[board][row][col] === pieceKind;
     }
-    function isPos(row, col) {
-        return isPiece(row, col, ('' + yourPlayerIndex()));
+    function isPos(board, row, col) {
+        var board_number = (board + yourPlayerIndex());
+        return isPiece(board_number, row, col, 'P');
     }
     game.isPos = isPos;
-    function isBroken(row, col) {
-        return isPiece(row, col, 'b');
+    function isBroken(board, row, col) {
+        var board_number = (board + yourPlayerIndex());
+        return isPiece(board_number, row, col, 'B');
     }
     game.isBroken = isBroken;
-    function isBlank(row, col) {
-        return isPiece(row, col, '');
+    function isBlank(board, row, col) {
+        var board_number = (board + yourPlayerIndex());
+        return isPiece(board_number, row, col, '');
     }
     game.isBlank = isBlank;
     function shouldSlowlyAppear(row, col) {

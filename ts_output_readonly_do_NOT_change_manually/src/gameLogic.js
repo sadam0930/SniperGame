@@ -22,12 +22,17 @@ var gameLogic;
         log.log("creating new boards");
         var boards = [];
         for (var i = 0; i < gameLogic.NUMPLAYERS * 2; i++) {
-            boards[i] = getInitialBoard();
+            boards[i] = getBlankBoard();
         }
+        log.log("generating player positions");
+        var p1_pos = getRandomPosition();
+        boards[2][p1_pos[0]][p1_pos[1]] = 'P';
+        var p2_pos = getRandomPosition();
+        boards[3][p2_pos[0]][p2_pos[1]] = 'P';
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
-    function getInitialBoard() {
+    function getBlankBoard() {
         var board = [];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             board[i] = [];
@@ -37,66 +42,30 @@ var gameLogic;
         }
         return board;
     }
-    gameLogic.getInitialBoard = getInitialBoard;
+    gameLogic.getBlankBoard = getBlankBoard;
     function getInitialState() {
         return { board: getInitialBoards(), delta: null };
     }
     gameLogic.getInitialState = getInitialState;
-    /**
-     * Returns true if the game ended in a tie because there are no empty cells.
-     * E.g., isTie returns true for the following board:
-     *     [['X', 'O', 'X'],
-     *      ['X', 'O', 'O'],
-     *      ['O', 'X', 'X']]
-     */
-    function isTie(board) {
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                if (board[i][j] === '') {
-                    // If there is an empty cell then we do not have a tie.
-                    return false;
-                }
-            }
-        }
-        // No empty cells, so we have a tie!
-        return true;
+    function getRandomPosition() {
+        return [getRandomIntInclusive(gameLogic.ROWS), getRandomIntInclusive(gameLogic.COLS)];
+    }
+    function getRandomIntInclusive(maxVal) {
+        var min = Math.ceil(0);
+        var max = Math.floor(maxVal);
+        return Math.floor(Math.random() * (max - min)) + min;
     }
     /**
-     * Return the winner (either 'X' or 'O') or '' if there is no winner.
-     * The board is a matrix of size 3x3 containing either 'X', 'O', or ''.
-     * E.g., getWinner returns 'X' for the following board:
-     *     [['X', 'O', ''],
-     *      ['X', 'O', ''],
-     *      ['X', '', '']]
+     * Return the winner (either 'P1' or 'P2') or '' if there is no winner.
+     * Compares the coordinates the player attacked
+     * with the opponents position board
      */
-    function getWinner(board) {
-        var boardString = '';
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                var cell = board[i][j];
-                boardString += cell === '' ? ' ' : cell;
-            }
+    function getWinner(row, col, isP1Turn, boards) {
+        if (isP1Turn && boards[3][row][col] === 'P') {
+            return 'P1';
         }
-        var win_patterns = [
-            'XXX......',
-            '...XXX...',
-            '......XXX',
-            'X..X..X..',
-            '.X..X..X.',
-            '..X..X..X',
-            'X...X...X',
-            '..X.X.X..'
-        ];
-        for (var _i = 0, win_patterns_1 = win_patterns; _i < win_patterns_1.length; _i++) {
-            var win_pattern = win_patterns_1[_i];
-            var x_regexp = new RegExp(win_pattern);
-            var o_regexp = new RegExp(win_pattern.replace(/X/g, 'O'));
-            if (x_regexp.test(boardString)) {
-                return 'X';
-            }
-            if (o_regexp.test(boardString)) {
-                return 'O';
-            }
+        if (!isP1Turn && boards[1][row][col] === 'P') {
+            return 'P2';
         }
         return '';
     }
@@ -104,35 +73,69 @@ var gameLogic;
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
-    function createMove(stateBeforeMove, row, col, turnIndexBeforeMove) {
+    function createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove) {
         if (!stateBeforeMove) {
             stateBeforeMove = getInitialState();
         }
         var boards = stateBeforeMove.board;
-        var board = boards[0]; //hack for tic tac toe to work
+        var board;
+        /*
+        * Based on the turnindex and the moveType
+        * we can figure out which board to use
+        */
+        var isP1Turn = (turnIndexBeforeMove % 2 === 0);
+        var isP2Turn = !isP1Turn;
+        var boardIdx;
+        if (isP1Turn && 'attack' === moveType) {
+            boardIdx = 0;
+        }
+        else if (isP1Turn && 'move' === moveType) {
+            boardIdx = 2;
+        }
+        else if (isP2Turn && 'attack' === moveType) {
+            boardIdx = 1;
+        }
+        else if (isP2Turn && 'move' === moveType) {
+            boardIdx = 3;
+        }
+        board = boards[boardIdx];
         if (board[row][col] !== '') {
             throw new Error("One can only make a move in an empty position!");
         }
-        if (getWinner(board) !== '' || isTie(board)) {
-            throw new Error("Can only make a move if the game is not over!");
-        }
-        var boardsAfterMove = angular.copy(boards);
-        var boardAfterMove = boardsAfterMove[0]; //hack for tic tac toe to work
-        boardAfterMove[row][col] = turnIndexBeforeMove === 0 ? 'X' : 'O';
-        var winner = getWinner(boardAfterMove);
+        //check if move is a hit, then game over
+        var winner = getWinner(row, col, isP1Turn, boards);
         var endMatchScores;
         var turnIndex;
-        if (winner !== '' || isTie(boardAfterMove)) {
-            // Game over.
+        if (winner !== '') {
+            // Game over
+            // throw new Error("Can only make a move if the game is not over!");
             turnIndex = -1;
-            endMatchScores = winner === 'X' ? [1, 0] : winner === 'O' ? [0, 1] : [0, 0];
+            endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
         }
-        else {
-            // Game continues. Now it's the opponent's turn (the turn switches from 0 to 1 and 1 to 0).
-            turnIndex = 1 - turnIndexBeforeMove;
-            endMatchScores = null;
+        // Game continues. Now it's the opponent's turn 
+        // (the turn switches from 0 to 1 and 1 to 0).
+        endMatchScores = null;
+        turnIndex = 1 - turnIndexBeforeMove;
+        var boardsAfterMove = angular.copy(boards);
+        /*
+        * Depending on the action update the board for movement or broken window.
+        * Update both the view of opponent and the opponents movement boards
+        */
+        if (isP1Turn && 'attack' === moveType) {
+            boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = 'B';
         }
-        var delta = { row: row, col: col };
+        else if (isP1Turn && 'move' === moveType) {
+            boardsAfterMove[2] = getBlankBoard();
+            boardsAfterMove[2][row][col] = 'P';
+        }
+        else if (isP2Turn && 'attack' === moveType) {
+            boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = 'B';
+        }
+        else if (isP2Turn && 'move' === moveType) {
+            boardsAfterMove[3] = getBlankBoard();
+            boardsAfterMove[3][row][col] = 'P';
+        }
+        var delta = { row: row, col: col, moveType: moveType };
         var state = { delta: delta, board: boardsAfterMove };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
@@ -143,7 +146,7 @@ var gameLogic;
     }
     gameLogic.createInitialMove = createInitialMove;
     function forSimpleTestHtml() {
-        var move = gameLogic.createMove(null, 0, 0, 0);
+        var move = gameLogic.createMove(null, 0, 0, 'attack', 0);
         log.log("move=", move);
     }
     gameLogic.forSimpleTestHtml = forSimpleTestHtml;
