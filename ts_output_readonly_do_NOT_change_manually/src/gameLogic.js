@@ -125,21 +125,29 @@ var gameLogic;
             boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = 'B';
         }
         else if (isP1Turn && 'move' === moveType) {
-            boardsAfterMove[2] = getBlankBoard();
-            boardsAfterMove[2][row][col] = 'P';
+            assignNewPosition(boardsAfterMove[2], row, col);
         }
         else if (isP2Turn && 'attack' === moveType) {
             boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = 'B';
         }
         else if (isP2Turn && 'move' === moveType) {
-            boardsAfterMove[3] = getBlankBoard();
-            boardsAfterMove[3][row][col] = 'P';
+            assignNewPosition(boardsAfterMove[3], row, col);
         }
         var delta = { row: row, col: col, moveType: moveType };
         var state = { delta: delta, board: boardsAfterMove };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;
+    function assignNewPosition(board, row, col) {
+        for (var i = 0; i < gameLogic.ROWS; i++) {
+            for (var j = 0; j < gameLogic.COLS; j++) {
+                if (board[i][j] === 'P') {
+                    board[i][j] = '';
+                }
+            }
+        }
+        board[row][col] = 'P';
+    }
     function createInitialMove() {
         return { endMatchScores: null, turnIndex: 0,
             state: getInitialState() };

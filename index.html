@@ -5,8 +5,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>TicTacToe</title>
-    <meta name="description" content="TicTacToe game">
+    <title>Sniper Game</title>
+    <meta name="description" content="Sniper Game">
     <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;,"><!-- Suppress browser request for favicon.ico -->
     <!-- To ensure CSS files are downloaded in parallel, always include external CSS before external JavaScript. -->
     <!-- build:[href] css/everything.min.css -->
@@ -56,11 +56,12 @@
 	<!-- WINDOW PANE -->
 		                		<rect ng-if="game.isBlank(2, row, col)" x="20%" y="25%" 
 		                			ng-click="game.cellClicked(row, col, 'move')"
-		                			width="60%" height="50%" style="fill:rgb(0,0,255); stroke-width:2px; stroke:rgb(0,0,0)" />
+		                			width="60%" height="50%" 
+		                			style="fill:rgb(150,150,225); stroke-width:1px; stroke:rgb(0,0,0); opacity:.5;" />
 	<!-- BROKEN GLASS -->
 			                	<rect ng-if="game.isBroken(2, row, col)" x="20%" y="25%" 
 			                		ng-click="game.cellClicked(row, col, 'move')"
-			                		width="60%" height="50%" style="fill:rgb(0,0,255); stroke-width:2px; stroke:rgb(0,0,0)" />
+			                		width="60%" height="50%" style="fill:rgb(0,0,0); stroke-width:2px; stroke:rgb(0,0,0)" />
 	<!-- CHARACTER MARKER -->
 			                	<rect ng-if="game.isPos(2, row, col)" x="20%" y="25%" 
 			                		ng-click="game.cellClicked(row, col, 'move')"
@@ -104,7 +105,7 @@
 	<!-- BROKEN GLASS -->
 			                	<rect ng-if="game.isBroken(0, row, col)" x="20%" y="25%" 
 			                		ng-click="game.cellClicked(row, col, 'attack')"
-			                		width="60%" height="50%" style="fill:rgb(0,0,255); stroke-width:2px; stroke:rgb(0,0,0)" />
+			                		width="60%" height="50%" style="fill:rgb(0,0,0); stroke-width:2px; stroke:rgb(0,0,0)" />
 		              		</svg>
 		          		</div>
 			    	</div>
