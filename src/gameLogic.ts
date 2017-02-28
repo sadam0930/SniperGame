@@ -141,18 +141,29 @@ module gameLogic {
     if(isP1Turn && 'attack' === moveType) { 
       boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = 'B';
     } else if (isP1Turn && 'move' === moveType){
-      boardsAfterMove[2] = getBlankBoard();
-      boardsAfterMove[2][row][col] = 'P';
+      assignNewPosition(boardsAfterMove[2], row, col);
+      // boardsAfterMove[2][row][col] = 'P';
     } else if (isP2Turn && 'attack' === moveType){
       boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = 'B';
     } else if (isP2Turn && 'move' === moveType){
-      boardsAfterMove[3] = getBlankBoard();
-      boardsAfterMove[3][row][col] = 'P';
+      assignNewPosition(boardsAfterMove[3], row, col);
+      // boardsAfterMove[3][row][col] = 'P';
     }
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType};
     let state: IState = {delta: delta, board: boardsAfterMove};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
+  }
+
+  function assignNewPosition(board: Board, row: number, col: number): void {
+    for (let i = 0; i < ROWS; i++) {
+      for (let j = 0; j < COLS; j++) {
+        if(board[i][j] === 'P') { 
+          board[i][j] = ''; 
+        }
+      }
+    }
+    board[row][col] = 'P';
   }
   
   export function createInitialMove(): IMove {
