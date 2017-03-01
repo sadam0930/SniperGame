@@ -20,7 +20,7 @@ var game;
         registerServiceWorker();
         translate.setTranslations(getTranslations());
         translate.setLanguage('en');
-        resizeGameAreaService.setWidthToHeight(1);
+        resizeGameAreaService.setWidthToHeight(.7);
         gameService.setGame({
             updateUI: updateUI,
             communityUI: communityUI,
