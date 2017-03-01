@@ -247,8 +247,14 @@ app.run(['$rootScope', '$timeout',
       $rootScope['game'] = game;
       game.init($rootScope, $timeout);
     }]);
-app.controller('MainController', ['$scope', function($scope: any) {
+app.controller('MainController', ['$scope', '$rootScope', function($scope: any, $rootScope: any) {
 
+  $scope.currentPlayer = (game.currentUpdateUI.turnIndex + 1);
+  $scope.updateTurnDisplay = function () {
+    $scope.$apply(function() {
+      $scope.currentPlayer = (game.currentUpdateUI.turnIndex + 1);
+    });
+  }
                   // BOARD ATTRIBUTES //
 
   $scope.board_size = .75;
