@@ -198,7 +198,7 @@ module game {
       nextMove = gameLogic.createMove(
           state, row, col, moveType, currentUpdateUI.turnIndex);
     } catch (e) {
-      log.info(["Cell is already full in position:", row, col]);
+      log.info((<Error>e).message);
       return;
     }
     // Move is legal, make it!
