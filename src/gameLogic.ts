@@ -22,6 +22,7 @@ module gameLogic {
   export const ROWS = 6;
   export const COLS = 5;
   export const NUMPLAYERS = 2;
+  export let isFirstMove: boolean = true; //instance variable for each client
 
   /** 
   * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. 
@@ -39,11 +40,11 @@ module gameLogic {
       boards[i] = getBlankBoard();
     }
     
-    log.log("generating player positions")
-    let p1_pos = getRandomPosition();
-    boards[2][p1_pos[0]][p1_pos[1]] = 'P';
-    let p2_pos = getRandomPosition();
-    boards[3][p2_pos[0]][p2_pos[1]] = 'P';
+    // log.log("generating player positions")
+    // let p1_pos = getRandomPosition();
+    // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
+    // let p2_pos = getRandomPosition();
+    // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
     
     return boards;
   }
@@ -120,6 +121,10 @@ module gameLogic {
 
     if (stateBeforeMove.gameOver) {
       throw new Error("Game Over!");
+    }
+
+    if (isFirstMove && 'attack' === moveType) {
+      throw new Error("Must place position on first move!");
     }
     
     //check if move is a hit, then game over
