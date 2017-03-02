@@ -234,6 +234,10 @@ module game {
    
   }
 
+  export function firstMove(): boolean {
+      return gameLogic.isFirstMove;
+  }
+
   export function shouldSlowlyAppear(row: number, col: number): boolean {
     return state.delta &&
         state.delta.row === row && state.delta.col === col;
