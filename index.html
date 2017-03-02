@@ -107,20 +107,20 @@
 				</div>
 			</div>
 <!-- CONTROL AREA -->
-		    <div id="controlArea"
+		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
-		        <div>	        
-		        	<text id="turnDisplay" ng-if="game.isMyTurn()"
+		        <div ng-if="!game.firstMove()">	        
+		        	<text class="turnDisplay" ng-if="game.isMyTurn()"
 			        	style="position:absolute; text-align:center; width:100%; height:20%;" > 
 			        	Your turn.
 			       	</text>
-			       	<text id="turnDisplay" ng-if="!game.isMyTurn()"
+			       	<text class="turnDisplay" ng-if="!game.isMyTurn()"
 			        	style="position:absolute; text-align:center; width:100%; height:20%;" > 
 			        	Opponent's turn.
 			       	</text>
 		        </div>
 <!-- BUTTONS -->
-				<div id="buttonArea">
+				<div id="buttonArea" ng-if="!game.firstMove()">
 					<text class="btn btn-attack"
 			        	ng-click="pressed_attack_button()"
 			        	style="position:absolute; top:45%; left:20%; width:25%; height:20%;" > 
@@ -132,7 +132,12 @@
 			        	Move
 			       	</text>
 				</div>
-
+<!-- FIRST MOVE BANNER -->
+		        <div ng-if="game.firstMove()" 
+		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()"
+		        	style="position:absolute; top:0; left:0; width:100%; height:100%;">
+		        	Select your starting position.
+		        </div>
 		    </div>
 	    </div>
   	</body>
