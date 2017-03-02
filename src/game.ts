@@ -184,7 +184,7 @@ module game {
     return isMyTurn() && !isComputer();
   }
 
-  function isMyTurn() {
+  export function isMyTurn() {
     return !didMakeMove && // you can only make one move per updateUI.
       currentUpdateUI.turnIndex >= 0 && // game is ongoing
       currentUpdateUI.yourPlayerIndex === currentUpdateUI.turnIndex; // it's my turn
@@ -249,12 +249,6 @@ app.run(['$rootScope', '$timeout',
     }]);
 app.controller('MainController', ['$scope', '$rootScope', function($scope: any, $rootScope: any) {
 
-  $scope.currentPlayer = (game.currentUpdateUI.turnIndex + 1);
-  $scope.updateTurnDisplay = function () {
-    $scope.$apply(function() {
-      $scope.currentPlayer = (game.currentUpdateUI.turnIndex + 1);
-    });
-  }
                   // BOARD ATTRIBUTES //
 
   $scope.board_size = .75;
