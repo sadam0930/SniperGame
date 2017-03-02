@@ -214,6 +214,10 @@ var game;
         return isPiece(board_number, row, col, '');
     }
     game.isBlank = isBlank;
+    function firstMove() {
+        return gameLogic.isFirstMove;
+    }
+    game.firstMove = firstMove;
     function shouldSlowlyAppear(row, col) {
         return game.state.delta &&
             game.state.delta.row === row && game.state.delta.col === col;
