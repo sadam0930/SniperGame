@@ -8,6 +8,7 @@ type IProposalData = BoardDelta;
 interface IState {
   board: Board[];
   delta: BoardDelta;
+  gameOver: boolean;
 }
 
 import gameService = gamingPlatform.gameService;
@@ -59,7 +60,7 @@ module gameLogic {
   }
 
   export function getInitialState(): IState {
-    return {board: getInitialBoards(), delta: null};
+    return {board: getInitialBoards(), delta: null, gameOver: false};
   }
 
   function getRandomPosition(): number[] {
@@ -116,17 +117,23 @@ module gameLogic {
     if (board[row][col] !== '') {
       throw new Error("One can only make a move in an empty position!");
     }
+
+    if (stateBeforeMove.gameOver) {
+      throw new Error("Game Over!");
+    }
     
     //check if move is a hit, then game over
     let winner = getWinner(row, col, isP1Turn, boards);
     let endMatchScores: number[];
     let turnIndex: number;
+    let isGameOver: boolean = false;
 
     if (winner !== '') {
       // Game over
-      // throw new Error("Can only make a move if the game is not over!");
+      log.info("Game over! Winner is: ", winner);
       turnIndex = -1;
       endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
+      isGameOver = true;
     }
 
     // Game continues. Now it's the opponent's turn 
@@ -151,7 +158,7 @@ module gameLogic {
     }
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType};
-    let state: IState = {delta: delta, board: boardsAfterMove};
+    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
   }
 
