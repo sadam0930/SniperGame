@@ -7,7 +7,7 @@ describe("In TicTacToe", function () {
     var P2_WIN_SCORES = [0, 1];
     var TIE_SCORES = [0, 0];
     function expectException(turnIndexBeforeMove, boardBeforeMove, row, col, moveType) {
-        var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null } : null;
+        var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: false } : null;
         // We expect an exception to be thrown :)
         var didThrowException = false;
         try {
@@ -24,9 +24,9 @@ describe("In TicTacToe", function () {
         var expectedMove = {
             turnIndex: turnIndexAfterMove,
             endMatchScores: endMatchScores,
-            state: { board: boardAfterMove, delta: { row: row, col: col, moveType: moveType } }
+            state: { board: boardAfterMove, delta: { row: row, col: col, moveType: moveType }, gameOver: false }
         };
-        var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null } : null;
+        var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: false } : null;
         var move = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
         expect(angular.equals(move, expectedMove)).toBe(true);
     }
@@ -55,7 +55,8 @@ describe("In TicTacToe", function () {
                         ['', 'P', ''],
                         ['', '', ''],
                         ['', '', '']]],
-                delta: null }
+                delta: null,
+                gameOver: false }
         };
         expect(angular.equals(move, expectedMove)).toBe(true);
     });

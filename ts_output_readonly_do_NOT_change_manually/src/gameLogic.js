@@ -9,6 +9,7 @@ var gameLogic;
     gameLogic.ROWS = 6;
     gameLogic.COLS = 5;
     gameLogic.NUMPLAYERS = 2;
+    gameLogic.isFirstMove = true; //instance variable for each client
     /**
     * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''.
     * There are 4 boards. P1 is even boards. P2 is odd boards.
@@ -24,11 +25,11 @@ var gameLogic;
         for (var i = 0; i < gameLogic.NUMPLAYERS * 2; i++) {
             boards[i] = getBlankBoard();
         }
-        log.log("generating player positions");
-        var p1_pos = getRandomPosition();
-        boards[2][p1_pos[0]][p1_pos[1]] = 'P';
-        var p2_pos = getRandomPosition();
-        boards[3][p2_pos[0]][p2_pos[1]] = 'P';
+        // log.log("generating player positions")
+        // let p1_pos = getRandomPosition();
+        // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
+        // let p2_pos = getRandomPosition();
+        // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
@@ -44,7 +45,7 @@ var gameLogic;
     }
     gameLogic.getBlankBoard = getBlankBoard;
     function getInitialState() {
-        return { board: getInitialBoards(), delta: null };
+        return { board: getInitialBoards(), delta: null, gameOver: false };
     }
     gameLogic.getInitialState = getInitialState;
     function getRandomPosition() {
@@ -102,15 +103,24 @@ var gameLogic;
         if (board[row][col] !== '') {
             throw new Error("One can only make a move in an empty position!");
         }
+        if (stateBeforeMove.gameOver) {
+            throw new Error("Game Over!");
+        }
+        if (gameLogic.isFirstMove && 'attack' === moveType) {
+            throw new Error("Must place position on first move!");
+        }
+        gameLogic.isFirstMove = false;
         //check if move is a hit, then game over
         var winner = getWinner(row, col, isP1Turn, boards);
         var endMatchScores;
         var turnIndex;
+        var isGameOver = false;
         if (winner !== '') {
             // Game over
-            // throw new Error("Can only make a move if the game is not over!");
+            log.info("Game over! Winner is: ", winner);
             turnIndex = -1;
             endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
+            isGameOver = true;
         }
         // Game continues. Now it's the opponent's turn 
         // (the turn switches from 0 to 1 and 1 to 0).
@@ -134,7 +144,7 @@ var gameLogic;
             assignNewPosition(boardsAfterMove[3], row, col);
         }
         var delta = { row: row, col: col, moveType: moveType };
-        var state = { delta: delta, board: boardsAfterMove };
+        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;

@@ -126,6 +126,7 @@ module gameLogic {
     if (isFirstMove && 'attack' === moveType) {
       throw new Error("Must place position on first move!");
     }
+    isFirstMove = false;
     
     //check if move is a hit, then game over
     let winner = getWinner(row, col, isP1Turn, boards);
