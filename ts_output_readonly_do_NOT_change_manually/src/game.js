@@ -175,6 +175,7 @@ var game;
             game.currentUpdateUI.turnIndex >= 0 &&
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.turnIndex; // it's my turn
     }
+    game.isMyTurn = isMyTurn;
     function cellClicked(row, col, moveType) {
         log.info("Clicked on cell:", row, col);
         if (!isHumanTurn())
@@ -184,7 +185,7 @@ var game;
             nextMove = gameLogic.createMove(game.state, row, col, moveType, game.currentUpdateUI.turnIndex);
         }
         catch (e) {
-            log.info(["Cell is already full in position:", row, col]);
+            log.info(e.message);
             return;
         }
         // Move is legal, make it!
@@ -226,7 +227,7 @@ app.run(['$rootScope', '$timeout',
         $rootScope['game'] = game;
         game.init($rootScope, $timeout);
     }]);
-app.controller('MainController', ['$scope', function ($scope) {
+app.controller('MainController', ['$scope', '$rootScope', function ($scope, $rootScope) {
         // BOARD ATTRIBUTES //
         $scope.board_size = .75;
         $scope.is_attacking = false;
