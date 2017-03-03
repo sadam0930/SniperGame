@@ -46,32 +46,26 @@ body {
   background-color: #708090;
   border: 8px solid black;
 }
-
 .turnDisplay {
-  font-size: 1.5em; 
-  white-space:nowrap; 
-  width:100%; 
-  padding:.8em 1.5em; 
-  font-family: Open Sans, Helvetica, Arial, sans-serif; 
-  line-height:18px; 
-  display: inline-block;
-  zoom: 1; 
-  color: #fff; 
-  text-align: center; 
-  position:relative; 
-  -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear; 
+  text-align: center;
+  padding: .5em 0;
+  font-family: Open Sans, Helvetica, Arial, sans-serif;
+  zoom: 1;
+  color: #fff;
+  -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear;
   transition: border .25s linear, color .25s linear, background-color .25s linear;
-  -webkit-box-shadow: 0 3px 0 #1c6394; 
+  -webkit-box-shadow: 0 3px 0 #1c6394;
   box-shadow: 0 3px 0 #1c6394;
-
-  background-color: #36485b; 
+  background-color: #36485b;
 }
-
+.btn-container{
+  float:left;
+  width: 50%;
+}
 .btn {
-  font-size: 18px; 
   white-space:nowrap; 
   width:100%; 
-  padding:.8em 1.5em; 
+  padding:14% 0%; 
   font-family: Open Sans, Helvetica, Arial, sans-serif; 
   line-height:18px; 
   display: inline-block;
@@ -81,7 +75,7 @@ body {
   position:relative; 
   -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear; 
   transition: border .25s linear, color .25s linear, background-color .25s linear;
-
+  text-decoration: none;
 }
 .btn.btn-attack{
   background-color: #B22222; 
@@ -101,4 +95,21 @@ body {
 .btn.btn-move:active{
   top: 3px; outline: none; 
   -webkit-box-shadow: none; 
-  box-shadow: none;}
+  box-shadow: none;
+}
+#buttonArea {
+  float: left;
+  clear: both;
+  width: 100%;
+}
+@media screen and (min-width: 767px){
+.btn-container{
+  float: left;
+  width: 50%;
+}
+#buttonArea {
+  float: left;
+  clear: both;
+  width: 100%;
+}
+}
