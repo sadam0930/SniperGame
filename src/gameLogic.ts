@@ -81,7 +81,7 @@ module gameLogic {
    */
   function getWinner(row: number, col: number, isP1Turn: boolean, boards: Board[]): string {
     if(isP1Turn && boards[3][row][col] === 'P'){ return 'P1'; }
-    if(!isP1Turn && boards[1][row][col] === 'P'){ return 'P2'; }
+    if(!isP1Turn && boards[2][row][col] === 'P'){ return 'P2'; }
     return '';
   }
 
@@ -129,19 +129,23 @@ module gameLogic {
     isFirstMove = false;
     
     //check if move is a hit, then game over
-    let winner = getWinner(row, col, isP1Turn, boards);
     let endMatchScores: number[];
     let turnIndex: number;
+    let winner: string = '';
     let isGameOver: boolean = false;
 
-    if (winner !== '') {
-      // Game over
-      log.info("Game over! Winner is: ", winner);
-      turnIndex = -1;
-      endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
-      isGameOver = true;
+    if (moveType === 'attack') {
+      let winner = getWinner(row, col, isP1Turn, boards);
+      if (winner !== '') {
+        // Game over
+        log.info("Game over! Winner is: ", winner);
+        turnIndex = -1;
+        endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
+        isGameOver = true;
+        game.theWinner = winner;
+      }
     }
-
+    
     // Game continues. Now it's the opponent's turn 
     // (the turn switches from 0 to 1 and 1 to 0).
     endMatchScores = null;

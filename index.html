@@ -127,9 +127,13 @@
 			       	</div>
 				</div>
 <!-- FIRST MOVE BANNER -->
-		        <div ng-if="game.firstMove()" 
-		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
+		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
 		        	Select your starting position.
+		        </div>
+<!-- GAME OVER BANNER -->
+		        <div ng-if="game.theWinner === '1' || game.theWinner === '2'" 
+		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
+		        	Player {{game.theWinner}} wins!
 		        </div>
 		    </div>
 	    </div>

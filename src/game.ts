@@ -242,6 +242,8 @@ module game {
     return state.delta &&
         state.delta.row === row && state.delta.col === col;
   }
+
+  export let theWinner: string = '';
 }
 
 var app = angular.module('myApp', ['gameServices']);
