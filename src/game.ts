@@ -190,6 +190,8 @@ module game {
       currentUpdateUI.yourPlayerIndex === currentUpdateUI.turnIndex; // it's my turn
   }
 
+  export let theWinner: string = '';
+
   export function cellClicked(row: number, col: number, moveType: string): void {
     log.info("Clicked on cell:", row, col);
     if (!isHumanTurn()) return;
@@ -242,6 +244,7 @@ module game {
     return state.delta &&
         state.delta.row === row && state.delta.col === col;
   }
+
 }
 
 var app = angular.module('myApp', ['gameServices']);
