@@ -118,7 +118,7 @@
 			       	</div>
 		        </div>
 <!-- BUTTONS -->
-				<div id="buttonArea" ng-if="!game.firstMove()">
+				<div id="buttonArea" ng-if="!game.firstMove() && game.theWinner === ''">
 					<div class="btn-container" ng-click="pressed_attack_button()"> 
 			        	<a href="#" class="btn btn-attack">Attack</a>
 			       	</div>
@@ -131,7 +131,7 @@
 		        	Select your starting position.
 		        </div>
 <!-- GAME OVER BANNER -->
-		        <div ng-if="game.theWinner === '1' || game.theWinner === '2'" 
+		        <div ng-if="game.theWinner != ''" 
 		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
 		        	Player {{game.theWinner}} wins!
 		        </div>
