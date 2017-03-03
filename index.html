@@ -11,7 +11,7 @@
     <!-- To ensure CSS files are downloaded in parallel, always include external CSS before external JavaScript. -->
     <!-- build:[href] css/everything.min.css -->
     <link rel="stylesheet" type="text/css" href="css/game.css"> 
-    <link rel="stylesheet" type="text/css" href="buttontest.css"> 
+    <!-- <link rel="stylesheet" type="text/css" href="buttontest.css">  -->
     <!-- /build -->
     <!-- build:js js/everything.min.js -->
     <script src="lib/angular.js"></script>
@@ -118,7 +118,7 @@
 			       	</div>
 		        </div>
 <!-- BUTTONS -->
-				<div id="buttonArea" ng-if="!game.firstMove() && game.theWinner === ''">
+				<div id=" buttonArea" ng-if="!game.firstMove() && game.theWinner === '' ">
 					<div class="btn-container" ng-click="pressed_attack_button()"> 
 			        	<a href="#" class="btn btn-attack">Attack</a>
 			       	</div>
@@ -131,7 +131,7 @@
 		        	Select your starting position.
 		        </div>
 <!-- GAME OVER BANNER -->
-		        <div ng-if="game.theWinner != ''" 
+		        <div ng-if=" game.theWinner != '' " 
 		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
 		        	Player {{game.theWinner}} wins!
 		        </div>
