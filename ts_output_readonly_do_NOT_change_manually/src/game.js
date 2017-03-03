@@ -201,16 +201,22 @@ var game;
         return game.state.board[board][row][col] === pieceKind;
     }
     function isPos(board, row, col) {
+        if (yourPlayerIndex() === -1)
+            return;
         var board_number = (board + yourPlayerIndex());
         return isPiece(board_number, row, col, 'P');
     }
     game.isPos = isPos;
     function isBroken(board, row, col) {
+        if (yourPlayerIndex() === -1)
+            return;
         var board_number = (board + yourPlayerIndex());
         return isPiece(board_number, row, col, 'B');
     }
     game.isBroken = isBroken;
     function isBlank(board, row, col) {
+        if (yourPlayerIndex() === -1)
+            return;
         var board_number = (board + yourPlayerIndex());
         return isPiece(board_number, row, col, '');
     }
