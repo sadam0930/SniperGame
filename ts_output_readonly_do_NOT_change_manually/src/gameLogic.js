@@ -65,7 +65,7 @@ var gameLogic;
         if (isP1Turn && boards[3][row][col] === 'P') {
             return 'P1';
         }
-        if (!isP1Turn && boards[1][row][col] === 'P') {
+        if (!isP1Turn && boards[2][row][col] === 'P') {
             return 'P2';
         }
         return '';
@@ -113,9 +113,10 @@ var gameLogic;
         //check if move is a hit, then game over
         var winner = getWinner(row, col, isP1Turn, boards);
         var endMatchScores;
+        endMatchScores = null;
         var turnIndex;
         var isGameOver = false;
-        if (winner !== '') {
+        if (moveType === 'attack' && winner !== '') {
             // Game over
             log.info("Game over! Winner is: ", winner);
             turnIndex = -1;
@@ -124,8 +125,7 @@ var gameLogic;
         }
         // Game continues. Now it's the opponent's turn 
         // (the turn switches from 0 to 1 and 1 to 0).
-        endMatchScores = null;
-        turnIndex = 1 - turnIndexBeforeMove;
+        turnIndex = endMatchScores === null ? (1 - turnIndexBeforeMove) : -1;
         var boardsAfterMove = angular.copy(boards);
         /*
         * Depending on the action update the board for movement or broken window.

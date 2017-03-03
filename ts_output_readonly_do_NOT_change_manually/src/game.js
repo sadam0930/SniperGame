@@ -176,6 +176,7 @@ var game;
             game.currentUpdateUI.yourPlayerIndex === game.currentUpdateUI.turnIndex; // it's my turn
     }
     game.isMyTurn = isMyTurn;
+    game.theWinner = '';
     function cellClicked(row, col, moveType) {
         log.info("Clicked on cell:", row, col);
         if (!isHumanTurn())
