@@ -216,21 +216,21 @@ module game {
   }
 
   export function isPos(board: number, row: number, col: number): boolean {
-    
+    if (yourPlayerIndex() === -1) return;
     let board_number: number = (board + yourPlayerIndex());    
     return isPiece(board_number, row, col, 'P');
 
   }
   
   export function isBroken(board: number, row: number, col: number): boolean {
-    
+    if (yourPlayerIndex() === -1) return;
     let board_number: number = (board + yourPlayerIndex());    
     return isPiece(board_number, row, col, 'B');
 
   }
 
   export function isBlank(board: number, row: number, col: number): boolean {
-    
+    if (yourPlayerIndex() === -1) return;
     let board_number: number = (board + yourPlayerIndex());    
     return isPiece(board_number, row, col, '');
    
