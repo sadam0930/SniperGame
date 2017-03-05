@@ -102,6 +102,14 @@ body {
   clear: both;
   width: 100%;
 }
+.board{
+  position: absolute;
+  width: 100%;
+  background-color: rgb(50,50,50);
+}
+.building{
+  background-image: url("../img/wall.png");
+}
 @media screen and (min-width: 767px){
 .btn-container{
   float: left;
