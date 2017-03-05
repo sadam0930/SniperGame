@@ -30,14 +30,14 @@
       		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
 <!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
+<!-- INNER BUILDING -->
+      				<div class="windowContainer">	
 <!-- ROWS -->
-	        		<div ng-repeat="row in num_rows_as_list"
-	            		style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
+		        		<div ng-repeat="row in num_rows_as_list"
+		            		style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
 <!-- COLUMNS -->
-	          			<div ng-repeat="col in num_cols_as_list" class="col"
-			            	style="width:{{col_size}}%;" id="{{'moveBoard' + row + 'x' + col}}">
-<!-- WINDOWS -->
-		              		<div class="windowContainer" id="{{'moveBoard_window_' + row + 'x' + col}}" >
+		          			<div ng-repeat="col in num_cols_as_list" class="col"
+				            	style="width:{{col_size}}%;" id="{{'moveBoard' + row + 'x' + col}}">
 <!-- WINDOW EFFECTS -->
 	<!-- WINDOW PANE -->
 		                		<a href="#" class="window blank" ng-if="game.isBlank(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
@@ -46,7 +46,7 @@
 	<!-- CHARACTER MARKER -->
 			                	<a href="#" class="window player" ng-if="game.isPos(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 		              		</div>
-		          		</div>
+			    		</div>
 			    	</div>
 <!-- GROUND FLOOR / DOOR -->
 			    	<div class="groundFloor">
@@ -60,21 +60,21 @@
 	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
 <!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
+<!-- INNER BUILDING -->
+      				<div class="windowContainer">	
 <!-- ROWS -->
-		        	<div ng-repeat="row in num_rows_as_list"
+		        		<div ng-repeat="row in num_rows_as_list"
 		            	style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
 <!-- COLUMNS -->
-		          		<div ng-repeat="col in num_cols_as_list" class="col"
+		          			<div ng-repeat="col in num_cols_as_list" class="col"
 				            style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
-<!-- WINDOWS -->
-			              	<div class="windowContainer" id="{{'attackBoard_window_' + row + 'x' + col}}">
 <!-- WINDOW EFFECTS -->
 	<!-- WINDOW PANE -->
 		                		<a href="#" class="window blank" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
 	<!-- BROKEN GLASS -->
 			                	<a href="#" class="window broken" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
-		              		</div>
-		          		</div>
+		          			</div>
+			    		</div>
 			    	</div>
 <!-- GROUND FLOOR / DOOR -->
 			    	<div class="groundFloor">
