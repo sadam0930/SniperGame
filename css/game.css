@@ -105,10 +105,41 @@ body {
 .board{
   position: absolute;
   width: 100%;
-  background-color: rgb(50,50,50);
+  background-image: url("../img/city.png");
+  background-repeat: no-repeat;
+  background-size: 150% 100%;
 }
 .building{
   background-image: url("../img/wall.png");
+}
+.windowContainer{
+  width: 60%;
+  height: 75%;
+  margin: 20%;
+}
+.window{
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+}
+.window.broken {
+  background-image: url("../img/broken_window.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.window.blank {
+  background-image: url("../img/window.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.window.player {
+  background-image: url("../img/sniper.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.col{
+  height: 100%;
+  float:left;
 }
 @media screen and (min-width: 767px){
 .btn-container{

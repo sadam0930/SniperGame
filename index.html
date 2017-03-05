@@ -34,53 +34,40 @@
 	        		<div ng-repeat="row in num_rows_as_list"
 	            		style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
 <!-- COLUMNS -->
-	          			<div ng-repeat="col in num_cols_as_list"
-			            	style="position:absolute; top:0; left:{{col * col_size}}%; width:{{col_size}}%; height:100%;"
-			            	id="{{'moveBoard' + row + 'x' + col}}">
+	          			<div ng-repeat="col in num_cols_as_list" class="col"
+			            	style="width:{{col_size}}%;" id="{{'moveBoard' + row + 'x' + col}}">
 <!-- WINDOWS -->
-		              		<svg id="{{'moveBoard_window_' + row + 'x' + col}}" 
-		              			ng-click="game.cellClicked(row, col, 'move')"
-		                    	width="100%" height="100%">
+		              		<div class="windowContainer" id="{{'moveBoard_window_' + row + 'x' + col}}" >
 <!-- WINDOW EFFECTS -->
 	<!-- WINDOW PANE -->
-		                		<rect ng-if="game.isBlank(2, row, col)" x="20%" y="25%" 	
-		                			width="60%" height="50%" 
-		                			style="fill:rgb(150,150,225); stroke-width:1px; stroke:rgb(0,0,0); opacity:.5;" />
+		                		<a href="#" class="window blank" ng-if="game.isBlank(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 	<!-- BROKEN GLASS -->
-			                	<rect ng-if="game.isBroken(2, row, col)" x="20%" y="25%" 			                		
-			                		width="60%" height="50%" style="fill:rgb(0,0,0); stroke-width:2px; stroke:rgb(0,0,0)" />
+			                	<a href="#" class="window broken" ng-if="game.isBroken(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 	<!-- CHARACTER MARKER -->
-			                	<rect ng-if="game.isPos(2, row, col)" x="20%" y="25%" 		                		
-			                		width="60%" height="50%" style="fill:rgb(0,255,0); stroke-width:2px; stroke:rgb(0,0,0)" />
-		              		</svg>
+			                	<a href="#" class="window player" ng-if="game.isPos(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
+		              		</div>
 		          		</div>
 			    	</div>
 				</div>
 			</div>
 <!-- ATTACK BOARD -->
 	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
-	        	<svg id="attackBoardBackground" width="100%" height="100%">
 <!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 <!-- ROWS -->
 		        	<div ng-repeat="row in num_rows_as_list"
 		            	style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
 <!-- COLUMNS -->
-		          		<div ng-repeat="col in num_cols_as_list"
-				            style="position:absolute; top:0; left:{{col * col_size}}%; width:{{col_size}}%; height:100%;"
-				            id="{{'attackBoard' + row + 'x' + col}}">
+		          		<div ng-repeat="col in num_cols_as_list" class="col"
+				            style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
 <!-- WINDOWS -->
-			              	<svg id="{{'attackBoard_window_' + row + 'x' + col}}" 
-			              		ng-click="game.cellClicked(row, col, 'attack')"
-			                    width="100%" height="100%">
+			              	<div class="windowContainer" id="{{'attackBoard_window_' + row + 'x' + col}}">
 <!-- WINDOW EFFECTS -->
 	<!-- WINDOW PANE -->
-			                	<rect ng-if="game.isBlank(0, row, col)" x="20%" y="25%" 
-			                		width="60%" height="50%" style="fill:rgb(0,0,200); stroke-width:2px; stroke:rgb(0,0,0)" />
+		                		<a href="#" class="window blank" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
 	<!-- BROKEN GLASS -->
-			                	<rect ng-if="game.isBroken(0, row, col)" x="20%" y="25%" 
-			                		width="60%" height="50%" style="fill:rgb(0,0,0); stroke-width:2px; stroke:rgb(0,0,0)" />
-		              		</svg>
+			                	<a href="#" class="window broken" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
+		              		</div>
 		          		</div>
 			    	</div>
 				</div>
