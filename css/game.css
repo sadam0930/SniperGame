@@ -125,14 +125,17 @@ body {
 .window.broken {
   background-image: url("../img/broken_window.png");
   background-repeat: no-repeat;
+  background-position: center;
 }
 .window.blank {
   background-image: url("../img/window.png");
   background-repeat: no-repeat;
+  background-position: center;
 }
 .window.player {
   background-image: url("../img/sniper.png");
   background-repeat: no-repeat;
+  background-position: center;
 }
 .col{
   height: 100%;
