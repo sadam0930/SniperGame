@@ -113,13 +113,17 @@ body {
   background-image: url("../img/wall.png");
 }
 .windowContainer{
-  width: 60%;
-  height: 75%;
-  margin: 20%;
+  position: absolute;
+  text-align: center;
+  top:5%;
+  left:3%;
+  height: 90%;
+  width: 94%;
+  box-sizing: border-box; 
 }
 .window{
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 70%;
   display: inline-block;
 }
 .window.broken {
