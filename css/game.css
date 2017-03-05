@@ -115,6 +115,7 @@ body {
 .windowContainer{
   width: 60%;
   height: 75%;
+  margin: 20%;
 }
 .window{
   width: 100%;
@@ -135,6 +136,7 @@ body {
 }
 .col{
   height: 100%;
+  float:left;
 }
 @media screen and (min-width: 767px){
 .btn-container{

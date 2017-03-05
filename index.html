@@ -35,7 +35,7 @@
 	            		style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
 <!-- COLUMNS -->
 	          			<div ng-repeat="col in num_cols_as_list" class="col"
-			            	style="position:absolute; left:{{col * col_size}}%; width:{{col_size}}%;" id="{{'moveBoard' + row + 'x' + col}}">
+			            	style="width:{{col_size}}%;" id="{{'moveBoard' + row + 'x' + col}}">
 <!-- WINDOWS -->
 		              		<div class="windowContainer" id="{{'moveBoard_window_' + row + 'x' + col}}" >
 <!-- WINDOW EFFECTS -->
@@ -59,7 +59,7 @@
 		            	style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
 <!-- COLUMNS -->
 		          		<div ng-repeat="col in num_cols_as_list" class="col"
-				            style="position:absolute; left:{{col * col_size}}%; width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
+				            style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
 <!-- WINDOWS -->
 			              	<div class="windowContainer" id="{{'attackBoard_window_' + row + 'x' + col}}">
 <!-- WINDOW EFFECTS -->
