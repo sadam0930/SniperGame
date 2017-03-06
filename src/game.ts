@@ -100,6 +100,8 @@ module game {
     return proposals && proposals[row][col] == 2;
   }
   
+  export let gameWinner: number = null;
+
   export function updateUI(params: IUpdateUI): void {
     log.info("Game got updateUI:", params);
     didMakeMove = false; // Only one move per updateUI
@@ -108,6 +110,9 @@ module game {
     state = params.state;
     if (isFirstMove()) {
       state = gameLogic.getInitialState();
+    }
+    if (params.endMatchScores != null) {
+      game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
     }
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
