@@ -242,6 +242,13 @@ module game {
    
   }
 
+  export function isDead(board: number, row: number, col: number): boolean {
+    if (yourPlayerIndex() === -1) return;
+    let board_number: number = (board + yourPlayerIndex());    
+    return isPiece(board_number, row, col, 'D');
+   
+  }
+
   export function firstMove(): boolean {
       return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
   }

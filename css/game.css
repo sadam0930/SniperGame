@@ -144,6 +144,11 @@ body {
   background-repeat: no-repeat;
   background-position: center;
 }
+.window.deadPlayer{
+  background-image: url("../img/blood1.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
 .col{
   height: 100%;
   float:left;

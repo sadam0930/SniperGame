@@ -152,13 +152,14 @@ module gameLogic {
     * Depending on the action update the board for movement or broken window.
     * Update both the view of opponent and the opponents movement boards
     */
+    let boardMarker = winner !== '' ? 'D' : 'B';
     if(isP1Turn && 'attack' === moveType) { 
-      boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = 'B';
+      boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
     } else if (isP1Turn && 'move' === moveType){
       assignNewPosition(boardsAfterMove[2], row, col);
       // boardsAfterMove[2][row][col] = 'P';
     } else if (isP2Turn && 'attack' === moveType){
-      boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = 'B';
+      boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
     } else if (isP2Turn && 'move' === moveType){
       assignNewPosition(boardsAfterMove[3], row, col);
       // boardsAfterMove[3][row][col] = 'P';

@@ -9,7 +9,7 @@ var gameLogic;
     gameLogic.ROWS = 6;
     gameLogic.COLS = 5;
     gameLogic.NUMPLAYERS = 2;
-    gameLogic.isFirstMove = true; //instance variable for each client
+    gameLogic.playerTurnCount = [];
     /**
     * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''.
     * There are 4 boards. P1 is even boards. P2 is odd boards.
@@ -30,6 +30,7 @@ var gameLogic;
         // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
         // let p2_pos = getRandomPosition();
         // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
+        gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
@@ -106,10 +107,9 @@ var gameLogic;
         if (stateBeforeMove.gameOver) {
             throw new Error("Game Over!");
         }
-        if (gameLogic.isFirstMove && 'attack' === moveType) {
+        if (game.firstMove() && 'attack' === moveType) {
             throw new Error("Must place position on first move!");
         }
-        gameLogic.isFirstMove = false;
         //check if move is a hit, then game over
         var winner = getWinner(row, col, isP1Turn, boards);
         var endMatchScores;
@@ -131,14 +131,15 @@ var gameLogic;
         * Depending on the action update the board for movement or broken window.
         * Update both the view of opponent and the opponents movement boards
         */
+        var boardMarker = winner !== '' ? 'D' : 'B';
         if (isP1Turn && 'attack' === moveType) {
-            boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = 'B';
+            boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
         }
         else if (isP1Turn && 'move' === moveType) {
             assignNewPosition(boardsAfterMove[2], row, col);
         }
         else if (isP2Turn && 'attack' === moveType) {
-            boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = 'B';
+            boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
         }
         else if (isP2Turn && 'move' === moveType) {
             assignNewPosition(boardsAfterMove[3], row, col);

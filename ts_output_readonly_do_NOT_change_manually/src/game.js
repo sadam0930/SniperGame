@@ -94,6 +94,7 @@ var game;
         return game.proposals && game.proposals[row][col] == 2;
     }
     game.isProposal2 = isProposal2;
+    game.gameWinner = null;
     function updateUI(params) {
         log.info("Game got updateUI:", params);
         game.didMakeMove = false; // Only one move per updateUI
@@ -102,6 +103,9 @@ var game;
         game.state = params.state;
         if (isFirstMove()) {
             game.state = gameLogic.getInitialState();
+        }
+        if (params.endMatchScores != null) {
+            game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
         }
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
@@ -152,6 +156,7 @@ var game;
             }
             gameService.communityMove(myProposal, move);
         }
+        gameLogic.playerTurnCount[yourPlayerIndex()] += 1;
     }
     function isFirstMove() {
         return !game.currentUpdateUI.state;
@@ -221,8 +226,15 @@ var game;
         return isPiece(board_number, row, col, '');
     }
     game.isBlank = isBlank;
+    function isDead(board, row, col) {
+        if (yourPlayerIndex() === -1)
+            return;
+        var board_number = (board + yourPlayerIndex());
+        return isPiece(board_number, row, col, 'D');
+    }
+    game.isDead = isDead;
     function firstMove() {
-        return gameLogic.isFirstMove;
+        return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
     }
     game.firstMove = firstMove;
     function shouldSlowlyAppear(row, col) {
