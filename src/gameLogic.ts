@@ -22,7 +22,7 @@ module gameLogic {
   export const ROWS = 6;
   export const COLS = 5;
   export const NUMPLAYERS = 2;
-  export let isFirstMove: boolean = true; //instance variable for each client
+  export let playerTurnCount: number[] = [];
 
   /** 
   * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. 
@@ -46,6 +46,7 @@ module gameLogic {
     // let p2_pos = getRandomPosition();
     // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
     
+    gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
     return boards;
   }
 
@@ -123,11 +124,10 @@ module gameLogic {
       throw new Error("Game Over!");
     }
 
-    if (isFirstMove && 'attack' === moveType) {
+    if (game.firstMove() && 'attack' === moveType) {
       throw new Error("Must place position on first move!");
     }
-    isFirstMove = false;
-    
+        
     //check if move is a hit, then game over
     let winner = getWinner(row, col, isP1Turn, boards);
     let endMatchScores: number[];

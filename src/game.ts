@@ -160,6 +160,7 @@ module game {
       }
       gameService.communityMove(myProposal, move);
     }
+    gameLogic.playerTurnCount[yourPlayerIndex()] += 1;
   }
 
   function isFirstMove() {
@@ -237,7 +238,7 @@ module game {
   }
 
   export function firstMove(): boolean {
-      return gameLogic.isFirstMove;
+      return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
   }
 
   export function shouldSlowlyAppear(row: number, col: number): boolean {
