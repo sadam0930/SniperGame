@@ -113,13 +113,17 @@ body {
   background-image: url("../img/wall.png");
 }
 .windowContainer{
-  width: 60%;
-  height: 75%;
-  margin: 20%;
+  position: absolute;
+  text-align: center;
+  top:5%;
+  left:3%;
+  height: 90%;
+  width: 94%;
+  box-sizing: border-box; 
 }
 .window{
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height: 70%;
   display: inline-block;
   border: grey;
   border-style: inset;
@@ -147,17 +151,15 @@ body {
   position: absolute;
   display: inline-block;
   width: 100%;
-  height: 25%;
-  top: 75%;
+  height: 20%;
+  top: 80%;
 }
 .doorContainer{
-  height: 93%;
+  height: 90%;
   margin: 3% 40%;
 }
 .door{
   background-image: url(../img/door.png);
-  background-repeat: no-repeat;
-  background-position: center;
   background-size: 100%;
   height: 100%;
 }
