@@ -111,13 +111,14 @@ body {
 }
 .building{
   background-image: url("../img/wall.png");
+  background-size: 15%;
 }
 .windowContainer{
   position: absolute;
   text-align: center;
   top:5%;
   left:3%;
-  height: 90%;
+  height: 80%;
   width: 94%;
   box-sizing: border-box; 
 }
