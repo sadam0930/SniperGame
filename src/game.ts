@@ -282,7 +282,7 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   }  
   $scope.num_rows_as_list = rows_as_list;
   $scope.num_rows = gameLogic.ROWS;
-  $scope.row_size = ((100 / gameLogic.ROWS) * $scope.board_size);
+  $scope.row_size = (100 / (gameLogic.ROWS+1));
 
                   // COLUMNS //
   let cols_as_list: number[] = [];
