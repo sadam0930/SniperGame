@@ -44,7 +44,7 @@ body {
 
 .controlArea { 
   background-color: #708090;
-  border: 8px solid black;
+  border: 1px solid black;
 }
 .turnDisplay {
   text-align: center;
@@ -76,6 +76,9 @@ body {
   -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear; 
   transition: border .25s linear, color .25s linear, background-color .25s linear;
   text-decoration: none;
+  border-style: outset;
+  border-color: darkslategrey;
+  border-width: 5px;
 }
 .btn.btn-attack{
   background-color: #B22222; 
