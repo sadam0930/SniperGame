@@ -52,11 +52,13 @@ var gameLogic;
     function getRandomPosition() {
         return [getRandomIntInclusive(gameLogic.ROWS), getRandomIntInclusive(gameLogic.COLS)];
     }
+    gameLogic.getRandomPosition = getRandomPosition;
     function getRandomIntInclusive(maxVal) {
         var min = Math.ceil(0);
         var max = Math.floor(maxVal);
         return Math.floor(Math.random() * (max - min)) + min;
     }
+    gameLogic.getRandomIntInclusive = getRandomIntInclusive;
     /**
      * Return the winner (either 'P1' or 'P2') or '' if there is no winner.
      * Compares the coordinates the player attacked
@@ -76,41 +78,30 @@ var gameLogic;
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
     function createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove) {
+        // GET CURRENT BOARDS
         if (!stateBeforeMove) {
             stateBeforeMove = getInitialState();
         }
         var boards = stateBeforeMove.board;
+        // SPECIFIC BOARD WE'RE EDITING
+        var playerID = game.yourPlayerIndex();
         var board;
-        /*
-        * Based on the turnindex and the moveType
-        * we can figure out which board to use
-        */
-        var isP1Turn = (turnIndexBeforeMove % 2 === 0);
+        var isP1Turn = (playerID === 0);
         var isP2Turn = !isP1Turn;
         var boardIdx;
-        if (isP1Turn && 'attack' === moveType) {
-            boardIdx = 0;
-        }
-        else if (isP1Turn && 'move' === moveType) {
-            boardIdx = 2;
-        }
-        else if (isP2Turn && 'attack' === moveType) {
-            boardIdx = 1;
-        }
-        else if (isP2Turn && 'move' === moveType) {
-            boardIdx = 3;
-        }
+        if (moveType === 'attack')
+            boardIdx = (playerID);
+        else
+            boardIdx = (playerID + 2);
         board = boards[boardIdx];
-        if (board[row][col] !== '') {
+        // CHECK IF LEGAL MOVE
+        if (board[row][col] == 'P' || board[row][col] == 'B')
             throw new Error("One can only make a move in an empty position!");
-        }
-        if (stateBeforeMove.gameOver) {
+        if (stateBeforeMove.gameOver)
             throw new Error("Game Over!");
-        }
-        if (game.firstMove() && 'attack' === moveType) {
+        if (game.firstMove() && ('attack' === moveType))
             throw new Error("Must place position on first move!");
-        }
-        //check if move is a hit, then game over
+        // CHECK IF KILL SHOT
         var winner = getWinner(row, col, isP1Turn, boards);
         var endMatchScores;
         endMatchScores = null;
@@ -123,26 +114,23 @@ var gameLogic;
             endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
             isGameOver = true;
         }
-        // Game continues. Now it's the opponent's turn 
-        // (the turn switches from 0 to 1 and 1 to 0).
+        // UPDATE BOARDS
         turnIndex = endMatchScores === null ? (1 - turnIndexBeforeMove) : -1;
         var boardsAfterMove = angular.copy(boards);
-        /*
-        * Depending on the action update the board for movement or broken window.
-        * Update both the view of opponent and the opponents movement boards
-        */
         var boardMarker = winner !== '' ? 'D' : 'B';
-        if (isP1Turn && 'attack' === moveType) {
-            boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
+        if (moveType === 'attack') {
+            if (game.current_buff[playerID] === 'grenade') {
+                boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = 'B';
+                boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
+                boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = 'B';
+                game.current_buff[playerID] = '';
+            }
+            boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
         }
-        else if (isP1Turn && 'move' === moveType) {
-            assignNewPosition(boardsAfterMove[2], row, col);
-        }
-        else if (isP2Turn && 'attack' === moveType) {
-            boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
-        }
-        else if (isP2Turn && 'move' === moveType) {
-            assignNewPosition(boardsAfterMove[3], row, col);
+        else if (moveType === 'move') {
+            if (game.isABuff(boardsAfterMove[playerID + 2][row][col]))
+                game.current_buff[playerID] = boardsAfterMove[playerID + 2][row][col];
+            assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
         var delta = { row: row, col: col, moveType: moveType };
         var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver };

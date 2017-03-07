@@ -58,6 +58,20 @@ body {
   box-shadow: 0 3px 0 #1c6394;
   background-color: #36485b;
 }
+.turnDisplay text {
+  overflow: hidden; /* Ensures the content is not revealed until the animation */
+  white-space: nowrap; /* Keeps the content on a single line */
+  letter-spacing: .1em; /* Adjust as needed */
+  border-right: .15em solid white; /* The typwriter cursor */
+  margin: 0 auto;
+  display:inline-block;
+  animation: typing 4s steps(40, end);
+}
+/* The typing effect */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 64% }
+}
 .btn-container{
   float:left;
   width: 50%;
