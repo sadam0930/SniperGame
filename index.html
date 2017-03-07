@@ -28,10 +28,14 @@
     	<div id="gameArea">
 <!-- MOVE BOARD -->
       		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
-      		<!-- TESTING BUFF NOTIFICATION -->
-      				<div ng-if=" game.hasBuff() != null " class="turnDisplay">	        
-			        	You have a {{game.hasBuff()}}!
-			       	</div>
+   	<!-- STATUS BAR -->
+      			<div class="turnDisplay">   
+				    Choose a position to move to! <br>
+				    <div ng-if=" game.hasBuff() != null ">	        
+				        You have a {{game.hasBuff()}}! <br>
+				        {{game.buffDescription()}}
+				    </div>
+			    </div>
 <!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 <!-- INNER BUILDING -->
@@ -64,6 +68,14 @@
 			</div>
 <!-- ATTACK BOARD -->
 	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
+	      	   	<!-- STATUS BAR -->
+      			<div class="turnDisplay">   
+				    Choose a position to attack! <br>
+				    <div ng-if=" game.hasBuff() != null ">	        
+				        You have a {{game.hasBuff()}}! <br>
+				        {{game.buffDescription()}}
+				    </div>
+			    </div>
 <!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 <!-- INNER BUILDING -->
