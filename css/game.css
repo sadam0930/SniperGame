@@ -151,6 +151,9 @@ body {
 .window.deadPlayer{
   background-image: url("../img/dead.png");
 }
+.window.supplyCrate{
+  background-image: url("../img/military_crate.png"); 
+}
 .col{
   height: 100%;
   float:left;
