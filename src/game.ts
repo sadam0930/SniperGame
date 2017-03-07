@@ -20,7 +20,8 @@ module game {
   // For community games.
   export let proposals: number[][] = null;
   export let yourPlayerInfo: IPlayerInfo = null;
-  export let buffs_enabled: boolean = false;
+  export let buffs_enabled: boolean = true;
+  export let current_buff: string[] = [];
 
   export function init($rootScope_: angular.IScope, $timeout_: angular.ITimeoutService) {
     $rootScope = $rootScope_;
@@ -104,12 +105,12 @@ module game {
   function spawnPowerUps(): void {
     if (yourPlayerIndex() === -1) return;
     let safe_guard_counter: number = 0;
-    let buff_type_num: number  = gameLogic.getRandomIntInclusive(2);  
+    let buff_type_num: number  = gameLogic.getRandomIntInclusive(0);  
     let buff_type: string = '';
 
-    if (buff_type_num == 0) buff_type = 'Z';        // placeholder buff
-    else if (buff_type_num == 1) buff_type = 'Y';   // placeholder buff
-    else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
+    if (buff_type_num == 0) buff_type = 'grenade';        // placeholder buff
+    // else if (buff_type_num == 1) buff_type = 'Y';   // placeholder buff
+    // else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
     else {
       log.info("spawnPowerUps() buff_type_num out of range.");
       return;
@@ -150,8 +151,17 @@ module game {
     }
 
     state.board[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
-    state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
+    // state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
 
+  }
+
+  export function isABuff(cellValue: string): boolean {
+    if (cellValue === 'grenade') return true;
+    else return false;
+  }
+
+  export function hasBuff(): string {
+    return game.current_buff[yourPlayerIndex()];
   }
 
   export let gameWinner: number = null;
@@ -170,10 +180,10 @@ module game {
     if (params.endMatchScores != null) {
       game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
     }
-    if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
+    if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
       spawnPowerUps();
     }
-
+    
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
     // then the animation will be paused until the javascript finishes.
@@ -232,7 +242,7 @@ module game {
     return !currentUpdateUI.state;
   }
 
-  function yourPlayerIndex() {
+  export function yourPlayerIndex() {
     return currentUpdateUI.yourPlayerIndex;
   }
 
@@ -306,6 +316,13 @@ module game {
     if (yourPlayerIndex() === -1) return;
     let board_number: number = (board + yourPlayerIndex());    
     return isPiece(board_number, row, col, 'D');
+   
+  }
+
+  export function isBuff(board: number, row: number, col: number): boolean {
+    if (yourPlayerIndex() === -1) return;
+    let board_number: number = (board + yourPlayerIndex());    
+    return isPiece(board_number, row, col, 'grenade');
    
   }
 

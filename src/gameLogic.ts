@@ -116,9 +116,10 @@ module gameLogic {
     }
     board = boards[boardIdx];
 
-    if (board[row][col] !== '') {
+    if (board[row][col] == 'P' || board[row][col] == 'B') {
       throw new Error("One can only make a move in an empty position!");
     }
+
 
     if (stateBeforeMove.gameOver) {
       throw new Error("Game Over!");
@@ -153,14 +154,29 @@ module gameLogic {
     * Update both the view of opponent and the opponents movement boards
     */
     let boardMarker = winner !== '' ? 'D' : 'B';
+
     if(isP1Turn && 'attack' === moveType) { 
-      boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
+      if (game.hasBuff() == 'grenade') {
+        boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col-1] = boardMarker;
+        boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
+        boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col+1] = boardMarker;
+        game.current_buff[game.yourPlayerIndex()] = null;
+      }
+      else boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
     } else if (isP1Turn && 'move' === moveType){
+      if (game.isABuff(board[row][col])) game.current_buff[game.yourPlayerIndex()] = board[row][col];
       assignNewPosition(boardsAfterMove[2], row, col);
       // boardsAfterMove[2][row][col] = 'P';
     } else if (isP2Turn && 'attack' === moveType){
-      boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
+      if (game.hasBuff() == 'grenade') {
+        boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col-1] = boardMarker;
+        boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
+        boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col+1] = boardMarker;
+        game.current_buff[game.yourPlayerIndex()] = null;
+      }
+      else boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
     } else if (isP2Turn && 'move' === moveType){
+      if (game.isABuff(board[row][col])) game.current_buff[game.yourPlayerIndex()] = board[row][col];
       assignNewPosition(boardsAfterMove[3], row, col);
       // boardsAfterMove[3][row][col] = 'P';
     }

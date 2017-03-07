@@ -28,6 +28,10 @@
     	<div id="gameArea">
 <!-- MOVE BOARD -->
       		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
+      		<!-- TESTING BUFF NOTIFICATION -->
+      				<div ng-if=" game.hasBuff() != null " class="turnDisplay">	        
+			        	You have a {{game.hasBuff()}}!
+			       	</div>
 <!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 <!-- INNER BUILDING -->
@@ -45,6 +49,8 @@
 			                	<a href="#" class="window player" ng-if="game.isPos(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 	<!-- DEAD CHARACTER -->
 								<a href="#" class="window deadPlayer" ng-if="game.isDead(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
+	<!-- SUPPLY CRATE -->
+								<a href="#" class="window supplyCrate" ng-if="game.isBuff(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 		              		</div>
 			    		</div>
 			    	</div>
