@@ -92,93 +92,60 @@ module gameLogic {
    */
   export function createMove(
       stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number): IMove {
+    
+    // GET CURRENT BOARDS
     if (!stateBeforeMove) {
       stateBeforeMove = getInitialState();
     }
-
     let boards: Board[] = stateBeforeMove.board;
+    
+    // SPECIFIC BOARD WE'RE EDITING
+    let playerID: number = game.yourPlayerIndex();
     let board: Board;
-    /*
-    * Based on the turnindex and the moveType 
-    * we can figure out which board to use
-    */
-    let isP1Turn = (turnIndexBeforeMove%2 === 0);
+    let isP1Turn = (playerID === 0);
     let isP2Turn = !isP1Turn;
     let boardIdx: number;
-    if(isP1Turn && 'attack' === moveType){
-      boardIdx = 0;
-    } else if (isP1Turn && 'move' === moveType){
-      boardIdx = 2;
-    } else if (isP2Turn && 'attack' === moveType){
-      boardIdx = 1;
-    } else if (isP2Turn && 'move' === moveType){
-      boardIdx = 3;
-    }
+    if (moveType === 'attack') boardIdx = (playerID);
+    else boardIdx = (playerID + 2);
     board = boards[boardIdx];
 
-    if (board[row][col] == 'P' || board[row][col] == 'B') {
-      throw new Error("One can only make a move in an empty position!");
-    }
-
-
-    if (stateBeforeMove.gameOver) {
-      throw new Error("Game Over!");
-    }
-
-    if (game.firstMove() && 'attack' === moveType) {
-      throw new Error("Must place position on first move!");
-    }
+    // CHECK IF LEGAL MOVE
+    if (board[row][col] == 'P' || board[row][col] == 'B') throw new Error("One can only make a move in an empty position!");
+    if (stateBeforeMove.gameOver) throw new Error("Game Over!");
+    if (game.firstMove() && ('attack' === moveType)) throw new Error("Must place position on first move!");
         
-    //check if move is a hit, then game over
+    // CHECK IF KILL SHOT
     let winner = getWinner(row, col, isP1Turn, boards);
     let endMatchScores: number[];
     endMatchScores = null;
     let turnIndex: number;
     let isGameOver: boolean = false;
-
     if (moveType === 'attack' && winner !== '') {
       // Game over
       log.info("Game over! Winner is: ", winner);
       turnIndex = -1;
       endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
       isGameOver = true;
-      
     }
-    
-    // Game continues. Now it's the opponent's turn 
-    // (the turn switches from 0 to 1 and 1 to 0).
+
+    // UPDATE BOARDS
     turnIndex = endMatchScores === null ? (1 - turnIndexBeforeMove) : -1;
     let boardsAfterMove = angular.copy(boards);
-    /*
-    * Depending on the action update the board for movement or broken window.
-    * Update both the view of opponent and the opponents movement boards
-    */
     let boardMarker = winner !== '' ? 'D' : 'B';
 
-    if(isP1Turn && 'attack' === moveType) { 
-      if (game.hasBuff() == 'grenade') {
-        boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col-1] = boardMarker;
-        boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
-        boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col+1] = boardMarker;
-        game.current_buff[game.yourPlayerIndex()] = null;
+    if (moveType === 'attack') {
+      if (game.current_buff[playerID] === 'grenade') {
+        boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
+        boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
+        boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
+        game.current_buff[playerID] = '';
       }
-      else boardsAfterMove[0][row][col] = boardsAfterMove[3][row][col] = boardMarker;
-    } else if (isP1Turn && 'move' === moveType){
-      if (game.isABuff(board[row][col])) game.current_buff[game.yourPlayerIndex()] = board[row][col];
-      assignNewPosition(boardsAfterMove[2], row, col);
-      // boardsAfterMove[2][row][col] = 'P';
-    } else if (isP2Turn && 'attack' === moveType){
-      if (game.hasBuff() == 'grenade') {
-        boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col-1] = boardMarker;
-        boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
-        boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col+1] = boardMarker;
-        game.current_buff[game.yourPlayerIndex()] = null;
-      }
-      else boardsAfterMove[1][row][col] = boardsAfterMove[2][row][col] = boardMarker;
-    } else if (isP2Turn && 'move' === moveType){
-      if (game.isABuff(board[row][col])) game.current_buff[game.yourPlayerIndex()] = board[row][col];
-      assignNewPosition(boardsAfterMove[3], row, col);
-      // boardsAfterMove[3][row][col] = 'P';
+      boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+    }
+    else if (moveType === 'move') {
+      if (game.isABuff(boardsAfterMove[playerID + 2][row][col])) 
+        game.current_buff[playerID] = boardsAfterMove[playerID + 2][row][col];
+      assignNewPosition(boardsAfterMove[playerID + 2], row, col);
     }
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType};
