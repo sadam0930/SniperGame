@@ -95,16 +95,16 @@
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%;">
 		        <div ng-if="!game.firstMove() && game.gameWinner == null ">	        
 		        	<div class="turnDisplay" ng-if="game.isMyTurn()"> 
-			        	Your turn.
+			        	<text>Your turn.</text>
 			       	</div>
 			       	<div class="turnDisplay" ng-if="!game.isMyTurn()"> 
-			        	Opponent's turn.
+			        	<text>Opponent's turn.</text>
 			       	</div>
 		        </div>
 		        <!-- GAME OVER BANNER -->
 		        <div ng-if="game.gameWinner != null" 
 		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
-		        	Player {{game.gameWinner}} wins!
+		        	<text>Player {{game.gameWinner}} wins!</text>
 		        </div>
 <!-- BUTTONS -->
 				<div id=" buttonArea" ng-if="!game.firstMove() && game.gameWinner == null ">
@@ -117,7 +117,7 @@
 				</div>
 <!-- FIRST MOVE BANNER -->
 		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
-		        	Select your starting position.
+		        	<text>Select your starting position.</text>
 		        </div>
 		    </div>
 	    </div>

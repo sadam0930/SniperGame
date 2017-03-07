@@ -14,6 +14,8 @@ var game;
     // For community games.
     game.proposals = null;
     game.yourPlayerInfo = null;
+    game.buffs_enabled = true;
+    game.current_buff = [];
     function init($rootScope_, $timeout_) {
         game.$rootScope = $rootScope_;
         game.$timeout = $timeout_;
@@ -94,6 +96,62 @@ var game;
         return game.proposals && game.proposals[row][col] == 2;
     }
     game.isProposal2 = isProposal2;
+    function spawnPowerUps() {
+        if (yourPlayerIndex() === -1)
+            return;
+        var safe_guard_counter = 0;
+        var buff_type_num = gameLogic.getRandomIntInclusive(0);
+        var buff_type = '';
+        if (buff_type_num == 0)
+            buff_type = 'grenade'; // placeholder buff
+        else {
+            log.info("spawnPowerUps() buff_type_num out of range.");
+            return;
+        }
+        var move_board = (2 + yourPlayerIndex()); // move board where buff is visible
+        var attack_board = (1 - yourPlayerIndex()); // attack board where buff is visible
+        var buff_pos = gameLogic.getRandomPosition();
+        while (!(isPiece(move_board, buff_pos[0], buff_pos[1], ''))) {
+            var buff_pos_1 = gameLogic.getRandomPosition();
+            var found_free_pos = false;
+            if (safe_guard_counter > 30) {
+                for (var i = 0; i < gameLogic.ROWS; i++) {
+                    for (var j = 0; j < gameLogic.COLS; j++) {
+                        if (isPiece(move_board, i, j, '')) {
+                            buff_pos_1[0] = i;
+                            buff_pos_1[1] = j;
+                            found_free_pos = true;
+                            break;
+                        }
+                    }
+                    if (found_free_pos)
+                        break;
+                }
+                if (!found_free_pos) {
+                    // Could force the buff to spawn on the player?
+                    game.buffs_enabled = false;
+                    return;
+                }
+            }
+            if (found_free_pos)
+                break;
+            // Make this look for empty space instead of random if hits safeGuard number?
+            safe_guard_counter += 1;
+        }
+        game.state.board[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
+        // state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
+    }
+    function isABuff(cellValue) {
+        if (cellValue === 'grenade')
+            return true;
+        else
+            return false;
+    }
+    game.isABuff = isABuff;
+    function hasBuff() {
+        return game.current_buff[yourPlayerIndex()];
+    }
+    game.hasBuff = hasBuff;
     game.gameWinner = null;
     function updateUI(params) {
         log.info("Game got updateUI:", params);
@@ -101,11 +159,15 @@ var game;
         game.currentUpdateUI = params;
         clearAnimationTimeout();
         game.state = params.state;
+        var my_turn_count = gameLogic.playerTurnCount[yourPlayerIndex()];
         if (isFirstMove()) {
             game.state = gameLogic.getInitialState();
         }
         if (params.endMatchScores != null) {
             game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
+        }
+        if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
+            spawnPowerUps();
         }
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
@@ -164,6 +226,7 @@ var game;
     function yourPlayerIndex() {
         return game.currentUpdateUI.yourPlayerIndex;
     }
+    game.yourPlayerIndex = yourPlayerIndex;
     function isComputer() {
         var playerInfo = game.currentUpdateUI.playersInfo[game.currentUpdateUI.yourPlayerIndex];
         // In community games, playersInfo is [].
@@ -233,6 +296,13 @@ var game;
         return isPiece(board_number, row, col, 'D');
     }
     game.isDead = isDead;
+    function isBuff(board, row, col) {
+        if (yourPlayerIndex() === -1)
+            return;
+        var board_number = (board + yourPlayerIndex());
+        return isPiece(board_number, row, col, 'grenade');
+    }
+    game.isBuff = isBuff;
     function firstMove() {
         return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
     }
