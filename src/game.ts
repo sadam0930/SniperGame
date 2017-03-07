@@ -99,7 +99,34 @@ module game {
   export function isProposal2(row: number, col: number) {
     return proposals && proposals[row][col] == 2;
   }
-  
+
+  function spawnPowerUps(): void {
+    if (yourPlayerIndex() === -1) return;
+    let safe_guard_counter: number = 0;
+    let buff_type_num: number  = gameLogic.getRandomIntInclusive(2);  
+    let buff_type: string = '';
+
+    if (buff_type_num == 0) buff_type = 'Z';        // placeholder buff
+    else if (buff_type_num == 1) buff_type = 'Y';   // placeholder buff
+    else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
+    else return;
+
+    let move_board: number = (2 + yourPlayerIndex());    // move board where buff is visible
+    let attack_board: number = (1 - yourPlayerIndex());  // attack board where buff is visible
+    let buff_pos: number[] = gameLogic.getRandomPosition();
+
+    while (!(isPiece(move_board, buff_pos[0], buff_pos[1], ''))) {
+      let buff_pos: number[] = gameLogic.getRandomPosition();
+      if (safe_guard_counter > 50) return;
+      // Make this look for empty space instead of random if hits safeGuard number?
+      safe_guard_counter += 1;
+    }
+
+    state.board[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
+    state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
+
+  }
+
   export let gameWinner: number = null;
 
   export function updateUI(params: IUpdateUI): void {
@@ -114,6 +141,11 @@ module game {
     if (params.endMatchScores != null) {
       game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
     }
+    // if ((gameLogic.playerTurnCount[yourPlayerIndex()] > 0) && 
+    //   (gameLogic.playerTurnCount[yourPlayerIndex()] % 7 == 0)) {
+    //   spawnPowerUps();
+    // }
+    
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
     // then the animation will be paused until the javascript finishes.

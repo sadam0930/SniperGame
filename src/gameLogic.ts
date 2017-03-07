@@ -65,11 +65,11 @@ module gameLogic {
     return {board: getInitialBoards(), delta: null, gameOver: false};
   }
 
-  function getRandomPosition(): number[] {
+  export function getRandomPosition(): number[] {
     return [getRandomIntInclusive(ROWS), getRandomIntInclusive(COLS)];
   }
 
-  function getRandomIntInclusive(maxVal: number): number {
+  export function getRandomIntInclusive(maxVal: number): number {
     let min = Math.ceil(0);
     let max = Math.floor(maxVal);
     return Math.floor(Math.random() * (max - min)) + min;
