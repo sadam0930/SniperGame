@@ -164,6 +164,13 @@ module game {
     return game.current_buff[yourPlayerIndex()];
   }
 
+  export function buffDescription(buffName: string): string {
+    if (game.current_buff[yourPlayerIndex()] === 'grenade') {
+      return 'Your next attack will hit 3 windows!';
+    }
+    return '';
+  }
+
   export let gameWinner: number = null;
 
   export function updateUI(params: IUpdateUI): void {
