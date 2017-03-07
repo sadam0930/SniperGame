@@ -112,6 +112,10 @@ body {
   background-repeat: no-repeat;
   background-size: 150% 100%;
 }
+#attackBoard,
+#attackBoard a {
+  cursor: url('../img/crosshair.png') 25 15, default;
+}
 .building{
   background-image: url("../img/wall.png");
   background-size: 15%;
