@@ -22,6 +22,8 @@ module game {
   export let yourPlayerInfo: IPlayerInfo = null;
   export let buffs_enabled: boolean = true;
   export let current_buff: string[] = [];
+  export let prev_turn_index: number = null;
+  export let turn_index: number = null;
 
   export function init($rootScope_: angular.IScope, $timeout_: angular.ITimeoutService) {
     $rootScope = $rootScope_;
@@ -102,7 +104,7 @@ module game {
     return proposals && proposals[row][col] == 2;
   }
 
-  function spawnPowerUps(): void {
+  export function spawnPowerUps(boards: Board[]): void {
     if (yourPlayerIndex() === -1) return;
     let safe_guard_counter: number = 0;
     let buff_type_num: number  = gameLogic.getRandomIntInclusive(0);  
@@ -117,17 +119,17 @@ module game {
     }
 
     let move_board: number = (2 + yourPlayerIndex());    // move board where buff is visible
-    let attack_board: number = (1 - yourPlayerIndex());  // attack board where buff is visible
+    // let attack_board: number = (1 - yourPlayerIndex());  // attack board where buff is visible
     let buff_pos: number[] = gameLogic.getRandomPosition();
 
-    while (!(isPiece(move_board, buff_pos[0], buff_pos[1], ''))) {
+    while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
       let buff_pos: number[] = gameLogic.getRandomPosition();
       let found_free_pos: boolean = false;
 
       if (safe_guard_counter > 30) {                    // Brute force check for a free cell
         for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
-            if (isPiece(move_board, i, j, '')) {
+            if (boards[move_board][i][j] === '') {
               buff_pos[0] = i;
               buff_pos[1] = j;
               found_free_pos = true;
@@ -150,9 +152,9 @@ module game {
       safe_guard_counter += 1;
     }
 
-    state.board[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
+    boards[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
     // state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
-
+''
   }
 
   export function isABuff(cellValue: string): boolean {
@@ -161,6 +163,7 @@ module game {
   }
 
   export function hasBuff(): string {
+    if (game.yourPlayerIndex() === -1) return '';
     return game.current_buff[yourPlayerIndex()];
   }
 
@@ -174,23 +177,22 @@ module game {
   export let gameWinner: number = null;
 
   export function updateUI(params: IUpdateUI): void {
+
     log.info("Game got updateUI:", params);
     didMakeMove = false; // Only one move per updateUI
     currentUpdateUI = params;
     clearAnimationTimeout();
     state = params.state;
-    let my_turn_count: number = gameLogic.playerTurnCount[yourPlayerIndex()];
-
+    
     if (isFirstMove()) {
       state = gameLogic.getInitialState();
     }
     if (params.endMatchScores != null) {
       game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
     }
-    if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
-      spawnPowerUps();
-    }
-    
+    game.prev_turn_index = game.turn_index;
+    game.turn_index = params.turnIndex;
+
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
     // then the animation will be paused until the javascript finishes.
@@ -295,42 +297,32 @@ module game {
   }
 
   function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
-    return state.board[board][row][col] === pieceKind;
+    let board_number: number = (board + yourPlayerIndex());
+    if (yourPlayerIndex() === -1) {
+      if (game.gameWinner != null) board_number = (board + game.gameWinner - 1);
+      else return;
+    }
+    return state.board[board_number][row][col] === pieceKind;
   }
 
   export function isPos(board: number, row: number, col: number): boolean {
-    if (yourPlayerIndex() === -1) return;
-    let board_number: number = (board + yourPlayerIndex());    
-    return isPiece(board_number, row, col, 'P');
-
+    return isPiece(board, row, col, 'P');
   }
   
   export function isBroken(board: number, row: number, col: number): boolean {
-    if (yourPlayerIndex() === -1) return;
-    let board_number: number = (board + yourPlayerIndex());    
-    return isPiece(board_number, row, col, 'B');
-
+    return isPiece(board, row, col, 'B');
   }
 
   export function isBlank(board: number, row: number, col: number): boolean {
-    if (yourPlayerIndex() === -1) return;
-    let board_number: number = (board + yourPlayerIndex());    
-    return isPiece(board_number, row, col, '');
-   
+    return isPiece(board, row, col, ''); 
   }
 
   export function isDead(board: number, row: number, col: number): boolean {
-    if (yourPlayerIndex() === -1) return;
-    let board_number: number = (board + yourPlayerIndex());    
-    return isPiece(board_number, row, col, 'D');
-   
+    return isPiece(board, row, col, 'D');
   }
 
   export function isBuff(board: number, row: number, col: number): boolean {
-    if (yourPlayerIndex() === -1) return;
-    let board_number: number = (board + yourPlayerIndex());    
-    return isPiece(board_number, row, col, 'grenade');
-   
+    return isPiece(board, row, col, 'grenade');
   }
 
   export function firstMove(): boolean {

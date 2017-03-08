@@ -48,6 +48,7 @@ var gameLogic;
     }
     gameLogic.getBlankBoard = getBlankBoard;
     function getInitialState() {
+        game.current_buff[0] = game.current_buff[1] = '';
         return { board: getInitialBoards(), delta: null, gameOver: false };
     }
     gameLogic.getInitialState = getInitialState;
@@ -121,7 +122,7 @@ var gameLogic;
         var isGameOver = false;
         if (moveType === 'attack' && winner[0] !== '') {
             // Game over
-            log.info("Game over! Winner is: ", winner);
+            log.info("Game over! Winner is: ", winner[0]);
             turnIndex = -1;
             endMatchScores = winner[0] === 'P1' ? [1, 0] : winner[0] === 'P2' ? [0, 1] : [0, 0];
             isGameOver = true;
@@ -148,6 +149,10 @@ var gameLogic;
             if (game.isABuff(boardsAfterMove[playerID + 2][row][col]))
                 game.current_buff[playerID] = boardsAfterMove[playerID + 2][row][col];
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
+        }
+        var my_turn_count = gameLogic.playerTurnCount[game.yourPlayerIndex()];
+        if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
+            game.spawnPowerUps(boardsAfterMove);
         }
         var delta = { row: row, col: col, moveType: moveType };
         var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver };

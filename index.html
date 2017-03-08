@@ -29,9 +29,9 @@
 <!-- MOVE BOARD -->
       		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
    	<!-- STATUS BAR -->
-      			<div class="turnDisplay">   
+      			<div class="turnDisplay">
 				    Choose a position to move to! <br>
-				    <div ng-if=" game.hasBuff() != null ">	        
+				    <div ng-if=" game.hasBuff() !== '' ">	        
 				        You have a {{game.hasBuff()}}! <br>
 				        {{game.buffDescription()}}
 				    </div>
@@ -69,9 +69,14 @@
 <!-- ATTACK BOARD -->
 	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
 	      	   	<!-- STATUS BAR -->
-      			<div class="turnDisplay">   
-				    Choose a position to attack! <br>
-				    <div ng-if=" game.hasBuff() != null ">	        
+      			<div class="turnDisplay">
+      				<div ng-if=" game.gameWinner == null ">
+      					Choose a position to attack! <br>
+      				</div> 
+      			    <div ng-if=" game.gameWinner != null ">
+      					<text>Player {{game.gameWinner}} wins!</text>
+      				</div> 
+				    <div ng-if=" game.hasBuff() !== '' ">	        
 				        You have a {{game.hasBuff()}}! <br>
 				        {{game.buffDescription()}}
 				    </div>
@@ -114,10 +119,10 @@
 			       	</div>
 		        </div>
 		        <!-- GAME OVER BANNER -->
-		        <div ng-if="game.gameWinner != null" 
+<!-- 		        <div ng-if="game.gameWinner != null" 
 		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
 		        	<text>Player {{game.gameWinner}} wins!</text>
-		        </div>
+		        </div> -->
 <!-- BUTTONS -->
 				<div id=" buttonArea" ng-if="!game.firstMove() && game.gameWinner == null ">
 					<div class="btn-container" ng-click="pressed_attack_button()"> 
