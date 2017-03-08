@@ -104,59 +104,6 @@ module game {
     return proposals && proposals[row][col] == 2;
   }
 
-  export function spawnPowerUps(boards: Board[]): void {
-    if (yourPlayerIndex() === -1) return;
-    let safe_guard_counter: number = 0;
-    let buff_type_num: number  = gameLogic.getRandomIntInclusive(0);  
-    let buff_type: string = '';
-
-    if (buff_type_num == 0) buff_type = 'grenade';        // placeholder buff
-    // else if (buff_type_num == 1) buff_type = 'Y';   // placeholder buff
-    // else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
-    else {
-      log.info("spawnPowerUps() buff_type_num out of range.");
-      return;
-    }
-
-    let move_board: number = (2 + yourPlayerIndex());    // move board where buff is visible
-    // let attack_board: number = (1 - yourPlayerIndex());  // attack board where buff is visible
-    let buff_pos: number[] = gameLogic.getRandomPosition();
-
-    while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
-      let buff_pos: number[] = gameLogic.getRandomPosition();
-      let found_free_pos: boolean = false;
-
-      if (safe_guard_counter > 30) {                    // Brute force check for a free cell
-        for (let i = 0; i < gameLogic.ROWS; i++) {
-          for (let j = 0; j < gameLogic.COLS; j++) {
-            if (boards[move_board][i][j] === '') {
-              buff_pos[0] = i;
-              buff_pos[1] = j;
-              found_free_pos = true;
-              break;
-            }
-          }
-          if (found_free_pos) break;
-        }
-
-        if (!found_free_pos) {
-          // Could force the buff to spawn on the player?
-          game.buffs_enabled = false;                  
-          return;
-        }
-      }
-
-      if (found_free_pos) break;
-
-      // Make this look for empty space instead of random if hits safeGuard number?
-      safe_guard_counter += 1;
-    }
-
-    boards[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
-    // state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
-''
-  }
-
   export function isABuff(cellValue: string): boolean {
     if (cellValue === 'grenade') return true;
     else return false;

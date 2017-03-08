@@ -87,6 +87,48 @@ var gameLogic;
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
+    function spawnPowerUps(boards) {
+        if (game.yourPlayerIndex() === -1)
+            return;
+        var safe_guard_counter = 0;
+        var buff_type_num = gameLogic.getRandomIntInclusive(0);
+        var buff_type = '';
+        if (buff_type_num == 0)
+            buff_type = 'grenade'; // placeholder buff
+        else {
+            log.info("spawnPowerUps() buff_type_num out of range.");
+            return;
+        }
+        var move_board = (2 + game.yourPlayerIndex()); // move board where buff is visible
+        var buff_pos = gameLogic.getRandomPosition();
+        while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
+            var buff_pos_1 = gameLogic.getRandomPosition();
+            var found_free_pos = false;
+            if (safe_guard_counter > 30) {
+                for (var i = 0; i < gameLogic.ROWS; i++) {
+                    for (var j = 0; j < gameLogic.COLS; j++) {
+                        if (boards[move_board][i][j] === '') {
+                            buff_pos_1[0] = i;
+                            buff_pos_1[1] = j;
+                            found_free_pos = true;
+                            break;
+                        }
+                    }
+                    if (found_free_pos)
+                        break;
+                }
+                if (!found_free_pos) {
+                    game.buffs_enabled = false;
+                    return;
+                }
+            }
+            if (found_free_pos)
+                break;
+            safe_guard_counter += 1;
+        }
+        boards[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
+    }
+    gameLogic.spawnPowerUps = spawnPowerUps;
     function createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove) {
         // GET CURRENT BOARDS
         if (!stateBeforeMove) {
@@ -138,6 +180,9 @@ var gameLogic;
                 boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = 'B';
                 game.current_buff[playerID] = '';
             }
+            else {
+                boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
+            }
             if (winner[1] === 'l')
                 boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = boardMarker;
             else if (winner[1] === 'c')
@@ -152,7 +197,7 @@ var gameLogic;
         }
         var my_turn_count = gameLogic.playerTurnCount[game.yourPlayerIndex()];
         if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
-            game.spawnPowerUps(boardsAfterMove);
+            gameLogic.spawnPowerUps(boardsAfterMove);
         }
         var delta = { row: row, col: col, moveType: moveType };
         var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver };
