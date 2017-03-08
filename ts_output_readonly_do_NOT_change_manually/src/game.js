@@ -325,7 +325,7 @@ app.run(['$rootScope', '$timeout',
     }]);
 app.controller('MainController', ['$scope', '$rootScope', function ($scope, $rootScope) {
         // BOARD ATTRIBUTES //
-        $scope.board_size = .75;
+        $scope.board_size = .8;
         $scope.is_attacking = false;
         $scope.is_moving = true;
         $scope.pressed_attack_button = function () {

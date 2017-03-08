@@ -347,7 +347,7 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
 
                   // BOARD ATTRIBUTES //
 
-  $scope.board_size = .75;
+  $scope.board_size = .8;
   $scope.is_attacking = false;
   $scope.is_moving = true;
 
