@@ -23,6 +23,8 @@ module gameLogic {
   export const COLS = 5;
   export const NUMPLAYERS = 2;
   export let playerTurnCount: number[] = [];
+  export let freeCells: Board[] = [];
+  export let playerPositions: number[][][] = [];
 
   /** 
   * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. 
@@ -80,10 +82,17 @@ module gameLogic {
    * Compares the coordinates the player attacked 
    * with the opponents position board
    */
-  function getWinner(row: number, col: number, isP1Turn: boolean, boards: Board[]): string {
-    if(isP1Turn && boards[3][row][col] === 'P'){ return 'P1'; }
-    if(!isP1Turn && boards[2][row][col] === 'P'){ return 'P2'; }
-    return '';
+  function getWinner(row: number, col: number, isP1Turn: boolean, boards: Board[], attackType: string): string[] {
+    let opponentMoveBoard: number = (1 - game.yourPlayerIndex() + 2);
+    if (attackType === '') {
+      if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
+    }
+    else if (attackType === 'grenade') {
+      if (boards[opponentMoveBoard][row][col-1] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'l'];
+      else if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
+      else if (boards[opponentMoveBoard][row][col+1] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'r'];
+    }
+    return ['', ''];
   }
 
   /**
@@ -115,23 +124,25 @@ module gameLogic {
     if (game.firstMove() && ('attack' === moveType)) throw new Error("Must place position on first move!");
         
     // CHECK IF KILL SHOT
-    let winner = getWinner(row, col, isP1Turn, boards);
+    let attackType: string = '';
+    if (game.current_buff[playerID] === 'grenade') attackType = 'grenade';
+    let winner = getWinner(row, col, isP1Turn, boards, attackType);
     let endMatchScores: number[];
     endMatchScores = null;
     let turnIndex: number;
     let isGameOver: boolean = false;
-    if (moveType === 'attack' && winner !== '') {
+    if (moveType === 'attack' && winner[0] !== '') {
       // Game over
       log.info("Game over! Winner is: ", winner);
       turnIndex = -1;
-      endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
+      endMatchScores = winner[0] === 'P1' ? [1, 0] : winner[0] === 'P2' ? [0, 1] : [0, 0];
       isGameOver = true;
     }
 
     // UPDATE BOARDS
     turnIndex = endMatchScores === null ? (1 - turnIndexBeforeMove) : -1;
     let boardsAfterMove = angular.copy(boards);
-    let boardMarker = winner !== '' ? 'D' : 'B';
+    let boardMarker = winner[0] !== '' ? 'D' : 'B';
 
     if (moveType === 'attack') {
       if (game.current_buff[playerID] === 'grenade') {
@@ -140,7 +151,9 @@ module gameLogic {
         boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
         game.current_buff[playerID] = '';
       }
-      boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+      if (winner[1] === 'l') boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = boardMarker;
+      else if (winner[1] === 'c') boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+      else if (winner[1] === 'r') boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = boardMarker;
     }
     else if (moveType === 'move') {
       if (game.isABuff(boardsAfterMove[playerID + 2][row][col])) 

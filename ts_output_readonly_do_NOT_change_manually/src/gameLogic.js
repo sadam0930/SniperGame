@@ -10,6 +10,8 @@ var gameLogic;
     gameLogic.COLS = 5;
     gameLogic.NUMPLAYERS = 2;
     gameLogic.playerTurnCount = [];
+    gameLogic.freeCells = [];
+    gameLogic.playerPositions = [];
     /**
     * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''.
     * There are 4 boards. P1 is even boards. P2 is odd boards.
@@ -64,14 +66,21 @@ var gameLogic;
      * Compares the coordinates the player attacked
      * with the opponents position board
      */
-    function getWinner(row, col, isP1Turn, boards) {
-        if (isP1Turn && boards[3][row][col] === 'P') {
-            return 'P1';
+    function getWinner(row, col, isP1Turn, boards, attackType) {
+        var opponentMoveBoard = (1 - game.yourPlayerIndex() + 2);
+        if (attackType === '') {
+            if (boards[opponentMoveBoard][row][col] === 'P')
+                return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
         }
-        if (!isP1Turn && boards[2][row][col] === 'P') {
-            return 'P2';
+        else if (attackType === 'grenade') {
+            if (boards[opponentMoveBoard][row][col - 1] === 'P')
+                return [('P' + (game.yourPlayerIndex() + 1)), 'l'];
+            else if (boards[opponentMoveBoard][row][col] === 'P')
+                return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
+            else if (boards[opponentMoveBoard][row][col + 1] === 'P')
+                return [('P' + (game.yourPlayerIndex() + 1)), 'r'];
         }
-        return '';
+        return ['', ''];
     }
     /**
      * Returns the move that should be performed when player
@@ -102,22 +111,25 @@ var gameLogic;
         if (game.firstMove() && ('attack' === moveType))
             throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
-        var winner = getWinner(row, col, isP1Turn, boards);
+        var attackType = '';
+        if (game.current_buff[playerID] === 'grenade')
+            attackType = 'grenade';
+        var winner = getWinner(row, col, isP1Turn, boards, attackType);
         var endMatchScores;
         endMatchScores = null;
         var turnIndex;
         var isGameOver = false;
-        if (moveType === 'attack' && winner !== '') {
+        if (moveType === 'attack' && winner[0] !== '') {
             // Game over
             log.info("Game over! Winner is: ", winner);
             turnIndex = -1;
-            endMatchScores = winner === 'P1' ? [1, 0] : winner === 'P2' ? [0, 1] : [0, 0];
+            endMatchScores = winner[0] === 'P1' ? [1, 0] : winner[0] === 'P2' ? [0, 1] : [0, 0];
             isGameOver = true;
         }
         // UPDATE BOARDS
         turnIndex = endMatchScores === null ? (1 - turnIndexBeforeMove) : -1;
         var boardsAfterMove = angular.copy(boards);
-        var boardMarker = winner !== '' ? 'D' : 'B';
+        var boardMarker = winner[0] !== '' ? 'D' : 'B';
         if (moveType === 'attack') {
             if (game.current_buff[playerID] === 'grenade') {
                 boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = 'B';
@@ -125,7 +137,12 @@ var gameLogic;
                 boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = 'B';
                 game.current_buff[playerID] = '';
             }
-            boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+            if (winner[1] === 'l')
+                boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = boardMarker;
+            else if (winner[1] === 'c')
+                boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+            else if (winner[1] === 'r')
+                boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = boardMarker;
         }
         else if (moveType === 'move') {
             if (game.isABuff(boardsAfterMove[playerID + 2][row][col]))
