@@ -152,6 +152,13 @@ var game;
         return game.current_buff[yourPlayerIndex()];
     }
     game.hasBuff = hasBuff;
+    function buffDescription(buffName) {
+        if (game.current_buff[yourPlayerIndex()] === 'grenade') {
+            return 'Your next attack will hit 3 windows!';
+        }
+        return '';
+    }
+    game.buffDescription = buffDescription;
     game.gameWinner = null;
     function updateUI(params) {
         log.info("Game got updateUI:", params);
