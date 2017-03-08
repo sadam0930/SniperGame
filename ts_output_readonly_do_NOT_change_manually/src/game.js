@@ -325,16 +325,20 @@ app.run(['$rootScope', '$timeout',
     }]);
 app.controller('MainController', ['$scope', '$rootScope', function ($scope, $rootScope) {
         // BOARD ATTRIBUTES //
-        $scope.board_size = .75;
+        $scope.board_size = .8;
         $scope.is_attacking = false;
         $scope.is_moving = true;
         $scope.pressed_attack_button = function () {
+            if (game.firstMove())
+                return;
             $scope.$apply(function () {
                 $scope.is_attacking = true;
                 $scope.is_moving = false;
             });
         };
         $scope.pressed_move_button = function () {
+            if (game.firstMove())
+                return;
             $scope.$apply(function () {
                 $scope.is_moving = true;
                 $scope.is_attacking = false;

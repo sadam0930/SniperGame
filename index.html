@@ -112,7 +112,7 @@
 			</div>
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
-		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%;">
+		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
 		        <div ng-if="!game.firstMove() && game.gameWinner == null ">	        
 		        	<div class="turnDisplay" ng-if="game.isMyTurn()"> 
 			        	<text>Your turn.</text>
@@ -126,8 +126,12 @@
 		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
 		        	<text>Player {{game.gameWinner}} wins!</text>
 		        </div> -->
+<!-- FIRST MOVE BANNER -->
+		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
+		        	<text>Select your starting position.</text>
+		        </div>
 <!-- BUTTONS -->
-				<div id=" buttonArea" ng-if="!game.firstMove() && game.gameWinner == null ">
+				<div id=" buttonArea" ng-if="game.gameWinner == null ">
 					<div class="btn-container" ng-click="pressed_attack_button()"> 
 			        	<a href="#" class="btn btn-attack">Attack</a>
 			       	</div>
@@ -135,10 +139,6 @@
 			        	<a href="#" class="btn btn-move">Move</a>
 			       	</div>
 				</div>
-<!-- FIRST MOVE BANNER -->
-		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
-		        	<text>Select your starting position.</text>
-		        </div>
 		    </div>
 	    </div>
   	</body>
