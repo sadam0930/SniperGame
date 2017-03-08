@@ -166,7 +166,7 @@ body {
   background-image: url("../img/dead.png");
 }
 .window.supplyCrate{
-  background-image: url("../img/military_crate.png"); 
+  background-image: url("../img/supplies.png"); 
 }
 .col{
   height: 100%;
