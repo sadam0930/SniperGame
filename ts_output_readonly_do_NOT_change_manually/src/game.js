@@ -16,6 +16,8 @@ var game;
     game.yourPlayerInfo = null;
     game.buffs_enabled = true;
     game.current_buff = [];
+    game.prev_turn_index = null;
+    game.turn_index = null;
     function init($rootScope_, $timeout_) {
         game.$rootScope = $rootScope_;
         game.$timeout = $timeout_;
@@ -96,7 +98,7 @@ var game;
         return game.proposals && game.proposals[row][col] == 2;
     }
     game.isProposal2 = isProposal2;
-    function spawnPowerUps() {
+    function spawnPowerUps(boards) {
         if (yourPlayerIndex() === -1)
             return;
         var safe_guard_counter = 0;
@@ -109,15 +111,15 @@ var game;
             return;
         }
         var move_board = (2 + yourPlayerIndex()); // move board where buff is visible
-        var attack_board = (1 - yourPlayerIndex()); // attack board where buff is visible
+        // let attack_board: number = (1 - yourPlayerIndex());  // attack board where buff is visible
         var buff_pos = gameLogic.getRandomPosition();
-        while (!(isPiece(move_board, buff_pos[0], buff_pos[1], ''))) {
+        while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
             var buff_pos_1 = gameLogic.getRandomPosition();
             var found_free_pos = false;
             if (safe_guard_counter > 30) {
                 for (var i = 0; i < gameLogic.ROWS; i++) {
                     for (var j = 0; j < gameLogic.COLS; j++) {
-                        if (isPiece(move_board, i, j, '')) {
+                        if (boards[move_board][i][j] === '') {
                             buff_pos_1[0] = i;
                             buff_pos_1[1] = j;
                             found_free_pos = true;
@@ -138,9 +140,11 @@ var game;
             // Make this look for empty space instead of random if hits safeGuard number?
             safe_guard_counter += 1;
         }
-        game.state.board[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
+        boards[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
         // state.board[attack_board][buff_pos[0]][buff_pos[1]] = buff_type;
+        '';
     }
+    game.spawnPowerUps = spawnPowerUps;
     function isABuff(cellValue) {
         if (cellValue === 'grenade')
             return true;
@@ -149,6 +153,8 @@ var game;
     }
     game.isABuff = isABuff;
     function hasBuff() {
+        if (game.yourPlayerIndex() === -1)
+            return '';
         return game.current_buff[yourPlayerIndex()];
     }
     game.hasBuff = hasBuff;
@@ -166,16 +172,14 @@ var game;
         game.currentUpdateUI = params;
         clearAnimationTimeout();
         game.state = params.state;
-        var my_turn_count = gameLogic.playerTurnCount[yourPlayerIndex()];
         if (isFirstMove()) {
             game.state = gameLogic.getInitialState();
         }
         if (params.endMatchScores != null) {
             game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
         }
-        if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
-            spawnPowerUps();
-        }
+        game.prev_turn_index = game.turn_index;
+        game.turn_index = params.turnIndex;
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
         // then the animation will be paused until the javascript finishes.
@@ -273,41 +277,33 @@ var game;
     }
     game.shouldShowImage = shouldShowImage;
     function isPiece(board, row, col, pieceKind) {
-        return game.state.board[board][row][col] === pieceKind;
+        var board_number = (board + yourPlayerIndex());
+        if (yourPlayerIndex() === -1) {
+            if (game.gameWinner != null)
+                board_number = (board + game.gameWinner - 1);
+            else
+                return;
+        }
+        return game.state.board[board_number][row][col] === pieceKind;
     }
     function isPos(board, row, col) {
-        if (yourPlayerIndex() === -1)
-            return;
-        var board_number = (board + yourPlayerIndex());
-        return isPiece(board_number, row, col, 'P');
+        return isPiece(board, row, col, 'P');
     }
     game.isPos = isPos;
     function isBroken(board, row, col) {
-        if (yourPlayerIndex() === -1)
-            return;
-        var board_number = (board + yourPlayerIndex());
-        return isPiece(board_number, row, col, 'B');
+        return isPiece(board, row, col, 'B');
     }
     game.isBroken = isBroken;
     function isBlank(board, row, col) {
-        if (yourPlayerIndex() === -1)
-            return;
-        var board_number = (board + yourPlayerIndex());
-        return isPiece(board_number, row, col, '');
+        return isPiece(board, row, col, '');
     }
     game.isBlank = isBlank;
     function isDead(board, row, col) {
-        if (yourPlayerIndex() === -1)
-            return;
-        var board_number = (board + yourPlayerIndex());
-        return isPiece(board_number, row, col, 'D');
+        return isPiece(board, row, col, 'D');
     }
     game.isDead = isDead;
     function isBuff(board, row, col) {
-        if (yourPlayerIndex() === -1)
-            return;
-        var board_number = (board + yourPlayerIndex());
-        return isPiece(board_number, row, col, 'grenade');
+        return isPiece(board, row, col, 'grenade');
     }
     game.isBuff = isBuff;
     function firstMove() {
