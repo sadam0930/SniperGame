@@ -278,6 +278,14 @@ var game;
             game.state.delta.row === row && game.state.delta.col === col;
     }
     game.shouldSlowlyAppear = shouldSlowlyAppear;
+    function isP1() {
+        return (yourPlayerIndex() == 0);
+    }
+    game.isP1 = isP1;
+    function isP2() {
+        return (yourPlayerIndex() == 1);
+    }
+    game.isP2 = isP2;
 })(game || (game = {}));
 var app = angular.module('myApp', ['gameServices']);
 app.run(['$rootScope', '$timeout',
