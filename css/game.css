@@ -184,14 +184,10 @@ body {
 .graffiti.p1{
   background-image: url(../img/p1tag.png);
   width: 40%;
-  transform: rotate(20deg);
-  background-position-y: 50%;
 }
 .graffiti.p2{
   background-image: url(../img/p2tag.png);
   width: 40%;
-  transform: rotate(20deg);
-  background-position-y: 50%;
 }
 .graffiti.graf{
   background-image: url(../img/graffiti.png);
