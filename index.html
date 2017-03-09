@@ -29,7 +29,7 @@
 <!-- MOVE BOARD -->
       		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
 	<!-- STATUS BAR -->
-      			<div class="turnDisplay">
+      			<div class="turnDisplay" id="topDisplay">
       				<div ng-if=" game.gameWinner == null ">
       					Choose a position to move to! <br>
       				</div> 
@@ -113,32 +113,29 @@
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
-		        <div ng-if="!game.firstMove() && game.gameWinner == null ">	        
-		        	<div class="turnDisplay" ng-if="game.isMyTurn()"> 
+		        <div ng-if="!game.firstMove()">	        
+		        	<div class="turnDisplay" ng-if="game.isMyTurn() && game.gameWinner == null"> 
 			        	<text>Your turn.</text>
 			       	</div>
-			       	<div class="turnDisplay" ng-if="!game.isMyTurn()"> 
+			       	<div class="turnDisplay" ng-if="!game.isMyTurn() && game.gameWinner == null"> 
 			        	<text>Opponent's turn.</text>
 			       	</div>
 		        </div>
-		        <!-- GAME OVER BANNER -->
-<!-- 		        <div ng-if="game.gameWinner != null" 
-		        	class="controlArea turnDisplay" id="makeFirstMove" ng-if="game.firstMove()">
+<!-- GAME OVER BANNER -->
+			    <div ng-if="game.gameWinner != null" class="controlArea turnDisplay" id="makeFirstMove">
 		        	<text>Player {{game.gameWinner}} wins!</text>
-		        </div> -->
+		        </div>
 <!-- FIRST MOVE BANNER -->
 		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
 		        	<text>Select your starting position.</text>
 		        </div>
 <!-- BUTTONS -->
-				<div id=" buttonArea" ng-if="game.gameWinner == null ">
-					<div class="btn-container" ng-click="pressed_attack_button()"> 
-			        	<a href="#" class="btn btn-attack">Attack</a>
-			       	</div>
-			        <div class="btn-container" ng-click="pressed_move_button()"> 
-			        	<a href="#" class="btn btn-move">Move</a>
-			       	</div>
-				</div>
+				<div class="btn-container" ng-click="pressed_attack_button()"> 
+		        	<a href="#" class="btn btn-attack">Attack</a>
+		       	</div>
+		        <div class="btn-container" ng-click="pressed_move_button()"> 
+		        	<a href="#" class="btn btn-move">Move</a>
+		       	</div>
 		    </div>
 	    </div>
   	</body>
