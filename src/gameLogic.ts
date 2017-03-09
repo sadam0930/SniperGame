@@ -73,9 +73,10 @@ module gameLogic {
   }
 
   export function getRandomIntInclusive(maxVal: number): number {
-    let min = Math.ceil(0);
-    let max = Math.floor(maxVal);
-    return Math.floor(Math.random() * (max - min)) + min;
+    let temp: number = Math.floor(Math.random() * (maxVal));
+    log.info(temp);
+    return temp;
+    // return Math.floor(Math.random() * (maxVal));
   }
 
   /**
@@ -89,9 +90,14 @@ module gameLogic {
       if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
     }
     else if (attackType === 'grenade') {
-      if (boards[opponentMoveBoard][row][col-1] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'l'];
-      else if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
-      else if (boards[opponentMoveBoard][row][col+1] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), 'r'];
+      if (boards[opponentMoveBoard][row][col-1] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), ('' + (col-1))];
+      else if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), ('' + (col))];
+      else if (boards[opponentMoveBoard][row][col+1] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), ('' + (col+1))];
+    }
+    else if (attackType === 'air strike') {
+      for (let i = 0; i < gameLogic.ROWS; i++) {
+        if (boards[opponentMoveBoard][i][col] === 'P') return [('P' + (game.yourPlayerIndex() + 1)), ('' + i)];  
+      }
     }
     return ['', ''];
   }
@@ -104,11 +110,11 @@ module gameLogic {
   export function spawnPowerUps(boards: Board[]): void {
     if (game.yourPlayerIndex() === -1) return;
     let safe_guard_counter: number = 0;
-    let buff_type_num: number  = gameLogic.getRandomIntInclusive(0);  
+    let buff_type_num: number  = gameLogic.getRandomIntInclusive(2);  
     let buff_type: string = '';
 
-    if (buff_type_num == 0) buff_type = 'grenade';        // placeholder buff
-    // else if (buff_type_num == 1) buff_type = 'Y';   // placeholder buff
+    if (buff_type_num == 0) buff_type = 'grenade';       
+    else if (buff_type_num == 1) buff_type = 'air strike';  
     // else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
     else {
       log.info("spawnPowerUps() buff_type_num out of range.");
@@ -174,6 +180,7 @@ module gameLogic {
     // CHECK IF KILL SHOT
     let attackType: string = '';
     if (game.current_buff[playerID] === 'grenade') attackType = 'grenade';
+    if (game.current_buff[playerID] === 'air strike') attackType = 'air strike';
     let winner = getWinner(row, col, isP1Turn, boards, attackType);
     let endMatchScores: number[];
     endMatchScores = null;
@@ -191,6 +198,7 @@ module gameLogic {
     turnIndex = endMatchScores === null ? (1 - turnIndexBeforeMove) : -1;
     let boardsAfterMove = angular.copy(boards);
     let boardMarker = winner[0] !== '' ? 'D' : 'B';
+    let hit_location: number = Number(winner[1]);
 
     if (moveType === 'attack') {
       if (game.current_buff[playerID] === 'grenade') {
@@ -198,13 +206,17 @@ module gameLogic {
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
         boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
         game.current_buff[playerID] = '';
+        if (winner[1] != '') boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
+      }
+      else if (game.current_buff[playerID] === 'air strike') {
+        for (let i = 0; i < gameLogic.ROWS; i++) boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
+        game.current_buff[playerID] = '';
+        if (winner[1] != '') boardsAfterMove[playerID][hit_location][col] = boardsAfterMove[(1 - playerID) + 2][hit_location][col] = boardMarker;
       }
       else {
-        boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
+        boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
       }
-      if (winner[1] === 'l') boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = boardMarker;
-      else if (winner[1] === 'c') boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
-      else if (winner[1] === 'r') boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = boardMarker;
+
     }
     else if (moveType === 'move') {
       if (game.isABuff(boardsAfterMove[playerID + 2][row][col])) 
