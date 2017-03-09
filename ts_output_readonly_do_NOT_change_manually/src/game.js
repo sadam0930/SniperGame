@@ -101,6 +101,8 @@ var game;
     function isABuff(cellValue) {
         if (cellValue === 'grenade')
             return true;
+        else if (cellValue === 'air strike')
+            return true;
         else
             return false;
     }
@@ -114,6 +116,9 @@ var game;
     function buffDescription(buffName) {
         if (game.current_buff[yourPlayerIndex()] === 'grenade') {
             return 'Your next attack will hit 3 windows!';
+        }
+        else if (game.current_buff[yourPlayerIndex()] === 'air strike') {
+            return 'Your next attack will destroy all windows in the selected column!';
         }
         return '';
     }
@@ -256,7 +261,12 @@ var game;
     }
     game.isDead = isDead;
     function isBuff(board, row, col) {
-        return isPiece(board, row, col, 'grenade');
+        if (isPiece(board, row, col, 'grenade'))
+            return true;
+        else if (isPiece(board, row, col, 'air strike'))
+            return true;
+        else
+            return false;
     }
     game.isBuff = isBuff;
     function firstMove() {
