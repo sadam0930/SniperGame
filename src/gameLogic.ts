@@ -73,10 +73,7 @@ module gameLogic {
   }
 
   export function getRandomIntInclusive(maxVal: number): number {
-    let temp: number = Math.floor(Math.random() * (maxVal));
-    log.info(temp);
-    return temp;
-    // return Math.floor(Math.random() * (maxVal));
+    return Math.floor(Math.random() * (maxVal));
   }
 
   /**
@@ -178,9 +175,7 @@ module gameLogic {
     if (game.firstMove() && ('attack' === moveType)) throw new Error("Must place position on first move!");
         
     // CHECK IF KILL SHOT
-    let attackType: string = '';
-    if (game.current_buff[playerID] === 'grenade') attackType = 'grenade';
-    if (game.current_buff[playerID] === 'air strike') attackType = 'air strike';
+    let attackType: string = game.current_buff[playerID];
     let winner = getWinner(row, col, isP1Turn, boards, attackType);
     let endMatchScores: number[];
     endMatchScores = null;

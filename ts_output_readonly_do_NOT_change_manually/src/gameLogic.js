@@ -57,10 +57,7 @@ var gameLogic;
     }
     gameLogic.getRandomPosition = getRandomPosition;
     function getRandomIntInclusive(maxVal) {
-        var temp = Math.floor(Math.random() * (maxVal));
-        log.info(temp);
-        return temp;
-        // return Math.floor(Math.random() * (maxVal));
+        return Math.floor(Math.random() * (maxVal));
     }
     gameLogic.getRandomIntInclusive = getRandomIntInclusive;
     /**
@@ -163,11 +160,7 @@ var gameLogic;
         if (game.firstMove() && ('attack' === moveType))
             throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
-        var attackType = '';
-        if (game.current_buff[playerID] === 'grenade')
-            attackType = 'grenade';
-        if (game.current_buff[playerID] === 'air strike')
-            attackType = 'air strike';
+        var attackType = game.current_buff[playerID];
         var winner = getWinner(row, col, isP1Turn, boards, attackType);
         var endMatchScores;
         endMatchScores = null;
