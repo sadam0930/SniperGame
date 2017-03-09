@@ -281,6 +281,14 @@ module game {
         state.delta.row === row && state.delta.col === col;
   }
 
+  export function isP1(): boolean {
+    return (yourPlayerIndex() == 0)
+  }
+
+  export function isP2(): boolean {
+    return (yourPlayerIndex() == 1)
+  }
+
 }
 
 var app = angular.module('myApp', ['gameServices']);

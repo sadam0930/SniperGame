@@ -169,6 +169,36 @@ body {
   background-size: 100%;
   height: 100%;
 }
+.graffitiContainer{
+  width: 100%;
+  height: 100%;
+  float: left;
+  clear: both;
+}
+.graffiti{
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 100%;
+  float: left;
+}
+.graffiti.p1{
+  background-image: url(../img/p1tag.png);
+  width: 40%;
+  transform: rotate(20deg);
+  background-position-y: 50%;
+}
+.graffiti.p2{
+  background-image: url(../img/p2tag.png);
+  width: 40%;
+  transform: rotate(20deg);
+  background-position-y: 50%;
+}
+.graffiti.graf{
+  background-image: url(../img/graffiti.png);
+  width: 40%;
+  left: 60%;
+  position: absolute;
+}
 @media screen and (min-width: 767px){
 .btn-container{
   float: left;
