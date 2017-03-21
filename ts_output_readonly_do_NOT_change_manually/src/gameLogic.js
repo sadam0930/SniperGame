@@ -207,7 +207,7 @@ var gameLogic;
         if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
             gameLogic.spawnPowerUps(boardsAfterMove);
         }
-        var delta = { row: row, col: col, moveType: moveType };
+        var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
         var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
