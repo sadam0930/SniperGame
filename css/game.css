@@ -205,4 +205,275 @@ body {
   clear: both;
   width: 100%;
 }
+
+* {
+    padding: 0;
+    margin: 0;
 }
+
+html , body {
+    width: 100%;
+    height: 100%:
+    overflow: hidden;
+    position: fixed;
+    top: 0%;
+    left: 0%;
+}
+
+html {
+    background-color: rgba(179, 179, 179, 1);    
+}
+
+
+#animation {
+    position: absolute;
+    animation: traverse_screen 10s;
+    -webkit-animation: traverse_screen 10s;
+    width: 80%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.helicopter {
+    position: absolute;
+    top: 10%;
+    right: 0;
+    margin-top: -20px;
+    margin-left: -220px;
+    z-index: 105;
+    -webkit-transform: rotate(-15deg) scale(0.9);
+    -moz-transform: rotate(-15deg) scale(0.9);
+    -ms-transform: rotate(-15deg) scale(0.9);
+    -o-transform: rotate(-15deg) scale(0.9);
+    transform: rotate(-15deg) scale(0.3);
+}
+
+.helicopter .cockpit {
+    width: 175px;
+    height: 175px;
+    border-radius: 100px;
+    background-color: rgba(171, 220, 40, 1);
+    position: fixed;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.helicopter .cockpit:before {
+    content: "";
+    width: 170px;
+    height: 170px;
+    border-radius: 40px;
+    background-color: rgba(65,94,133,1);
+    position: absolute;
+    z-index: 5;
+    top: -10px;
+    left: -25px;
+}
+
+.helicopter .cockpit:after {
+    content: "";
+    width: 170px;
+    height: 170px;
+    border-radius: 40px;
+    background-color: rgba(255,255,255,0.1);
+    position: absolute;
+    z-index: 8;
+    top: -60px;
+    left: -60px;
+}
+
+.helicopter .tail {
+    position: absolute;
+    border-top: 10px solid transparent;
+    border-bottom: 90px solid transparent;
+    border-left: 330px solid rgba(171, 220, 40, 1);
+    /*border-left: 330px solid black;*/
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    height: 10px;
+    top: 40px;
+    left: 150px;
+    -webkit-transform-origin: left center;
+    transform-origin: left center;
+}
+
+.helicopter .main {
+    border-bottom: 70px solid rgba(171, 220, 40, 1);
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    width: 10px;
+    position: absolute;
+    left: 130px;
+    top: -10px;
+}
+
+.helicopter .smallrotor {
+    animation: rotate 0.6s linear 0s infinite normal none;
+  -webkit-animation: rotate 0.6s linear 0s infinite normal none;
+    background-color: rgba( 28,18,2,0.02 );
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 5px;
+    left: 428px;
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.helicopter .smallrotor div {
+    width: 120px;
+    height: 10px;
+    background-color: rgba( 28,18,2,0.03 );
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -60px;
+    margin-top: -5px;   
+}
+
+.helicopter .smallrotor div:nth-of-type(2){
+    -webkit-transform: rotate( 90deg );
+    -moz-transform: rotate( 90deg );
+    -ms-transform: rotate( 90deg );
+    -o-transform: rotate( 90deg );
+    transform: rotate( 90deg );
+}
+
+.helicopter .rotor {
+    width: 700px;
+    height: 700px;
+    border-radius: 350px;
+    position: absolute;
+    top: -360px;
+    left: -200px;
+    overflow: hidden;
+    background-color: rgba( 28,18,2,0.03 );
+    background-color: rgb(200,200,200);
+    -webkit-transform: scale( 1 , 0.075 );
+    -moz-transform: scale( 1 , 0.075 );
+    -ms-transform: scale( 1 , 0.075 );
+    -o-transform: scale( 1 , 0.075 );
+    transform: scale( 1 , 0.075 );
+    z-index: 20;
+}
+
+.helicopter .rotor .rotator {
+    width: 700px;
+    height: 700px;
+    border-radius: 350px;
+    position: absolute;
+    
+    animation: rotate 0.6s linear 0s infinite normal none;
+  -webkit-animation: rotate 0.6s linear 0s infinite normal none;
+}
+
+.helicopter .rotor .rotator div {
+    width: 700px;
+    height: 60px;
+    background-color: rgba( 28,18,2,0.03 );
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -350px;
+    margin-top: -30px;   
+}
+
+.helicopter .rotor div:nth-of-type(1) {
+    -webkit-transform: rotate( 0deg );
+    -moz-transform: rotate( 0deg );
+    -ms-transform: rotate( 0deg );
+    -o-transform: rotate( 0deg );
+    transform: rotate( 0deg );
+}
+
+.helicopter .rotor div:nth-of-type(2) {
+    -webkit-transform: rotate( 90deg );
+    -moz-transform: rotate( 90deg );
+    -ms-transform: rotate( 90deg );
+    -o-transform: rotate( 90deg );
+    transform: rotate( 90deg );
+}
+
+@keyframes rotate {
+  0% { 
+        -webkit-transform: rotate(0deg); 
+        -moz-transform: rotate(0deg); 
+        -ms-transform: rotate(0deg); 
+        -o-transform: rotate(0deg); 
+        transform: rotate(0deg);
+    } 
+  100% { 
+        -webkit-transform: rotate(360deg); 
+        -moz-transform: rotate(360deg); 
+        -ms-transform: rotate(360deg); 
+        -o-transform: rotate(360deg); 
+        transform: rotate(360deg);
+    } 
+}
+
+@-webkit-keyframes rotate {
+  0% { 
+        -webkit-transform: rotate(0deg); 
+        -moz-transform: rotate(0deg); 
+        -ms-transform: rotate(0deg); 
+        -o-transform: rotate(0deg); 
+        transform: rotate(0deg);} 
+  100% { 
+        -webkit-transform: rotate(360deg); 
+        -moz-transform: rotate(360deg); 
+        -ms-transform: rotate(360deg); 
+        -o-transform: rotate(360deg); 
+        transform: rotate(360deg);
+    } 
+}
+
+@keyframes traverse_screen {
+  0% { 
+        -webkit-transform: translate(0px , -2px);
+        -moz-transform: translate(0px , -2px);
+        -ms-transform: translate(0px , -2px);
+        -o-transform: translate(0px , -2px);
+        transform: translate(1% , -2px);
+    } 
+  50% { 
+        -webkit-transform: translate(0px , 2px);
+        -moz-transform: translate(0px , 2px);
+        -ms-transform: translate(0px , 2px);
+        -o-transform: translate(0px , 2px);
+        transform: translate(50% , 2px);
+    }
+  100% { 
+        -webkit-transform: translate(0px , -2px);
+        -moz-transform: translate(0px , -2px);
+        -ms-transform: translate(0px , -2px);
+        -o-transform: translate(0px , -2px);
+        transform: translate(-100% , -2px);
+    } 
+}
+
+/*@-webkit-keyframes traverse_screen {
+  0% { 
+        -webkit-transform: translate(0px , -2px);
+        -moz-transform: translate(0px , -2px);
+        -ms-transform: translate(0px , -2px);
+        -o-transform: translate(0px , -2px);
+        transform: translate(100% , -2px);
+    } 
+  50% { 
+        -webkit-transform: translate(0px , 2px);
+        -moz-transform: translate(0px , 2px);
+        -ms-transform: translate(0px , 2px);
+        -o-transform: translate(0px , 2px);
+        transform: translate(50% , 2px);
+    }
+  100% { 
+        -webkit-transform: translate(0px , -2px);
+        -moz-transform: translate(0px , -2px);
+        -ms-transform: translate(0px , -2px);
+        -o-transform: translate(0px , -2px);
+        transform: translate(0% , -2px);
+    } 
+}
+*/
