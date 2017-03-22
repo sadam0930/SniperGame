@@ -287,6 +287,7 @@ var game;
     }
     game.isP2 = isP2;
 })(game || (game = {}));
+// CONTROLLER
 var app = angular.module('myApp', ['gameServices']);
 app.run(['$rootScope', '$timeout',
     function ($rootScope, $timeout) {

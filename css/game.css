@@ -54,11 +54,7 @@ body {
   margin: 0 auto;
   display:inline-block;
   animation: typing 4s steps(40, end);
-  opacity: 0.5;
 }
-/*#topDisplay{
-  padding:2%;
-}*/
 /* The typing effect */
 @keyframes typing {
   from { width: 0 }
@@ -80,7 +76,7 @@ body {
   transition: border .25s linear, color .25s linear, background-color .25s linear;
   text-decoration: none;
   border-style: outset;
-  border-color: darkslategrey;
+  /*border-color: darkslategrey;*/
   border-width: thin;
 }
 .btn.btn-attack{
@@ -206,6 +202,7 @@ body {
   position: absolute;
   right: 0;
   top: -10%;
+  z-index: 105;
 }
 .helicopter {
     position: absolute;
@@ -352,3 +349,35 @@ body {
   }
 }
 /* End Helicopter */
+#introduction{
+  width: 90%;
+  position: absolute;
+  top: 20%;
+  margin: 5%;
+}
+#introduction .turnDisplay{
+  padding: 5%;
+}
+#introduction text{
+  white-space: inherit;
+  animation: none;
+  opacity: 0.5;
+}
+#introduction .btn-container{
+  float: none;
+  margin: 5% 25% 0%;
+}
+.btn-close{
+  background-color: darkslategrey;
+}
+#help{
+  position: absolute;
+  display: inline-block;
+  top: 8%;
+  width: 10%;
+  right: 0;
+  background-color: dimgrey;
+}
+.btn-help{
+  color: yellow;
+}
