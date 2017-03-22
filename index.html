@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Sniper Game</title>
+    <title>SnipeCity</title>
     <meta name="description" content="Sniper Game">
     <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;,"><!-- Suppress browser request for favicon.ico -->
     <!-- To ensure CSS files are downloaded in parallel, always include external CSS before external JavaScript. -->
@@ -74,23 +74,24 @@
 		    			</div>
 			    	</div>
 				</div>
-			<div class="helimation helicopterContainer">
-            	<div class="helicopter">
-                	<div class="cockpit"></div>
-                	<div class="tail"></div>
-                	<div class="main"></div>
-                	<div class="rotor">
-                    	<div class="rotator">
-	                        <div></div>
-	                        <div></div>
-                    	</div>
-                	</div>
-                	<div class="smallrotor">
-                    	<div></div>
-                    	<div></div>
-                	</div>
-            	</div>
-        	</div>
+<!-- HELICOPTER -->
+				<div class="helimation helicopterContainer">
+	            	<div class="helicopter">
+	                	<div class="cockpit"></div>
+	                	<div class="tail"></div>
+	                	<div class="main"></div>
+	                	<div class="rotor">
+	                    	<div class="rotator">
+		                        <div></div>
+		                        <div></div>
+	                    	</div>
+	                	</div>
+	                	<div class="smallrotor">
+	                    	<div></div>
+	                    	<div></div>
+	                	</div>
+	            	</div>
+	        	</div>
 			</div>
 <!-- ATTACK BOARD -->
 	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
@@ -137,6 +138,24 @@
 			    	</div>
 				</div>
 			</div>
+<!-- INTRODUCTION DISPLAY -->
+	    	<div id="introduction" style="display:none">
+        		<div class="turnDisplay">
+        			<text>
+        				Welcome to Snipe City.<br/><br/>
+        				Your mission is to locate and kill the 
+        				enemy sniper located in the building across from
+        				yours. <br/>
+        				Reposition yourself in your building hideout to 
+        				avoid being hit and to pick up buffs when they spawn. <br/><br/>
+        				Good luck, Sargeant!
+        			</text>
+        			<div class="btn-container" onclick="toggleIntroduction();"> 
+			        	<a href="#" class="btn btn-close">Close</a>
+			       	</div>
+        		</div>
+        	</div>
+        	<div id="help" class="btn-container" onclick="toggleIntroduction()"><a href="#" class="btn btn-help">?</a></div>
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
@@ -165,5 +184,12 @@
 		       	</div>
 		    </div>
 	    </div>
+	    <script>
+	    	// UI Helper Functions //
+			function toggleIntroduction() {
+			    let intro = document.getElementById("introduction");
+    			intro.style.display = (intro.style.display == "none") ? "inherit" : "none";
+			}
+	    </script>
   	</body>
 </html>

@@ -297,6 +297,7 @@ module game {
 
 }
 
+// CONTROLLER
 var app = angular.module('myApp', ['gameServices']);
 app.run(['$rootScope', '$timeout',
     function ($rootScope: angular.IScope, $timeout: angular.ITimeoutService) {
@@ -306,7 +307,7 @@ app.run(['$rootScope', '$timeout',
     }]);
 app.controller('MainController', ['$scope', '$rootScope', function($scope: any, $rootScope: any) {
 
-                  // BOARD ATTRIBUTES //
+  // BOARD ATTRIBUTES //
 
   $scope.board_size = .8;
   $scope.is_attacking = false;
