@@ -3,6 +3,7 @@ interface BoardDelta {
   row: number;
   col: number;
   moveType: string;
+  attackType: string;
 }
 type IProposalData = BoardDelta;
 interface IState {
@@ -224,7 +225,7 @@ module gameLogic {
       gameLogic.spawnPowerUps(boardsAfterMove);
     }
 
-    let delta: BoardDelta = {row: row, col: col, moveType: moveType};
+    let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
     let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
   }

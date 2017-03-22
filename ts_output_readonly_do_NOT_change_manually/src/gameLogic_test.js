@@ -20,11 +20,11 @@ describe("In TicTacToe", function () {
             throw new Error("We expect an illegal move, but createMove didn't throw any exception!");
         }
     }
-    function expectMove(turnIndexBeforeMove, boardBeforeMove, row, col, moveType, boardAfterMove, turnIndexAfterMove, endMatchScores) {
+    function expectMove(turnIndexBeforeMove, boardBeforeMove, row, col, moveType, attackType, boardAfterMove, turnIndexAfterMove, endMatchScores) {
         var expectedMove = {
             turnIndex: turnIndexAfterMove,
             endMatchScores: endMatchScores,
-            state: { board: boardAfterMove, delta: { row: row, col: col, moveType: moveType }, gameOver: false }
+            state: { board: boardAfterMove, delta: { row: row, col: col, moveType: moveType, attackType: attackType }, gameOver: false }
         };
         var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: false } : null;
         var move = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
@@ -61,7 +61,7 @@ describe("In TicTacToe", function () {
         expect(angular.equals(move, expectedMove)).toBe(true);
     });
     it("P1 attacking in 0x0 from initial state", function () {
-        expectMove(P1_TURN, null, 0, 0, 'attack', [[['B', '', ''],
+        expectMove(P1_TURN, null, 0, 0, 'attack', '', [[['B', '', ''],
                 ['', '', ''],
                 ['', '', ''],
                 ['', '', ''],
@@ -102,7 +102,7 @@ describe("In TicTacToe", function () {
                 ['', '', ''],
                 ['', 'P', ''],
                 ['', '', ''],
-                ['', '', '']]], 0, 1, 'attack', [[['B', '', ''],
+                ['', '', '']]], 0, 1, 'attack', '', [[['B', '', ''],
                 ['', '', ''],
                 ['', '', ''],
                 ['', '', ''],
@@ -190,7 +190,7 @@ describe("In TicTacToe", function () {
                 ['', '', ''],
                 ['P', '', ''],
                 ['', '', ''],
-                ['', '', '']]], 2, 1, 'move', [[['B', '', ''],
+                ['', '', '']]], 2, 1, 'move', '', [[['B', '', ''],
                 ['', '', ''],
                 ['', '', ''],
                 ['', '', ''],
@@ -231,7 +231,7 @@ describe("In TicTacToe", function () {
                 ['', '', ''],
                 ['', 'P', ''],
                 ['', '', ''],
-                ['', '', '']]], 2, 1, 'attack', [[['B', '', ''],
+                ['', '', '']]], 2, 1, 'attack', '', [[['B', '', ''],
                 ['', '', ''],
                 ['', '', ''],
                 ['', '', ''],
@@ -272,7 +272,7 @@ describe("In TicTacToe", function () {
                 ['', '', ''],
                 ['', 'P', ''],
                 ['', '', ''],
-                ['', '', '']]], 2, 1, 'attack', [[['B', '', ''],
+                ['', '', '']]], 2, 1, 'attack', '', [[['B', '', ''],
                 ['', '', ''],
                 ['', '', ''],
                 ['', '', ''],

@@ -33,13 +33,14 @@ describe("In TicTacToe", function() {
       row: number,
       col: number,
       moveType: string,
+      attackType: string,
       boardAfterMove: Board[],
       turnIndexAfterMove: number,
       endMatchScores: number[]): void {
     let expectedMove:IMove = {
         turnIndex: turnIndexAfterMove,
         endMatchScores: endMatchScores,
-        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType}, gameOver: false}
+        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: false}
       };
     let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
@@ -79,7 +80,7 @@ describe("In TicTacToe", function() {
   });
   
   it("P1 attacking in 0x0 from initial state", function() {
-    expectMove(P1_TURN, null, 0, 0, 'attack',
+    expectMove(P1_TURN, null, 0, 0, 'attack', '',
       [[['B', '', ''],
        ['', '', ''],
        ['', '', ''],
@@ -125,7 +126,7 @@ describe("In TicTacToe", function() {
        ['', 'P', ''],
        ['', '', ''],
        ['', '', '']]],
-      0, 1, 'attack',
+      0, 1, 'attack', '',
       [[['B', '', ''],
        ['', '', ''],
        ['', '', ''],
@@ -222,7 +223,7 @@ describe("In TicTacToe", function() {
        ['P', '', ''],
        ['', '', ''],
        ['', '', '']]], 
-      2, 1, 'move',
+      2, 1, 'move', '',
       [[['B', '', ''],
        ['', '', ''],
        ['', '', ''],
@@ -268,7 +269,7 @@ describe("In TicTacToe", function() {
        ['', 'P', ''],
        ['', '', ''],
        ['', '', '']]],
-      2, 1, 'attack',
+      2, 1, 'attack', '',
       [[['B', '', ''],
        ['', '', ''],
        ['', '', ''],
@@ -314,7 +315,7 @@ describe("In TicTacToe", function() {
        ['', 'P', ''],
        ['', '', ''],
        ['', '', '']]], 
-      2, 1, 'attack',
+      2, 1, 'attack', '',
       [[['B', '', ''],
        ['', '', ''],
        ['', '', ''],
