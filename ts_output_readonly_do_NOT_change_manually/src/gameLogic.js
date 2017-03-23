@@ -107,15 +107,15 @@ var gameLogic;
         }
         var move_board = (2 + game.yourPlayerIndex()); // move board where buff is visible
         var buff_pos = gameLogic.getRandomPosition();
+        var found_free_pos = false;
         while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
-            var buff_pos_1 = gameLogic.getRandomPosition();
-            var found_free_pos = false;
+            buff_pos = gameLogic.getRandomPosition();
             if (safe_guard_counter > 30) {
                 for (var i = 0; i < gameLogic.ROWS; i++) {
                     for (var j = 0; j < gameLogic.COLS; j++) {
                         if (boards[move_board][i][j] === '') {
-                            buff_pos_1[0] = i;
-                            buff_pos_1[1] = j;
+                            buff_pos[0] = i;
+                            buff_pos[1] = j;
                             found_free_pos = true;
                             break;
                         }
