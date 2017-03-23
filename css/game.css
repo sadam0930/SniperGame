@@ -333,27 +333,11 @@ body {
   45% { transform: translate(0%, 150%); }
   100% { transform: translate(-600%, 150%); } 
 }
-
-/* Manipulate size for screen size */
-@media only screen and (max-device-width:736px){
-   /* styles for mobile browsers smaller than 736px; (iPhone 6 plus) */
-   .helicopter {
-    position: absolute;
-    transform: rotate(-15deg) scale(0.2);
-  }
-}
-@media only screen and (min-device-width:1024px){
-   /* default iPad screens */
-   .helicopter {
-    position: absolute;
-    transform: rotate(-15deg) scale(0.3);
-  }
-}
 /* End Helicopter */
 #introduction{
   width: 90%;
   position: absolute;
-  top: 20%;
+  top: 15%;
   margin: 5%;
 }
 #introduction .turnDisplay{
@@ -381,4 +365,50 @@ body {
 }
 .btn-help{
   color: yellow;
+}
+
+/* Manipulate size for screen size */
+@media only screen and (max-device-width:1025px){
+   /* default iPad Pro screens */
+  .helicopter {
+    position: absolute;
+    transform: rotate(-15deg) scale(0.4);
+  }
+  .turnDisplay,
+  .btn {
+    font-size: xx-large;
+  }
+}
+@media only screen and (max-device-width:769px){
+   /* default iPad screens */
+   .helicopter {
+    position: absolute;
+    transform: rotate(-15deg) scale(0.3);
+  }
+  .turnDisplay,
+  .btn {
+    font-size: x-large;
+  }
+}
+@media only screen and (min-device-width:320px) and (max-device-width:415px){
+   /* styles for mobile browsers up to iPhone 6 plus */
+   .helicopter {
+    position: absolute;
+    transform: rotate(-15deg) scale(0.2);
+  }
+  .turnDisplay,
+  .btn {
+    font-size: medium;
+  }
+}
+@media only screen and (max-device-width:321px){
+   /* styles for mobile browsers as large as iPhone 4 */
+   .helicopter {
+    position: absolute;
+    transform: rotate(-15deg) scale(0.15);
+  }
+  .turnDisplay,
+  .btn {
+    font-size: small;
+  }
 }
