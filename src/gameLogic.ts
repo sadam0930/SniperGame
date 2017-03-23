@@ -121,11 +121,11 @@ module gameLogic {
 
     let move_board: number = (2 + game.yourPlayerIndex());    // move board where buff is visible
     let buff_pos: number[] = gameLogic.getRandomPosition();
+    let found_free_pos: boolean = false;
 
     while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
-      let buff_pos: number[] = gameLogic.getRandomPosition();
-      let found_free_pos: boolean = false;
-
+      buff_pos = gameLogic.getRandomPosition();
+      
       if (safe_guard_counter > 30) {                    // Brute force check for a free cell
         for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
