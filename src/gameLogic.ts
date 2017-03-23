@@ -10,6 +10,7 @@ interface IState {
   board: Board[];
   delta: BoardDelta;
   gameOver: boolean;
+  turnCounts: number[];
 }
 
 import gameService = gamingPlatform.gameService;
@@ -48,8 +49,7 @@ module gameLogic {
     // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
     // let p2_pos = getRandomPosition();
     // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
-    
-    gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
+
     return boards;
   }
 
@@ -66,7 +66,8 @@ module gameLogic {
 
   export function getInitialState(): IState {
     game.current_buff[0] = game.current_buff[1] = '';
-    return {board: getInitialBoards(), delta: null, gameOver: false};
+    gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
+    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: playerTurnCount};
   }
 
   export function getRandomPosition(): number[] {
@@ -221,12 +222,13 @@ module gameLogic {
     }
 
     let my_turn_count: number = gameLogic.playerTurnCount[game.yourPlayerIndex()];
-    if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
+    if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
       gameLogic.spawnPowerUps(boardsAfterMove);
     }
+    gameLogic.playerTurnCount[game.yourPlayerIndex()] += 1;
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
-    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver};
+    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
   }
 

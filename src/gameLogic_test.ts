@@ -14,7 +14,7 @@ describe("In TicTacToe", function() {
       row: number,
       col: number,
       moveType: string): void {
-    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false} : null;
+    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: null} : null;
     // We expect an exception to be thrown :)
     let didThrowException = false;
     try {
@@ -40,9 +40,9 @@ describe("In TicTacToe", function() {
     let expectedMove:IMove = {
         turnIndex: turnIndexAfterMove,
         endMatchScores: endMatchScores,
-        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: false}
+        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: false, turnCounts: null}
       };
-    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false} : null;
+    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: null} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
     expect(angular.equals(move, expectedMove)).toBe(true);
   }
@@ -74,7 +74,8 @@ describe("In TicTacToe", function() {
           ['', '', ''],
           ['', '', '']]],
           delta: null,
-          gameOver: false}
+          gameOver: false,
+          turnCounts: null}
       };
     expect(angular.equals(move, expectedMove)).toBe(true);
   });

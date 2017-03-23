@@ -153,6 +153,7 @@ module game {
     }
     game.prev_turn_index = game.turn_index;
     game.turn_index = params.turnIndex;
+    gameLogic.playerTurnCount = state.turnCounts;
 
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
@@ -205,7 +206,6 @@ module game {
       }
       gameService.communityMove(myProposal, move);
     }
-    gameLogic.playerTurnCount[yourPlayerIndex()] += 1;
   }
 
   function isFirstMove() {
@@ -289,7 +289,8 @@ module game {
   }
 
   export function firstMove(): boolean {
-      return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
+  	if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
+    return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
   }
 
   export function shouldSlowlyAppear(row: number, col: number): boolean {
