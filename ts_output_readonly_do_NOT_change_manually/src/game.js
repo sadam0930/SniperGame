@@ -144,6 +144,9 @@ var game;
         if (params.endMatchScores != null) {
             game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
         }
+        else {
+            game.gameWinner = null;
+        }
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
         // We calculate the AI move only after the animation finishes,
@@ -294,6 +297,10 @@ var game;
         return (yourPlayerIndex() == 1);
     }
     game.isP2 = isP2;
+    function isGameOver() {
+        return (game.currentUpdateUI.state.gameOver);
+    }
+    game.isGameOver = isGameOver;
 })(game || (game = {}));
 // CONTROLLER
 var app = angular.module('myApp', ['gameServices']);
@@ -329,7 +336,7 @@ app.controller('MainController', ['$scope', '$rootScope', function ($scope, $roo
             });
         };
         $scope.pressed_attack_button = function () {
-            if (game.firstMove())
+            if (game.firstMove() && !game.isGameOver())
                 return;
             $scope.$apply(function () {
                 $scope.is_attacking = true;
@@ -337,7 +344,7 @@ app.controller('MainController', ['$scope', '$rootScope', function ($scope, $roo
             });
         };
         $scope.pressed_move_button = function () {
-            if (game.firstMove())
+            if (game.firstMove() && !game.isGameOver())
                 return;
             $scope.$apply(function () {
                 $scope.is_moving = true;
