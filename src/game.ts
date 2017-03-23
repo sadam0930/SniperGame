@@ -125,6 +125,14 @@ module game {
     return '';
   }
 
+  export function isGrenade(): boolean {
+  	return (current_buff[game.yourPlayerIndex()] === 'grenade');
+  }
+
+  export function isAirStrike(): boolean {
+  	return (current_buff[game.yourPlayerIndex()] === 'air strike');
+  }
+  
   export let gameWinner: number = null;
 
   export function updateUI(params: IUpdateUI): void {
