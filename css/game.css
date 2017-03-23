@@ -367,8 +367,11 @@ body {
   position: absolute;
   display: inline-block;
   width: 10%;
-  right: 0;
+  right: 2%;
   background-color: dimgrey;
+}
+.hints .btn{
+  padding: 22% 0%;
 }
 #help{
   top: 8%;
@@ -377,16 +380,19 @@ body {
   color: yellow;
 }
 #buff{
-  top: 16%;
+  top: 17%;
 }
 .btn-buff{
-  background-image: url("../img/missile.png");
-  /*background-image: url("../img/grenade.png");*/
   background-repeat: no-repeat;
   background-position: center;
   background-size: 50%
 }
-
+.btn-buff.grenade{
+  background-image: url("../img/grenade.png");
+}
+.btn-buff.missile{
+  background-image: url("../img/missile.png");
+}
 /* Manipulate size for screen size */
 @media only screen and (max-device-width:1025px){
    /* default iPad Pro screens */

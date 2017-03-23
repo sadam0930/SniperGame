@@ -152,7 +152,8 @@
         		<a href="#" class="btn btn-help">?</a>
         	</div>
         	<div id="buff" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_buff()" ng-if=" game.hasBuff() !== '' && game.gameWinner == null ">
-        		<a href="#" class="btn btn-buff">&nbsp</a>
+        		<a href="#" class="btn btn-buff grenade" ng-if="game.isGrenade()">&nbsp</a>
+        		<a href="#" class="btn btn-buff missile" ng-if="game.isAirStrike()">&nbsp</a>
         	</div>
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
