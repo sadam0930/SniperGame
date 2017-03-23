@@ -123,6 +123,14 @@ var game;
         return '';
     }
     game.buffDescription = buffDescription;
+    function isGrenade() {
+        return (game.current_buff[game.yourPlayerIndex()] === 'grenade');
+    }
+    game.isGrenade = isGrenade;
+    function isAirStrike() {
+        return (game.current_buff[game.yourPlayerIndex()] === 'air strike');
+    }
+    game.isAirStrike = isAirStrike;
     game.gameWinner = null;
     function updateUI(params) {
         log.info("Game got updateUI:", params);
