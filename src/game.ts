@@ -306,7 +306,7 @@ module game {
   }
 
   export function isGameOver(): boolean {
-    return (currentUpdateUI.state.gameOver);
+    return (game.gameWinner !== null);
   }
 
 }
