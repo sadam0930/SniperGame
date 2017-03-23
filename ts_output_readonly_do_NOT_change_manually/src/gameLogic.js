@@ -32,7 +32,6 @@ var gameLogic;
         // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
         // let p2_pos = getRandomPosition();
         // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
-        gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
@@ -49,7 +48,8 @@ var gameLogic;
     gameLogic.getBlankBoard = getBlankBoard;
     function getInitialState() {
         game.current_buff[0] = game.current_buff[1] = '';
-        return { board: getInitialBoards(), delta: null, gameOver: false };
+        gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
+        return { board: getInitialBoards(), delta: null, gameOver: false, turnCounts: gameLogic.playerTurnCount };
     }
     gameLogic.getInitialState = getInitialState;
     function getRandomPosition() {
@@ -204,11 +204,12 @@ var gameLogic;
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
         var my_turn_count = gameLogic.playerTurnCount[game.yourPlayerIndex()];
-        if ((my_turn_count > 0) && (my_turn_count % 2 == 0) && game.buffs_enabled) {
+        if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
             gameLogic.spawnPowerUps(boardsAfterMove);
         }
+        gameLogic.playerTurnCount[game.yourPlayerIndex()] += 1;
         var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
-        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver };
+        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: gameLogic.playerTurnCount };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;
