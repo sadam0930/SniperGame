@@ -298,7 +298,7 @@ var game;
     }
     game.isP2 = isP2;
     function isGameOver() {
-        return (game.currentUpdateUI.state.gameOver);
+        return (game.gameWinner !== null);
     }
     game.isGameOver = isGameOver;
 })(game || (game = {}));
