@@ -298,7 +298,9 @@ var game;
     }
     game.isP2 = isP2;
     function isGameOver() {
-        return (game.gameWinner !== null);
+        if (isFirstMove() || (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1))
+            return;
+        return (game.currentUpdateUI.state.gameOver);
     }
     game.isGameOver = isGameOver;
 })(game || (game = {}));
