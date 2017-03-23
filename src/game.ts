@@ -306,7 +306,8 @@ module game {
   }
 
   export function isGameOver(): boolean {
-    return (game.gameWinner !== null);
+    if (isFirstMove() || (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)) return;
+    return (currentUpdateUI.state.gameOver);
   }
 
 }
