@@ -359,7 +359,6 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   };
 
   $scope.pressed_move_button = function() {
-    if (game.firstMove() && !game.isGameOver()) return;
     $scope.$apply(function() {
       $scope.is_moving = true;
       $scope.is_attacking = false;
