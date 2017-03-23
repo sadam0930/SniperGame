@@ -212,6 +212,7 @@ body {
     width: 175px;
     height: 175px;
     border-radius: 100px;
+    border: 2px black outset;
     background-color: #1e5a1d;
     position: fixed;
     overflow: hidden;
