@@ -148,6 +148,8 @@ module game {
     }
     if (params.endMatchScores != null) {
       game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
+    } else {
+      game.gameWinner = null;
     }
     game.prev_turn_index = game.turn_index;
     game.turn_index = params.turnIndex;
@@ -296,11 +298,15 @@ module game {
   }
 
   export function isP1(): boolean {
-    return (yourPlayerIndex() == 0)
+    return (yourPlayerIndex() == 0);
   }
 
   export function isP2(): boolean {
-    return (yourPlayerIndex() == 1)
+    return (yourPlayerIndex() == 1);
+  }
+
+  export function isGameOver(): boolean {
+    return (currentUpdateUI.state.gameOver);
   }
 
 }
@@ -345,7 +351,7 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   };
 
   $scope.pressed_attack_button = function() {
-    if (game.firstMove()) return;
+    if (game.firstMove() && !game.isGameOver()) return;
     $scope.$apply(function() {
       $scope.is_attacking = true;
       $scope.is_moving = false;
@@ -353,7 +359,7 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   };
 
   $scope.pressed_move_button = function() {
-    if (game.firstMove()) return;
+    if (game.firstMove() && !game.isGameOver()) return;
     $scope.$apply(function() {
       $scope.is_moving = true;
       $scope.is_attacking = false;
