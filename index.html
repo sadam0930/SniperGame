@@ -26,43 +26,43 @@
 	    ng-controller="MainController"
 	    style="position:absolute; top:0; left:0; width:100%; height:100%;">
     	<div id="gameArea">
+<!-- STATUS BAR -->
+  			<div class="turnDisplay" id="topDisplay">
+  				<div ng-if=" game.gameWinner == null ">
+  					Choose a position to move to! <br>
+  				</div> 
+  			    <div ng-if=" game.gameWinner != null ">
+  					<text>Player {{game.gameWinner}} wins!</text>
+  				</div> 
+			   <!--  <div class="buff" ng-if=" game.hasBuff() !== '' && game.gameWinner == null ">	        
+			        You have a {{game.hasBuff()}}! <br> {{game.buffDescription()}}
+			    </div> -->
+		    </div>
 <!-- MOVE BOARD -->
       		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
-	<!-- STATUS BAR -->
-      			<div class="turnDisplay" id="topDisplay">
-      				<div ng-if=" game.gameWinner == null ">
-      					Choose a position to move to! <br>
-      				</div> 
-      			    <div ng-if=" game.gameWinner != null ">
-      					<text>Player {{game.gameWinner}} wins!</text>
-      				</div> 
-				    <div ng-if=" game.hasBuff() !== '' && game.gameWinner == null ">	        
-				        You have a {{game.hasBuff()}}! <br> {{game.buffDescription()}}
-				    </div>
-			    </div>
-<!-- BUILDING -->
+				<!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
-<!-- INNER BUILDING -->
+					<!-- INNER BUILDING -->
       				<div class="windowContainer">	
-<!-- ROWS -->
+						<!-- ROWS -->
 		        		<div ng-repeat="row in num_rows_as_list" style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
-<!-- COLUMNS -->
+							<!-- COLUMNS -->
 		          			<div ng-repeat="col in num_cols_as_list" class="col" style="width:{{col_size}}%;" id="{{'moveBoard' + row + 'x' + col}}">
-<!-- WINDOW EFFECTS -->
-	<!-- WINDOW PANE -->
+								<!-- WINDOW EFFECTS -->
+								<!-- WINDOW PANE -->
 		                		<a href="#" class="window blank" ng-if="game.isBlank(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
-	<!-- BROKEN GLASS -->
+								<!-- BROKEN GLASS -->
 			                	<a href="#" class="window broken" ng-if="game.isBroken(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
-	<!-- CHARACTER MARKER -->
+								<!-- CHARACTER MARKER -->
 			                	<a href="#" class="window player" ng-if="game.isPos(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
-	<!-- DEAD CHARACTER -->
+								<!-- DEAD CHARACTER -->
 								<a href="#" class="window deadPlayer" ng-if="game.isDead(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
-	<!-- SUPPLY CRATE -->
+								<!-- SUPPLY CRATE -->
 								<a href="#" class="window supplyCrate" ng-if="game.isBuff(2, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 		              		</div>
 			    		</div>
 			    	</div>
-<!-- GROUND FLOOR / DOOR -->
+					<!-- GROUND FLOOR / DOOR -->
 			    	<div class="groundFloor">
 			    		<div class="graffitiContainer">
 			    			<div class="graffiti p1" ng-if="game.isP1()"></div>
@@ -95,37 +95,25 @@
 			</div>
 <!-- ATTACK BOARD -->
 	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
-	<!-- STATUS BAR -->
-      			<div class="turnDisplay">
-      				<div ng-if=" game.gameWinner == null ">
-      					Choose a position to attack! <br>
-      				</div> 
-      			    <div ng-if=" game.gameWinner != null ">
-      					<text>Player {{game.gameWinner}} wins!</text>
-      				</div> 
-				    <div ng-if=" game.hasBuff() !== '' && game.gameWinner == null ">	        
-				        You have a {{game.hasBuff()}}! <br> {{game.buffDescription()}}
-				    </div>
-			    </div>
-<!-- BUILDING -->
+				<!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
-<!-- INNER BUILDING -->
+					<!-- INNER BUILDING -->
       				<div class="windowContainer">	
-<!-- ROWS -->
+						<!-- ROWS -->
 		        		<div ng-repeat="row in num_rows_as_list" style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
-<!-- COLUMNS -->
+							<!-- COLUMNS -->
 		          			<div ng-repeat="col in num_cols_as_list" class="col" style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
-<!-- WINDOW EFFECTS -->
-	<!-- WINDOW PANE -->
+							<!-- WINDOW EFFECTS -->
+								<!-- WINDOW PANE -->
 		                		<a href="#" class="window blank" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
-	<!-- BROKEN GLASS -->
+								<!-- BROKEN GLASS -->
 			                	<a href="#" class="window broken" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
-	<!-- DEAD CHARACTER -->
+								<!-- DEAD CHARACTER -->
 								<a href="#" class="window deadPlayer" ng-if="game.isDead(0, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 		          			</div>
 			    		</div>
 			    	</div>
-<!-- GROUND FLOOR / DOOR -->
+					<!-- GROUND FLOOR / DOOR -->
 			    	<div class="groundFloor">
 			    		<div class="graffitiContainer">
 			    			<div class="graffiti p1" ng-if="game.isP1()"></div>
@@ -138,10 +126,11 @@
 			    	</div>
 				</div>
 			</div>
-<!-- INTRODUCTION DISPLAY -->
-	    	<div id="introduction" style="display:none">
+<!-- HINT DISPLAY -->
+	    	<div id="hint" style="display:none">
         		<div class="turnDisplay">
-        			<text>
+        			<!-- INTRODUCTION -->
+        			<text class="introduction" ng-if="show_intro">
         				Welcome to Snipe City.<br/><br/>
         				Your mission is to locate and kill the 
         				enemy sniper located in the building across from
@@ -150,12 +139,21 @@
         				avoid being hit and to pick up buffs when they spawn. <br/><br/>
         				Good luck, Sergeant!
         			</text>
-        			<div class="btn-container" onclick="toggleIntroduction();"> 
+        			<!-- BUFF INFO -->
+        			<text class="buff_info" ng-if="show_buff_info">
+        				You have a {{game.hasBuff()}}! <br> {{game.buffDescription()}}
+        			</text>
+        			<div class="btn-container" onclick="toggleHint();" ng-click="clear_hint()"> 
 			        	<a href="#" class="btn btn-close">Close</a>
 			       	</div>
         		</div>
         	</div>
-        	<div id="help" class="btn-container" onclick="toggleIntroduction()"><a href="#" class="btn btn-help">?</a></div>
+        	<div id="help" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_intro()">
+        		<a href="#" class="btn btn-help">?</a>
+        	</div>
+        	<div id="buff" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_buff()" ng-if=" game.hasBuff() !== '' && game.gameWinner == null ">
+        		<a href="#" class="btn btn-buff">&nbsp</a>
+        	</div>
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
@@ -186,9 +184,9 @@
 	    </div>
 	    <script>
 	    	// UI Helper Functions //
-			function toggleIntroduction() {
-			    let intro = document.getElementById("introduction");
-    			intro.style.display = (intro.style.display == "none") ? "inherit" : "none";
+			function toggleHint() {
+			    let hint = document.getElementById("hint");
+    			hint.style.display = (hint.style.display == "none") ? "inherit" : "none";
 			}
 	    </script>
   	</body>

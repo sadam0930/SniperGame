@@ -312,6 +312,29 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   $scope.board_size = .8;
   $scope.is_attacking = false;
   $scope.is_moving = true;
+  $scope.show_intro = false;
+  $scope.show_buff_info = false;
+
+  $scope.pressed_intro = function() {
+    $scope.$apply(function() {
+      $scope.show_buff_info = false;
+      $scope.show_intro = true;
+    });
+  };
+
+  $scope.pressed_buff = function() {
+    $scope.$apply(function() {
+      $scope.show_intro = false;
+      $scope.show_buff_info = true;
+    });
+  };
+
+  $scope.clear_hint = function() {
+    $scope.$apply(function() {
+      $scope.show_intro = false;
+      $scope.show_buff_info = false;
+    });
+  };
 
   $scope.pressed_attack_button = function() {
     if (game.firstMove()) return;

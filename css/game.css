@@ -37,6 +37,12 @@ body {
   background-image: url(../img/camo.png);
   border: 1px solid black;
 }
+#topDisplay{
+  position: absolute;
+  display: inline-block;
+  z-index: 50;
+  width: 100%;
+}
 .turnDisplay {
   text-align: center;
   padding: 2%;
@@ -102,6 +108,7 @@ body {
   background-image: url("../img/city.png");
   background-repeat: no-repeat;
   background-size: 150% 100%;
+  top: 2%;
 }
 #attackBoard,
 #attackBoard a {
@@ -333,37 +340,50 @@ body {
   100% { transform: translate(-600%, 150%); } 
 }
 /* End Helicopter */
-#introduction{
+#hint{
   width: 90%;
   position: absolute;
   top: 15%;
   margin: 5%;
+  z-index: 200;
 }
-#introduction .turnDisplay{
+#hint .turnDisplay{
   padding: 5%;
 }
-#introduction text{
+#hint text{
   white-space: inherit;
   animation: none;
   opacity: 0.5;
 }
-#introduction .btn-container{
+#hint .btn-container{
   float: none;
   margin: 5% 25% 0%;
 }
 .btn-close{
   background-color: darkslategrey;
 }
-#help{
+.hints{
   position: absolute;
   display: inline-block;
-  top: 8%;
   width: 10%;
   right: 0;
   background-color: dimgrey;
 }
+#help{
+  top: 8%;
+}
 .btn-help{
   color: yellow;
+}
+#buff{
+  top: 16%;
+}
+.btn-buff{
+  background-image: url("../img/missile.png");
+  /*background-image: url("../img/grenade.png");*/
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 50%
 }
 
 /* Manipulate size for screen size */
