@@ -200,6 +200,7 @@ var game;
             gameService.communityMove(myProposal, move);
         }
     }
+    game.makeMove = makeMove;
     function isFirstMove() {
         return !game.currentUpdateUI.state;
     }

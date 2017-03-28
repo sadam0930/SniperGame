@@ -1,53 +1,52 @@
 module aiService {
-  /** Returns the move that the computer player should do for the given state in move. */
-  export function findComputerMove(move: IMove): IMove {
-    return createComputerMove(move,
-        // at most 1 second for the AI to choose a move (but might be much quicker)
-        {millisecondsLimit: 1000});
-  }
+    var aiState: IUpdateUI;
+    var cell : number[];
 
-  /**
-   * Returns all the possible moves for the given state and turnIndexBeforeMove.
-   * Returns an empty array if the game is over.
-   */
-  export function getPossibleMoves(state: IState, turnIndexBeforeMove: number): IMove[] {
-    let possibleMoves: IMove[] = [];
-    for (let i = 0; i < gameLogic.ROWS; i++) {
-      for (let j = 0; j < gameLogic.COLS; j++) {
-        try {
-          possibleMoves.push(gameLogic.createMove(state, i, j, 'attack', turnIndexBeforeMove));
-        } catch (e) {
-          // The cell in that position was full.
-        }
+    export function generateComputerMove(currentUpdateUI: IUpdateUI): void {
+        aiState = currentUpdateUI;
+        cell[0] = cell[1] = 0;
+        makeComputerMove();
+    }
+  
+
+  function checkBoardForBuff() : boolean {
+
+      let moveBoard: Board = aiState.state.board[(aiState.turnIndex + 2)];
+
+      for (let i = 0; i < gameLogic.ROWS; i++) {
+          for (let j = 0; j < gameLogic.COLS; j++) {
+              if (game.isABuff(moveBoard[i][j])) {
+                  cell[0] = i;
+                  cell[1] = j;
+                  return true;
+              }
+          }
       }
+      return false;
+  }
+
+  function getMoveType() : string[] {
+    if (checkBoardForBuff() != null) {
+
     }
-    return possibleMoves;
   }
 
-  /**
-   * Returns the move that the computer player should do for the given state.
-   * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
-   * and it has either a millisecondsLimit or maxDepth field:
-   * millisecondsLimit is a time limit, and maxDepth is a depth limit.
-   */
-  export function createComputerMove(
-      move: IMove, alphaBetaLimits: IAlphaBetaLimits): IMove {
-    // We use alpha-beta search, where the search states are TicTacToe moves.
-    return alphaBetaService.alphaBetaDecision(
-        move, move.turnIndex, getNextStates, getStateScoreForIndex0, null, alphaBetaLimits);
+  export function makeComputerMove(): void {
+    
+    let moveType : string;
+    let computerMove = gameLogic.createMove(aiState.state, 
+                                            cell[0], cell[1], moveType, 
+                                            aiState.turnIndex);
+    game.makeMove(computerMove);
   }
 
-  function getStateScoreForIndex0(move: IMove, playerIndex: number): number {
-    let endMatchScores = move.endMatchScores;
-    if (endMatchScores) {
-      return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-          : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-          : 0;
-    }
-    return 0;
-  }
-
-  function getNextStates(move: IMove, playerIndex: number): IMove[] {
-    return getPossibleMoves(move.state, playerIndex);
-  }
 }
+
+
+
+
+
+
+
+
+
