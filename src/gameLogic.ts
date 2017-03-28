@@ -75,7 +75,7 @@ module gameLogic {
   }
 
   export function getRandomIntInclusive(maxVal: number): number {
-    return Math.floor(Math.random() * (maxVal));
+    return Math.floor(Math.random() * (maxVal)); // returns 0 to maxVal - 1
   }
 
   /**
