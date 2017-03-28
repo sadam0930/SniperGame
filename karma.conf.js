@@ -6,6 +6,7 @@ module.exports = function(config) {
     files : [
       'lib/angular.js',
       'lib/turnBasedServices.4.js',
+      'ts_output_readonly_do_NOT_change_manually/src/game.js',
       'ts_output_readonly_do_NOT_change_manually/src/gameLogic.js',
       'ts_output_readonly_do_NOT_change_manually/src/aiService.js',
       'ts_output_readonly_do_NOT_change_manually/src/gameLogic_test.js',

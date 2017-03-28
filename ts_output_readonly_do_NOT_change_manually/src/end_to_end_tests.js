@@ -50,7 +50,7 @@ var JasmineOverrides;
         browser.pause();
     });
 })(JasmineOverrides || (JasmineOverrides = {}));
-describe('TicTacToe', function () {
+describe('SnipeCity', function () {
     browser.driver.manage().window().setSize(400, 600);
     browser.driver.manage().window().setPosition(10, 10);
     var checkNoErrorInLogsIntervalId = null;
