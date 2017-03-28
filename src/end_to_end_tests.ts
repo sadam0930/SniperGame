@@ -48,11 +48,11 @@ module JasmineOverrides {
   });
 }
 
-describe('TicTacToe', function() {
+describe('SnipeCity', function() {
   browser.driver.manage().window().setSize(400, 600);
   browser.driver.manage().window().setPosition(10, 10);
   
-  let checkNoErrorInLogsIntervalId: number = null;
+  let checkNoErrorInLogsIntervalId: NodeJS.Timer = null;
   beforeEach(()=>{
     console.log('\n\n\nRunning test: ', lastTest.fullName);
     checkNoErrorInLogsIntervalId = setInterval(expectEmptyBrowserLogs, 100);
