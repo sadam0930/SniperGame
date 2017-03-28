@@ -65,24 +65,24 @@ var gameLogic;
      * Compares the coordinates the player attacked
      * with the opponents position board
      */
-    function getWinner(row, col, isP1Turn, boards, attackType) {
-        var opponentMoveBoard = (1 - game.yourPlayerIndex() + 2);
+    function getWinner(row, col, turnIndexBeforeMove, boards, attackType) {
+        var opponentMoveBoard = (1 - turnIndexBeforeMove + 2);
         if (attackType === '') {
             if (boards[opponentMoveBoard][row][col] === 'P')
-                return [('P' + (game.yourPlayerIndex() + 1)), 'c'];
+                return [('P' + (turnIndexBeforeMove + 1)), 'c'];
         }
         else if (attackType === 'grenade') {
             if (boards[opponentMoveBoard][row][col - 1] === 'P')
-                return [('P' + (game.yourPlayerIndex() + 1)), ('' + (col - 1))];
+                return [('P' + (turnIndexBeforeMove + 1)), ('' + (col - 1))];
             else if (boards[opponentMoveBoard][row][col] === 'P')
-                return [('P' + (game.yourPlayerIndex() + 1)), ('' + (col))];
+                return [('P' + (turnIndexBeforeMove + 1)), ('' + (col))];
             else if (boards[opponentMoveBoard][row][col + 1] === 'P')
-                return [('P' + (game.yourPlayerIndex() + 1)), ('' + (col + 1))];
+                return [('P' + (turnIndexBeforeMove + 1)), ('' + (col + 1))];
         }
         else if (attackType === 'air strike') {
             for (var i = 0; i < gameLogic.ROWS; i++) {
                 if (boards[opponentMoveBoard][i][col] === 'P')
-                    return [('P' + (game.yourPlayerIndex() + 1)), ('' + i)];
+                    return [('P' + (turnIndexBeforeMove + 1)), ('' + i)];
             }
         }
         return ['', ''];
@@ -91,11 +91,11 @@ var gameLogic;
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
-    function spawnPowerUps(boards) {
-        if (game.yourPlayerIndex() === -1)
+    function spawnPowerUps(boards, turnIndexBeforeMove) {
+        if (turnIndexBeforeMove === -1)
             return;
         var safe_guard_counter = 0;
-        var buff_type_num = gameLogic.getRandomIntInclusive(2);
+        var buff_type_num = getRandomIntInclusive(2);
         var buff_type = '';
         if (buff_type_num == 0)
             buff_type = 'grenade';
@@ -105,11 +105,11 @@ var gameLogic;
             log.info("spawnPowerUps() buff_type_num out of range.");
             return;
         }
-        var move_board = (2 + game.yourPlayerIndex()); // move board where buff is visible
-        var buff_pos = gameLogic.getRandomPosition();
+        var move_board = (2 + turnIndexBeforeMove); // move board where buff is visible
+        var buff_pos = getRandomPosition();
         var found_free_pos = false;
         while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
-            buff_pos = gameLogic.getRandomPosition();
+            buff_pos = getRandomPosition();
             if (safe_guard_counter > 30) {
                 for (var i = 0; i < gameLogic.ROWS; i++) {
                     for (var j = 0; j < gameLogic.COLS; j++) {
@@ -142,7 +142,7 @@ var gameLogic;
         }
         var boards = stateBeforeMove.board;
         // SPECIFIC BOARD WE'RE EDITING
-        var playerID = game.yourPlayerIndex();
+        var playerID = turnIndexBeforeMove;
         var board;
         var isP1Turn = (playerID === 0);
         var isP2Turn = !isP1Turn;
@@ -157,11 +157,11 @@ var gameLogic;
             throw new Error("One can only make a move in an empty position!");
         if (stateBeforeMove.gameOver)
             throw new Error("Game Over!");
-        if (game.firstMove() && ('attack' === moveType))
+        if ((gameLogic.playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType))
             throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
         var attackType = game.current_buff[playerID];
-        var winner = getWinner(row, col, isP1Turn, boards, attackType);
+        var winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
         var endMatchScores;
         endMatchScores = null;
         var turnIndex;
@@ -203,11 +203,11 @@ var gameLogic;
                 game.current_buff[playerID] = boardsAfterMove[playerID + 2][row][col];
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
-        var my_turn_count = gameLogic.playerTurnCount[game.yourPlayerIndex()];
+        var my_turn_count = gameLogic.playerTurnCount[turnIndexBeforeMove];
         if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
-            gameLogic.spawnPowerUps(boardsAfterMove);
+            spawnPowerUps(boardsAfterMove, turnIndexBeforeMove);
         }
-        gameLogic.playerTurnCount[game.yourPlayerIndex()] += 1;
+        gameLogic.playerTurnCount[turnIndexBeforeMove] += 1;
         var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
         var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: gameLogic.playerTurnCount };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
@@ -229,7 +229,7 @@ var gameLogic;
     }
     gameLogic.createInitialMove = createInitialMove;
     function forSimpleTestHtml() {
-        var move = gameLogic.createMove(null, 0, 0, 'attack', 0);
+        var move = createMove(null, 0, 0, 'attack', 0);
         log.log("move=", move);
     }
     gameLogic.forSimpleTestHtml = forSimpleTestHtml;

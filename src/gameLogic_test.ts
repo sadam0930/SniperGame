@@ -44,6 +44,7 @@ describe("In SnipeCity", function() {
       };
     let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: null} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
+    console.log(move);
     expect(angular.equals(move, expectedMove)).toBe(true);
   }
 
@@ -84,28 +85,32 @@ describe("In SnipeCity", function() {
     expect(angular.equals(move, expectedMove)).toBe(true);
   });
   
-  // it("P1 attacking in 0x0 from initial state", function() {
-  //   expectMove(P1_TURN, null, 0, 0, 'attack', '',
-  //     [[['B', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', '', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['B', '', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']]], 
+  // it("P1 moving in 0x0 from initial state", function() {
+  //   expectMove(P1_TURN, null, 0, 0, 'move', '',
+  //     [[['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', '']], 
+  //     [['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', '']],
+  //     [['P', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', '']],
+  //     [['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', ''],
+  //     ['', '', '', '', '']]], 
   //     P2_TURN, NO_ONE_WINS);
   // });
 
