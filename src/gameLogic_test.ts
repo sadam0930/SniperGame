@@ -36,14 +36,16 @@ describe("In SnipeCity", function() {
       attackType: string,
       boardAfterMove: Board[],
       turnIndexAfterMove: number,
-      endMatchScores: number[]): void {
+      endMatchScores: number[],
+      turnCounts: number[]): void {
     let expectedMove:IMove = {
         turnIndex: turnIndexAfterMove,
         endMatchScores: endMatchScores,
-        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: false, turnCounts: null}
+        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: false, turnCounts: turnCounts}
       };
     let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: null} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
+    console.log(move);
     expect(angular.equals(move, expectedMove)).toBe(true);
   }
 
@@ -84,30 +86,34 @@ describe("In SnipeCity", function() {
     expect(angular.equals(move, expectedMove)).toBe(true);
   });
   
-  // it("P1 attacking in 0x0 from initial state", function() {
-  //   expectMove(P1_TURN, null, 0, 0, 'attack', '',
-  //     [[['B', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', '', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['B', '', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']]], 
-  //     P2_TURN, NO_ONE_WINS);
-  // });
+  it("P1 moving in 0x0 from initial state", function() {
+    expectMove(P1_TURN, null, 0, 0, 'move', '',
+      [[['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']], 
+      [['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['P', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']]], 
+      P2_TURN, NO_ONE_WINS, [1,0]);
+  });
 
   // it("P2 attacking in 0x1", function() {
   //   expectMove(P2_TURN,
