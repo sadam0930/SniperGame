@@ -1,52 +1,116 @@
 var aiService;
 (function (aiService) {
-    /** Returns the move that the computer player should do for the given state in move. */
-    function findComputerMove(move) {
-        return createComputerMove(move, 
-        // at most 1 second for the AI to choose a move (but might be much quicker)
-        { millisecondsLimit: 1000 });
+    var aiState = null;
+    var cell = [];
+    var moveType = '';
+    var getBuff = false;
+    function generateComputerMove(currentUpdateUI) {
+        aiState = currentUpdateUI;
+        cell[0] = cell[1] = -1;
+        moveType = '';
+        getBuff = false;
+        getMoveType();
+        if (!getBuff)
+            getCells();
+        if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
+            log.info("Failed to generate computer move.");
+            log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
+            return;
+        }
+        log.info("Computer's move: " + moveType, cell);
+        makeComputerMove();
     }
-    aiService.findComputerMove = findComputerMove;
-    /**
-     * Returns all the possible moves for the given state and turnIndexBeforeMove.
-     * Returns an empty array if the game is over.
-     */
-    function getPossibleMoves(state, turnIndexBeforeMove) {
-        var possibleMoves = [];
+    aiService.generateComputerMove = generateComputerMove;
+    function checkBoardForBuff() {
+        var moveBoard = aiState.state.board[(aiState.turnIndex + 2)];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
-                try {
-                    possibleMoves.push(gameLogic.createMove(state, i, j, 'attack', turnIndexBeforeMove));
-                }
-                catch (e) {
+                if (game.isABuff(moveBoard[i][j])) {
+                    cell[0] = i;
+                    cell[1] = j;
+                    getBuff = true;
+                    return true;
                 }
             }
         }
-        return possibleMoves;
+        return false;
     }
-    aiService.getPossibleMoves = getPossibleMoves;
-    /**
-     * Returns the move that the computer player should do for the given state.
-     * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
-     * and it has either a millisecondsLimit or maxDepth field:
-     * millisecondsLimit is a time limit, and maxDepth is a depth limit.
-     */
-    function createComputerMove(move, alphaBetaLimits) {
-        // We use alpha-beta search, where the search states are TicTacToe moves.
-        return alphaBetaService.alphaBetaDecision(move, move.turnIndex, getNextStates, getStateScoreForIndex0, null, alphaBetaLimits);
-    }
-    aiService.createComputerMove = createComputerMove;
-    function getStateScoreForIndex0(move, playerIndex) {
-        var endMatchScores = move.endMatchScores;
-        if (endMatchScores) {
-            return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-                : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-                    : 0;
+    function canMove() {
+        var board = aiState.state.board[(aiState.turnIndex + 2)];
+        for (var i = 0; i < gameLogic.ROWS; i++) {
+            for (var j = 0; j < gameLogic.COLS; j++) {
+                if (board[i][j] === '')
+                    return true;
+            }
         }
-        return 0;
+        return false;
     }
-    function getNextStates(move, playerIndex) {
-        return getPossibleMoves(move.state, playerIndex);
+    function canAttack() {
+        var board = aiState.state.board[(aiState.turnIndex)];
+        for (var i = 0; i < gameLogic.ROWS; i++) {
+            for (var j = 0; j < gameLogic.COLS; j++) {
+                if (board[i][j] === '')
+                    return true;
+            }
+        }
+        return false;
     }
+    function getCells() {
+        if (moveType === '')
+            return;
+        var safe_guard_counter = 0;
+        var board = (moveType === 'move') ?
+            aiState.state.board[aiState.turnIndex + 2] :
+            aiState.state.board[aiState.turnIndex];
+        var pos = gameLogic.getRandomPosition();
+        while (board[pos[0]][pos[1]] !== '') {
+            pos = gameLogic.getRandomPosition();
+            if (safe_guard_counter > 30) {
+                for (var i = 0; i < gameLogic.ROWS; i++) {
+                    for (var j = 0; j < gameLogic.COLS; j++) {
+                        if (board[i][j] === '') {
+                            cell[0] = i;
+                            cell[1] = j;
+                            return;
+                        }
+                    }
+                }
+                log.info("Error: Could not find an empty cell!");
+                return;
+            }
+            safe_guard_counter += 1;
+        }
+        cell[0] = pos[0];
+        cell[1] = pos[1];
+    }
+    function getMoveType() {
+        if (aiState.state.turnCounts[aiState.turnIndex] === 0)
+            moveType = 'move';
+        else if (checkBoardForBuff())
+            moveType = 'move';
+        else {
+            var move = canMove();
+            var attack = canAttack();
+            if (move && attack) {
+                var moveAsInt = (gameLogic.getRandomIntInclusive(10) + 1);
+                if (moveAsInt <= 3)
+                    moveType = 'move'; // 30% chance to move
+                else
+                    moveType = 'attack'; // 70% chance to attack
+            }
+            else if (!move && attack)
+                moveType = 'attack';
+            else if (move && !attack)
+                moveType = 'move';
+            else
+                log.info("Error: No moves available!");
+        }
+    }
+    function makeComputerMove() {
+        //stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number)
+        var computerMove = gameLogic.createMove(aiState.state, cell[0], cell[1], moveType, aiState.turnIndex);
+        game.makeMove(computerMove);
+    }
+    aiService.makeComputerMove = makeComputerMove;
 })(aiService || (aiService = {}));
 //# sourceMappingURL=aiService.js.map

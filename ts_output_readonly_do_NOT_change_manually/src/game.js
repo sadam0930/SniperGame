@@ -169,14 +169,15 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        var currentMove = {
-            endMatchScores: game.currentUpdateUI.endMatchScores,
-            state: game.currentUpdateUI.state,
-            turnIndex: game.currentUpdateUI.turnIndex,
-        };
-        var move = aiService.findComputerMove(currentMove);
-        log.info("Computer move: ", move);
-        makeMove(move);
+        // let currentMove:IMove = {
+        //   endMatchScores: currentUpdateUI.endMatchScores,
+        //   state: currentUpdateUI.state,
+        //   turnIndex: currentUpdateUI.turnIndex,
+        // }
+        // let move = aiService.findComputerMove(currentMove);
+        // log.info("Computer move: ", move);
+        // makeMove(move);
+        aiService.generateComputerMove(game.currentUpdateUI);
     }
     function makeMove(move) {
         if (game.didMakeMove) {
@@ -200,6 +201,7 @@ var game;
             gameService.communityMove(myProposal, move);
         }
     }
+    game.makeMove = makeMove;
     function isFirstMove() {
         return !game.currentUpdateUI.state;
     }

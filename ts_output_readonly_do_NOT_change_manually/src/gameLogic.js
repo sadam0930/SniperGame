@@ -57,7 +57,7 @@ var gameLogic;
     }
     gameLogic.getRandomPosition = getRandomPosition;
     function getRandomIntInclusive(maxVal) {
-        return Math.floor(Math.random() * (maxVal));
+        return Math.floor(Math.random() * (maxVal)); // returns 0 to maxVal - 1
     }
     gameLogic.getRandomIntInclusive = getRandomIntInclusive;
     /**

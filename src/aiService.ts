@@ -1,53 +1,114 @@
 module aiService {
-  /** Returns the move that the computer player should do for the given state in move. */
-  export function findComputerMove(move: IMove): IMove {
-    return createComputerMove(move,
-        // at most 1 second for the AI to choose a move (but might be much quicker)
-        {millisecondsLimit: 1000});
-  }
+    var aiState: IUpdateUI = null;
+    var cell: number[] = [];
+    var moveType: string = '';
+    var getBuff: boolean = false;
 
-  /**
-   * Returns all the possible moves for the given state and turnIndexBeforeMove.
-   * Returns an empty array if the game is over.
-   */
-  export function getPossibleMoves(state: IState, turnIndexBeforeMove: number): IMove[] {
-    let possibleMoves: IMove[] = [];
-    for (let i = 0; i < gameLogic.ROWS; i++) {
-      for (let j = 0; j < gameLogic.COLS; j++) {
-        try {
-          possibleMoves.push(gameLogic.createMove(state, i, j, 'attack', turnIndexBeforeMove));
-        } catch (e) {
-          // The cell in that position was full.
+    export function generateComputerMove(currentUpdateUI: IUpdateUI): void {
+        aiState = currentUpdateUI;
+        cell[0] = cell[1] = -1;
+        moveType = '';
+        getBuff = false;
+        getMoveType();
+        if (!getBuff) getCells();
+
+        if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
+            log.info("Failed to generate computer move.");
+            log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
+            return;
         }
+        log.info("Computer's move: " + moveType, cell);
+        makeComputerMove();
+    }
+
+  function checkBoardForBuff() : boolean {
+      let moveBoard: Board = aiState.state.board[(aiState.turnIndex + 2)];
+      for (let i = 0; i < gameLogic.ROWS; i++) {
+          for (let j = 0; j < gameLogic.COLS; j++) {
+              if (game.isABuff(moveBoard[i][j])) {
+                  cell[0] = i;
+                  cell[1] = j;
+                  getBuff = true;
+                  return true;
+              }
+          }
       }
-    }
-    return possibleMoves;
+      return false;
   }
 
-  /**
-   * Returns the move that the computer player should do for the given state.
-   * alphaBetaLimits is an object that sets a limit on the alpha-beta search,
-   * and it has either a millisecondsLimit or maxDepth field:
-   * millisecondsLimit is a time limit, and maxDepth is a depth limit.
-   */
-  export function createComputerMove(
-      move: IMove, alphaBetaLimits: IAlphaBetaLimits): IMove {
-    // We use alpha-beta search, where the search states are TicTacToe moves.
-    return alphaBetaService.alphaBetaDecision(
-        move, move.turnIndex, getNextStates, getStateScoreForIndex0, null, alphaBetaLimits);
+  function canMove(): boolean {
+      let board: Board = aiState.state.board[(aiState.turnIndex + 2)];
+      for (let i = 0; i < gameLogic.ROWS; i++) {
+          for (let j = 0; j < gameLogic.COLS; j++) {
+              if (board[i][j] === '') return true;
+          }
+      }
+      return false;
   }
 
-  function getStateScoreForIndex0(move: IMove, playerIndex: number): number {
-    let endMatchScores = move.endMatchScores;
-    if (endMatchScores) {
-      return endMatchScores[0] > endMatchScores[1] ? Number.POSITIVE_INFINITY
-          : endMatchScores[0] < endMatchScores[1] ? Number.NEGATIVE_INFINITY
-          : 0;
-    }
-    return 0;
+  function canAttack(): boolean {
+      let board: Board = aiState.state.board[(aiState.turnIndex)];
+      for (let i = 0; i < gameLogic.ROWS; i++) {
+          for (let j = 0; j < gameLogic.COLS; j++) {
+              if (board[i][j] === '') return true;
+          }
+      }
+      return false;
   }
 
-  function getNextStates(move: IMove, playerIndex: number): IMove[] {
-    return getPossibleMoves(move.state, playerIndex);
+  function getCells(): void {
+      if (moveType === '') return;
+      let safe_guard_counter: number = 0;
+      let board: Board = (moveType === 'move') ? 
+          aiState.state.board[aiState.turnIndex + 2] : 
+          aiState.state.board[aiState.turnIndex];
+      let pos: number[] = gameLogic.getRandomPosition();
+
+      while (board[pos[0]][pos[1]] !== '') {
+          pos = gameLogic.getRandomPosition();
+          if (safe_guard_counter > 30) {                    // Brute force check for a free cell
+              for (let i = 0; i < gameLogic.ROWS; i++) {
+                  for (let j = 0; j < gameLogic.COLS; j++) {
+                      if (board[i][j] === '') {
+                          cell[0] = i;
+                          cell[1] = j;
+                          return;
+                      }
+                  }
+              }
+              log.info("Error: Could not find an empty cell!");
+              return;
+          }
+          safe_guard_counter += 1;
+      }
+      cell[0] = pos[0];
+      cell[1] = pos[1];
   }
+
+  function getMoveType(): void {
+      if (aiState.state.turnCounts[aiState.turnIndex] === 0) moveType = 'move';
+      else if (checkBoardForBuff()) moveType = 'move';
+      else {
+          let move: boolean = canMove();
+          let attack: boolean = canAttack();
+          if (move && attack) {
+              let moveAsInt = (gameLogic.getRandomIntInclusive(10) + 1);
+              if (moveAsInt <= 3) moveType = 'move';     // 30% chance to move
+              else moveType = 'attack';                  // 70% chance to attack
+          }
+          else if (!move && attack) moveType = 'attack';
+          else if (move && !attack) moveType = 'move';
+          else log.info("Error: No moves available!");
+      }
+  }
+
+  export function makeComputerMove(): void {
+    //stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number)
+    
+      let computerMove = gameLogic.createMove(aiState.state, 
+                                              cell[0], cell[1], moveType, 
+                                              aiState.turnIndex);
+      game.makeMove(computerMove);
+  }
+
 }

@@ -175,17 +175,18 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    let currentMove:IMove = {
-      endMatchScores: currentUpdateUI.endMatchScores,
-      state: currentUpdateUI.state,
-      turnIndex: currentUpdateUI.turnIndex,
-    }
-    let move = aiService.findComputerMove(currentMove);
-    log.info("Computer move: ", move);
-    makeMove(move);
+    // let currentMove:IMove = {
+    //   endMatchScores: currentUpdateUI.endMatchScores,
+    //   state: currentUpdateUI.state,
+    //   turnIndex: currentUpdateUI.turnIndex,
+    // }
+    // let move = aiService.findComputerMove(currentMove);
+    // log.info("Computer move: ", move);
+    // makeMove(move);
+    aiService.generateComputerMove(currentUpdateUI);
   }
 
-  function makeMove(move: IMove) {
+  export function makeMove(move: IMove) {
     if (didMakeMove) { // Only one move per updateUI
       return;
     }

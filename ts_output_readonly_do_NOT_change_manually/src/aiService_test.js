@@ -8,7 +8,7 @@ describe("aiService", function () {
             endMatchScores: null,
             state: createStateFromBoard(board),
         };
-        return aiService.createComputerMove(move, { maxDepth: maxDepth });
+        // return aiService.createComputerMove(move, {maxDepth: maxDepth});
     }
     // it("getPossibleMoves returns exactly one cell", function() {
     //   let board =
