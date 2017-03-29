@@ -15,7 +15,6 @@ var game;
     game.proposals = null;
     game.yourPlayerInfo = null;
     game.buffs_enabled = true;
-    game.current_buff = [];
     game.prev_turn_index = null;
     game.turn_index = null;
     function init($rootScope_, $timeout_) {
@@ -108,27 +107,27 @@ var game;
     }
     game.isABuff = isABuff;
     function hasBuff() {
-        if (game.yourPlayerIndex() === -1)
+        if (yourPlayerIndex() === -1)
             return '';
-        return game.current_buff[yourPlayerIndex()];
+        return game.state.currentBuffs[yourPlayerIndex()];
     }
     game.hasBuff = hasBuff;
     function buffDescription(buffName) {
-        if (game.current_buff[yourPlayerIndex()] === 'grenade') {
+        if (game.state.currentBuffs[yourPlayerIndex()] === 'grenade') {
             return 'Your next attack will hit 3 windows!';
         }
-        else if (game.current_buff[yourPlayerIndex()] === 'air strike') {
+        else if (game.state.currentBuffs[yourPlayerIndex()] === 'air strike') {
             return 'Your next attack will destroy all windows in the selected column!';
         }
         return '';
     }
     game.buffDescription = buffDescription;
     function isGrenade() {
-        return (game.current_buff[game.yourPlayerIndex()] === 'grenade');
+        return (game.state.currentBuffs[yourPlayerIndex()] === 'grenade');
     }
     game.isGrenade = isGrenade;
     function isAirStrike() {
-        return (game.current_buff[game.yourPlayerIndex()] === 'air strike');
+        return (game.state.currentBuffs[yourPlayerIndex()] === 'air strike');
     }
     game.isAirStrike = isAirStrike;
     game.gameWinner = null;
