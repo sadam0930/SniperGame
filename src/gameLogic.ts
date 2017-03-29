@@ -171,6 +171,7 @@ module gameLogic {
     board = boards[boardIdx];
 
     // CHECK IF LEGAL MOVE
+    if (row > ROWS || row < 0 || col > COLS || col < 0) throw new Error("Cannot move outside of board!");
     if (board[row][col] == 'P' || board[row][col] == 'B') throw new Error("One can only make a move in an empty position!");
     if (stateBeforeMove.gameOver) throw new Error("Game Over!");
     if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
