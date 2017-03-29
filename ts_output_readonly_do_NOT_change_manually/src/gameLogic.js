@@ -152,6 +152,8 @@ var gameLogic;
             boardIdx = (playerID + 2);
         board = boards[boardIdx];
         // CHECK IF LEGAL MOVE
+        if (row > gameLogic.ROWS || row < 0 || col > gameLogic.COLS || col < 0)
+            throw new Error("Cannot move outside of board!");
         if (board[row][col] == 'P' || board[row][col] == 'B')
             throw new Error("One can only make a move in an empty position!");
         if (stateBeforeMove.gameOver)
