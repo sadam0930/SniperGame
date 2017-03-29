@@ -28,6 +28,7 @@
     "karma-coverage": "*",
     "karma-jasmine": "*",
     "load-grunt-tasks": "*",
+    "typescript": "*",
     "protractor": "*"
   },
   "scripts": {
