@@ -3,13 +3,13 @@ describe("aiService", function() {
     return {board: board, delta: null, gameOver: false, turnCounts: null};
   }
 
-  function createComputerMove(board: Board[], turnIndex: number, maxDepth: number): IMove {
+  function createComputerMove(board: Board[], turnIndex: number, maxDepth: number): void {
     let move: IMove = {
       turnIndex: turnIndex,
       endMatchScores: null,
       state: createStateFromBoard(board),
     };
-    return aiService.createComputerMove(move, {maxDepth: maxDepth});
+    // return aiService.createComputerMove(move, {maxDepth: maxDepth});
   }
 
   // it("getPossibleMoves returns exactly one cell", function() {

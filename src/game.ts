@@ -183,7 +183,7 @@ module game {
     // let move = aiService.findComputerMove(currentMove);
     // log.info("Computer move: ", move);
     // makeMove(move);
-    aiService.makeComputerMove(currentUpdateUI);
+    aiService.generateComputerMove(currentUpdateUI);
   }
 
   export function makeMove(move: IMove) {
