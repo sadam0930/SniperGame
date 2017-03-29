@@ -24,7 +24,6 @@ module gameLogic {
   export const ROWS = 6;
   export const COLS = 5;
   export const NUMPLAYERS = 2;
-  export let playerTurnCount: number[] = [];
   export let freeCells: Board[] = [];
   export let playerPositions: number[][][] = [];
 
@@ -66,8 +65,7 @@ module gameLogic {
 
   export function getInitialState(): IState {
     game.current_buff[0] = game.current_buff[1] = '';
-    playerTurnCount[0] = playerTurnCount[1] = 0;
-    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: playerTurnCount};
+    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0,0]};
   }
 
   export function getRandomPosition(): number[] {
@@ -166,6 +164,7 @@ module gameLogic {
     let board: Board;
     let isP1Turn = (playerID === 0);
     let isP2Turn = !isP1Turn;
+    let playerTurnCount: number[] = stateBeforeMove.turnCounts;
     let boardIdx: number;
     if (moveType === 'attack') boardIdx = (playerID);
     else boardIdx = (playerID + 2);

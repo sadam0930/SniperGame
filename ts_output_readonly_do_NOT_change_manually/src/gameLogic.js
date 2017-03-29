@@ -9,7 +9,6 @@ var gameLogic;
     gameLogic.ROWS = 6;
     gameLogic.COLS = 5;
     gameLogic.NUMPLAYERS = 2;
-    gameLogic.playerTurnCount = [];
     gameLogic.freeCells = [];
     gameLogic.playerPositions = [];
     /**
@@ -48,8 +47,7 @@ var gameLogic;
     gameLogic.getBlankBoard = getBlankBoard;
     function getInitialState() {
         game.current_buff[0] = game.current_buff[1] = '';
-        gameLogic.playerTurnCount[0] = gameLogic.playerTurnCount[1] = 0;
-        return { board: getInitialBoards(), delta: null, gameOver: false, turnCounts: gameLogic.playerTurnCount };
+        return { board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0, 0] };
     }
     gameLogic.getInitialState = getInitialState;
     function getRandomPosition() {
@@ -146,6 +144,7 @@ var gameLogic;
         var board;
         var isP1Turn = (playerID === 0);
         var isP2Turn = !isP1Turn;
+        var playerTurnCount = stateBeforeMove.turnCounts;
         var boardIdx;
         if (moveType === 'attack')
             boardIdx = (playerID);
@@ -157,7 +156,7 @@ var gameLogic;
             throw new Error("One can only make a move in an empty position!");
         if (stateBeforeMove.gameOver)
             throw new Error("Game Over!");
-        if ((gameLogic.playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType))
+        if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType))
             throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
         var attackType = game.current_buff[playerID];
@@ -203,13 +202,13 @@ var gameLogic;
                 game.current_buff[playerID] = boardsAfterMove[playerID + 2][row][col];
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
-        var my_turn_count = gameLogic.playerTurnCount[turnIndexBeforeMove];
+        var my_turn_count = playerTurnCount[turnIndexBeforeMove];
         if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
             spawnPowerUps(boardsAfterMove, turnIndexBeforeMove);
         }
-        gameLogic.playerTurnCount[turnIndexBeforeMove] += 1;
+        playerTurnCount[turnIndexBeforeMove] += 1;
         var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
-        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: gameLogic.playerTurnCount };
+        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;
