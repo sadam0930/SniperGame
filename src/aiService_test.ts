@@ -1,6 +1,6 @@
 describe("aiService", function() {
   function createStateFromBoard(board: Board[]): IState {
-    return {board: board, delta: null, gameOver: false, turnCounts: null};
+    return {board: board, delta: null, gameOver: false, turnCounts: null, currentBuffs: null};
   }
 
   function createComputerMove(board: Board[], turnIndex: number, maxDepth: number): void {

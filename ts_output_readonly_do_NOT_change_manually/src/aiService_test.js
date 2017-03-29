@@ -1,6 +1,6 @@
 describe("aiService", function () {
     function createStateFromBoard(board) {
-        return { board: board, delta: null, gameOver: false, turnCounts: null };
+        return { board: board, delta: null, gameOver: false, turnCounts: null, currentBuffs: null };
     }
     function createComputerMove(board, turnIndex, maxDepth) {
         var move = {
