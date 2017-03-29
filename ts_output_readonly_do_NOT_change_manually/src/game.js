@@ -149,7 +149,6 @@ var game;
         }
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
-        gameLogic.playerTurnCount = game.state.turnCounts;
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
         // then the animation will be paused until the javascript finishes.
@@ -287,7 +286,7 @@ var game;
     function firstMove() {
         if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
             return;
-        return (gameLogic.playerTurnCount[yourPlayerIndex()] == 0);
+        return (game.state.turnCounts[yourPlayerIndex()] == 0);
     }
     game.firstMove = firstMove;
     function shouldSlowlyAppear(row, col) {
