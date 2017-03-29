@@ -28,8 +28,11 @@
     	<div id="gameArea">
 <!-- STATUS BAR -->
   			<div class="turnDisplay" id="topDisplay">
-  				<div ng-if="!game.isGameOver()">
+  				<div ng-if="!game.isGameOver() && is_moving">
   					Choose a position to move to! <br>
+  				</div> 
+  				<div ng-if="!game.isGameOver() && is_attacking">
+  					Choose a window to attack! <br>
   				</div> 
   			    <div ng-if="game.isGameOver()">
   					<text>Player {{game.gameWinner}} wins!</text>
@@ -113,8 +116,8 @@
 					<!-- GROUND FLOOR / DOOR -->
 			    	<div class="groundFloor">
 			    		<div class="graffitiContainer">
-			    			<div class="graffiti p1" ng-if="game.isP1()"></div>
-			    			<div class="graffiti p2" ng-if="game.isP2()"></div>
+			    			<div class="graffiti p1" ng-if="game.isP2()"></div>
+			    			<div class="graffiti p2" ng-if="game.isP1()"></div>
 			    			<div class="graffiti graf"></div>
 			    		</div>
 			    		<div class="doorContainer">
@@ -168,7 +171,7 @@
 		        	<text>Player {{game.gameWinner}} wins!</text>
 		        </div>
 <!-- FIRST MOVE BANNER -->
-		        <div ng-if="game.firstMove() && !isGameOver()" class="controlArea turnDisplay" id="makeFirstMove">
+		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
 		        	<text>Select your starting position.</text>
 		        </div>
 <!-- BUTTONS -->
