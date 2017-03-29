@@ -117,6 +117,10 @@ body {
 .building{
   background-image: url("../img/wall.png");
   background-size: 15%;
+  animation:rotateme 1s linear;
+}
+@keyframes rotateme { 
+  100% { transform:rotatey(180deg); } 
 }
 .windowContainer{
   position: absolute;
