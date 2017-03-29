@@ -10,11 +10,13 @@ describe("In SnipeCity", function() {
     
   function expectException(
       turnIndexBeforeMove: number,
+      turnCountBeforeMove: number[],
       boardBeforeMove: Board[],
       row: number,
       col: number,
-      moveType: string): void {
-    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: null} : null;
+      moveType: string,
+      attackType: string): void {
+    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove} : null;
     // We expect an exception to be thrown :)
     let didThrowException = false;
     try {
@@ -224,34 +226,34 @@ describe("In SnipeCity", function() {
       P1_TURN, NO_ONE_WINS, [2,2]);
   });
 
-  // it("atacking in a non-empty position is illegal", function() {
-  //   expectException(P1_TURN,
-  //     [[['B', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', '']], 
-  //     [['', '', '', '', ''],
-  //     ['', 'B', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', '']],
-  //     [['P', '', '', '', ''],
-  //     ['', 'B', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', '']],
-  //     [['B', '', '', '', ''],
-  //     ['', 'P', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', ''],
-  //     ['', '', '', '', '']]], 
-  //     0, 0, 'attack');
-  // });
+  it("atacking in a non-empty position is illegal", function() {
+    expectException(P1_TURN, [2,2],
+      [[['B', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']], 
+      [['', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['P', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['B', '', '', '', ''],
+      ['', 'P', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']]], 
+      0, 0, 'attack', '');
+  });
 
   // /* We don't have a good way to handle game over yet */
   // // it("cannot move after the game is over", function() {
