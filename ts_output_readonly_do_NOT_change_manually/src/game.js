@@ -297,19 +297,25 @@ var game;
     function isP1() {
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             return true;
-        return (yourPlayerIndex() == 0);
+        else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+            isGameOver() && (game.gameWinner === 1))
+            return true;
+        else
+            return (yourPlayerIndex() === 0);
     }
     game.isP1 = isP1;
     function isP2() {
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             return false;
-        return (yourPlayerIndex() == 1);
+        else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+            isGameOver() && (game.gameWinner === 2))
+            return true;
+        else
+            return (yourPlayerIndex() === 1);
     }
     game.isP2 = isP2;
     function isGameOver() {
-        if (isFirstMove() || (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1))
-            return;
-        return (game.currentUpdateUI.state.gameOver);
+        return (game.currentUpdateUI.turnIndex === -1);
     }
     game.isGameOver = isGameOver;
 })(game || (game = {}));

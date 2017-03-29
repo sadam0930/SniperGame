@@ -301,17 +301,20 @@ module game {
 
   export function isP1(): boolean {
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') return true;
-    return (yourPlayerIndex() == 0);
+    else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+        isGameOver() && (gameWinner === 1)) return true;
+    else return (yourPlayerIndex() === 0);
   }
 
   export function isP2(): boolean {
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') return false;
-    return (yourPlayerIndex() == 1);
+    else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+        isGameOver() && (gameWinner === 2)) return true;
+    else return (yourPlayerIndex() === 1);
   }
 
   export function isGameOver(): boolean {
-    if (isFirstMove() || (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)) return;
-    return (currentUpdateUI.state.gameOver);
+    return (currentUpdateUI.turnIndex === -1);
   }
 
 }
