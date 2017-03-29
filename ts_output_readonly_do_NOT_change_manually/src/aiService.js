@@ -6,6 +6,8 @@ var aiService;
     var getBuff = false;
     function generateComputerMove(currentUpdateUI) {
         aiState = currentUpdateUI;
+        if (aiState.state === null)
+            aiState.state = gameLogic.getInitialState();
         cell[0] = cell[1] = -1;
         moveType = '';
         getBuff = false;
