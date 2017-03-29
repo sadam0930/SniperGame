@@ -6,12 +6,12 @@ module aiService {
 
     export function generateComputerMove(currentUpdateUI: IUpdateUI): void {
         aiState = currentUpdateUI;
+        if (aiState.state === null) aiState.state = gameLogic.getInitialState();
         cell[0] = cell[1] = -1;
         moveType = '';
         getBuff = false;
         getMoveType();
         if (!getBuff) getCells();
-
         if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
             log.info("Failed to generate computer move.");
             log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
