@@ -260,6 +260,7 @@ module game {
 
   function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
     let board_number: number = (board + yourPlayerIndex());
+    if (currentUpdateUI.playMode === 'playAgainstTheComputer') board_number = board;
     if (yourPlayerIndex() === -1) {
       if (game.gameWinner != null) board_number = (board + game.gameWinner - 1);
       else return;
@@ -300,10 +301,12 @@ module game {
   }
 
   export function isP1(): boolean {
+    if (currentUpdateUI.playMode === 'playAgainstTheComputer') return true;
     return (yourPlayerIndex() == 0);
   }
 
   export function isP2(): boolean {
+    if (currentUpdateUI.playMode === 'playAgainstTheComputer') return false;
     return (yourPlayerIndex() == 1);
   }
 

@@ -249,6 +249,8 @@ var game;
     game.shouldShowImage = shouldShowImage;
     function isPiece(board, row, col, pieceKind) {
         var board_number = (board + yourPlayerIndex());
+        if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
+            board_number = board;
         if (yourPlayerIndex() === -1) {
             if (game.gameWinner != null)
                 board_number = (board + game.gameWinner - 1);
@@ -294,10 +296,14 @@ var game;
     }
     game.shouldSlowlyAppear = shouldSlowlyAppear;
     function isP1() {
+        if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
+            return true;
         return (yourPlayerIndex() == 0);
     }
     game.isP1 = isP1;
     function isP2() {
+        if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
+            return false;
         return (yourPlayerIndex() == 1);
     }
     game.isP2 = isP2;
