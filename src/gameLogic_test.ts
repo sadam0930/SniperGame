@@ -41,11 +41,12 @@ describe("In SnipeCity", function() {
       boardAfterMove: Board[],
       turnIndexAfterMove: number,
       endMatchScores: number[],
-      turnCountAfterMove: number[]): void {
+      turnCountAfterMove: number[],
+      gameOver: boolean): void {
     let expectedMove:IMove = {
         turnIndex: turnIndexAfterMove,
         endMatchScores: endMatchScores,
-        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: false, turnCounts: turnCountAfterMove}
+        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: gameOver, turnCounts: turnCountAfterMove}
       };
     let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
@@ -116,7 +117,7 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P2_TURN, NO_ONE_WINS, [1,0]);
+      P2_TURN, NO_ONE_WINS, [1,0], false);
   });
 
   it("P2 moving in 1x1", function() {
@@ -170,7 +171,7 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [1,1]);
+      P1_TURN, NO_ONE_WINS, [1,1], false);
   });
 
   it("P2 attacking in 1x1", function() {
@@ -224,7 +225,7 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [2,2]);
+      P1_TURN, NO_ONE_WINS, [2,2], false);
   });
 
   it("atacking in a non-empty position is illegal", function() {
@@ -336,54 +337,62 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P2_TURN, NO_ONE_WINS, [3,2]);
+      P2_TURN, NO_ONE_WINS, [3,2], false);
   });
 
-  // it("P1 wins by attacking in 2x1", function() {
-  //   expectMove(P1_TURN,
-  //     [[['B', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', 'B', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', 'B', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['B', '', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']]],
-  //     2, 1, 'attack', '',
-  //     [[['B', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', 'B', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['', 'B', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', ''],
-  //      ['', '', '']],
-  //      [['B', '', ''],
-  //      ['', '', ''],
-  //      ['', 'P', ''],
-  //      ['', '', ''],
-  //      ['', '', '']]], 
-  //     NO_ONE_TURN, P1_WIN_SCORES);
-  // });
+  it("P2 wins by attacking in 2x1", function() {
+    expectMove(P2_TURN, [3,2],
+      [[['B', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']], 
+      [['', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', 'P', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['B', '', '', '', ''],
+      ['', 'P', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']]],
+      2, 1, 'attack', '',
+      [[['B', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']], 
+      [['', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', 'D', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', 'D', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['B', '', '', '', ''],
+      ['', 'P', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']]], 
+      NO_ONE_TURN, P2_WIN_SCORES, [3,3], true);
+  });
 
   // it("P2 wins by attacking in 2x1", function() {
   //   expectMove(P2_TURN,
