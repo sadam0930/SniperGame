@@ -8,13 +8,7 @@ html, body {
 }
 /* To prevent long-press that will bring up copy-paste dialog. */
 * {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-  -webkit-touch-callout: none;
-  -moz-touch-callout: none;
-  -ms-touch-callout: none;
   touch-callout: none;
   outline: 0; /* To prevent blue-box outline after click: http://stackoverflow.com/questions/21719306/getting-rid-of-a-blue-box-around-button-when-pressed */
 }
@@ -32,7 +26,9 @@ body {
 }
 
 * {-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;}
-
+#gameArea{
+  overflow: hidden;
+}
 .controlArea { 
   background-image: url(../img/camo.png);
   border: 1px solid black;
@@ -428,7 +424,7 @@ body {
   }
   .turnDisplay,
   .btn {
-    font-size: medium;
+    font-size: small;
   }
 }
 @media only screen and (max-device-width:321px){
