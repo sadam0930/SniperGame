@@ -1,28 +1,24 @@
 module aiService {
-    var currentState: IState = null;
-    var currentTurnIndex: number = null;
-    var cell: number[] = [];
-    var moveType: string = '';
-    var getBuff: boolean = false;
 
-    export function generateComputerMove(currentState: IState, currentTurnIndex: number): IMove {
-        currentState = currentState;
-        currentTurnIndex = currentTurnIndex;
-        if (currentState === null) currentState = gameLogic.getInitialState();
-        cell[0] = cell[1] = -1;
-        moveType = '';
-        getBuff = false;
-        getMoveType();
-        if (!getBuff) getCells();
-        if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
-            log.info("Failed to generate computer move.");
-            log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
-            return;
-        }
-        return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
-    }
+  export function generateComputerMove(currentState: IState, currentTurnIndex: number): IMove {
+      currentTurnIndex = currentTurnIndex;
+      if (currentState === null) currentState = gameLogic.getInitialState();
+      
+      let cell: number[] = [-1, -1];
+      let moveType: string = '';
+      let getBuff: boolean = false; //immediately get buff and skip searching for free cells
 
-  function checkBoardForBuff() : boolean {
+      moveType = getMoveType(currentState, currentTurnIndex, cell, getBuff);
+      if (!getBuff) getCells(currentState, currentTurnIndex, moveType, cell);
+      if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
+          log.info("Failed to generate computer move.");
+          log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
+          return;
+      }
+      return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
+  }
+
+  function checkBoardForBuff(currentState: IState, currentTurnIndex: number, cell: number[], getBuff: boolean) : boolean {
       let moveBoard: Board = currentState.board[(currentTurnIndex + 2)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
@@ -37,7 +33,7 @@ module aiService {
       return false;
   }
 
-  function canMove(): boolean {
+  function canMove(currentState: IState, currentTurnIndex: number): boolean {
       let board: Board = currentState.board[(currentTurnIndex + 2)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
@@ -47,7 +43,7 @@ module aiService {
       return false;
   }
 
-  function canAttack(): boolean {
+  function canAttack(currentState: IState, currentTurnIndex: number): boolean {
       let board: Board = currentState.board[(currentTurnIndex)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
@@ -57,7 +53,7 @@ module aiService {
       return false;
   }
 
-  function getCells(): void {
+  function getCells(currentState: IState, currentTurnIndex: number, moveType: string, cell: number[]): void {
       if (moveType === '') return;
       let safe_guard_counter: number = 0;
       let board: Board = (moveType === 'move') ? 
@@ -86,12 +82,13 @@ module aiService {
       cell[1] = pos[1];
   }
 
-  function getMoveType(): void {
+  function getMoveType(currentState: IState, currentTurnIndex: number, cell: number[], getBuff: boolean): string {
+      let moveType: string;
       if (currentState.turnCounts[currentTurnIndex] === 0) moveType = 'move';
-      else if (checkBoardForBuff()) moveType = 'move';
+      else if (checkBoardForBuff(currentState, currentTurnIndex, cell, getBuff)) moveType = 'move';
       else {
-          let move: boolean = canMove();
-          let attack: boolean = canAttack();
+          let move: boolean = canMove(currentState, currentTurnIndex);
+          let attack: boolean = canAttack(currentState, currentTurnIndex);
           if (move && attack) {
               let moveAsInt = (gameLogic.getRandomIntInclusive(10) + 1);
               if (moveAsInt <= 3) moveType = 'move';     // 30% chance to move
@@ -101,6 +98,7 @@ module aiService {
           else if (move && !attack) moveType = 'move';
           else log.info("Error: No moves available!");
       }
+      return moveType;
   }
 
 }

@@ -1,347 +1,86 @@
 describe("aiService", function () {
-    function createStateFromBoard(board) {
-        return { board: board, delta: null, gameOver: false, turnCounts: null, currentBuffs: null };
+    var P1_TURN = 0;
+    var AI_TURN = 1;
+    var NO_ONE_TURN = -1;
+    var NO_ONE_WINS = null;
+    var P1_WIN_SCORES = [1, 0];
+    var P2_WIN_SCORES = [0, 1];
+    function createComputerMove(board, gameOver, turnCounts, currentBuffs, turnIndex) {
+        var stateBeforeMove = { board: board, delta: null, gameOver: gameOver, turnCounts: turnCounts, currentBuffs: currentBuffs };
+        return aiService.generateComputerMove(stateBeforeMove, turnIndex);
     }
-    function createComputerMove(board, turnIndex, maxDepth) {
-        var move = {
-            turnIndex: turnIndex,
-            endMatchScores: null,
-            state: createStateFromBoard(board),
+    function expectException(turnIndexBeforeMove, turnCountBeforeMove, currentBuffs, boardBeforeMove, row, col, moveType, attackType, //not actually used here since we don't care about the delta
+        gameOver) {
+        var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: gameOver, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs } : null;
+        // We expect an exception to be thrown :)
+        var didThrowException = false;
+        try {
+            createComputerMove(boardBeforeMove, gameOver, turnCountBeforeMove, currentBuffs, turnIndexBeforeMove);
+        }
+        catch (e) {
+            didThrowException = true;
+        }
+        if (!didThrowException) {
+            throw new Error("We expect an illegal move, but createMove didn't throw any exception!");
+        }
+    }
+    function expectMove(turnIndexBeforeMove, turnCountBeforeMove, currentBuffs, boardBeforeMove, row, col, moveType, attackType, boardAfterMove, turnIndexAfterMove, endMatchScores, turnCountAfterMove, buffsAfterMove, gameOver) {
+        var expectedMove = {
+            turnIndex: P1_TURN,
+            endMatchScores: endMatchScores,
+            state: { board: boardAfterMove, delta: { row: row, col: col, moveType: moveType, attackType: attackType }, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove }
         };
-        // return aiService.createComputerMove(move, {maxDepth: maxDepth});
+        var aiMove = createComputerMove(boardBeforeMove, gameOver, turnCountBeforeMove, currentBuffs, turnIndexBeforeMove);
+        expect(angular.equals(aiMove, expectedMove)).toBe(true);
     }
-    // it("getPossibleMoves returns exactly one cell", function() {
-    //   let board =
-    //       [[['O', 'O', 'X'],
-    //        ['X', 'X', 'O'],
-    //        ['O', 'X', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']]];
-    //   let possibleMoves = aiService.getPossibleMoves(createStateFromBoard(board), 0);
-    //   expect(possibleMoves.length).toBe(1);
-    //   expect(angular.equals(possibleMoves[0].state.delta, {row: 2, col: 2})).toBe(true);
-    // });
-    // it("X finds an immediate winning move", function() {
-    //   let move = createComputerMove(
-    //       [[['', '', 'O'],
-    //        ['O', 'X', 'X'],
-    //        ['O', 'X', 'O'],
-    //        ['', '', ''],
-    //        ['', '', '']], 
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']]],
-    //       0, 1);
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 1})).toBe(true);
-    // });
-    // it("X finds an immediate winning move in less than a second", function() {
-    //   let move = aiService.findComputerMove({
-    //     endMatchScores: null,
-    //     turnIndex: 0,
-    //     state: {
-    //       board: [[['', '', 'O'],
-    //               ['O', 'X', 'X'],
-    //               ['O', 'X', 'O'],
-    //               ['', '', ''],
-    //               ['', '', '']], 
-    //               [['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', '']],
-    //               [['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', '']],
-    //               [['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', ''],
-    //               ['', '', '']]],
-    //       delta: null, 
-    //       gameOver: false,
-    //       turnCounts: null
-    //     }
-    //   });
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 1})).toBe(true);
-    // });
-    // it("O finds an immediate winning move", function() {
-    //   let move = createComputerMove(
-    //       [[['', '', 'O'],
-    //        ['O', 'X', 'X'],
-    //        ['O', 'X', 'O'],
-    //        ['', '', ''],
-    //        ['', '', '']], 
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']]],
-    //       1, 1);
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 0})).toBe(true);
-    // });
-    // it("X prevents an immediate win", function() {
-    //   let move = createComputerMove(
-    //       [[['X', '', ''],
-    //        ['O', 'O', ''],
-    //        ['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']], 
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']],
-    //        [['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', '']]], 
-    //       0, 2);
-    //   expect(angular.equals(move.state.delta, {row: 1, col: 2})).toBe(true);
-    // });
-    // it("O prevents an immediate win", function() {
-    //   let move = createComputerMove(
-    //       [[['X', 'X', ''],
-    //        ['O', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       1, 2);
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 2})).toBe(true);
-    // });
-    // it("O prevents another immediate win", function() {
-    //   let move = createComputerMove(
-    //       [[['X', 'O', ''],
-    //        ['X', 'O', ''],
-    //        ['', 'X', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       1, 2);
-    //   expect(angular.equals(move.state.delta, {row: 2, col: 0})).toBe(true);
-    // });
-    // it("X finds a winning move that will lead to winning in 2 steps", function() {
-    //   let move = createComputerMove(
-    //       [[['X', '', ''],
-    //        ['O', 'X', ''],
-    //        ['', '', 'O'],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       0, 3);
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 1})).toBe(true);
-    // });
-    // it("O finds a winning move that will lead to winning in 2 steps", function() {
-    //   let move = createComputerMove(
-    //       [[['', 'X', ''],
-    //        ['X', 'X', 'O'],
-    //        ['', 'O', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       1, 3);
-    //   expect(angular.equals(move.state.delta, {row: 2, col: 2})).toBe(true);
-    // });
-    // it("O finds a cool winning move that will lead to winning in 2 steps", function() {
-    //   let move = createComputerMove(
-    //       [[['X', 'O', 'X'],
-    //        ['X', '', ''],
-    //        ['O', '', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       1, 3);
-    //   expect(angular.equals(move.state.delta, {row: 2, col: 1})).toBe(true);
-    // });
-    // it("O finds the wrong move due to small depth", function() {
-    //   let move = createComputerMove(
-    //       [[['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       1, 3);
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 1})).toBe(true);
-    // });
-    // it("O finds the correct move when depth is big enough", function() {
-    //   let move = createComputerMove(
-    //       [[['X', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       1, 6);
-    //   expect(angular.equals(move.state.delta, {row: 1, col: 1})).toBe(true);
-    // });
-    // it("X finds a winning move that will lead to winning in 2 steps", function() {
-    //   let move = createComputerMove(
-    //       [[['', '', ''],
-    //        ['O', 'X', ''],
-    //        ['', '', ''],
-    //        ['', '', ''],
-    //         ['', '', '']], 
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']],
-    //         [['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', ''],
-    //         ['', '', '']]],
-    //       0, 5);
-    //   expect(angular.equals(move.state.delta, {row: 0, col: 0})).toBe(true);
-    // });
+    it("computer moves to pick up buff", function () {
+        expectMove(AI_TURN, [2, 1], ['', ''], [[['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['P', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', 'grenade', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', 'P', '', ''],
+                ['', 'grenade', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']]], 3, 1, 'move', '', [[['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['P', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', 'P', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']]], P1_TURN, NO_ONE_WINS, [2, 2], ['', 'grenade'], false);
+    });
 });
 //# sourceMappingURL=aiService_test.js.map

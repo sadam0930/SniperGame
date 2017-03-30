@@ -5,7 +5,7 @@ describe("In SnipeCity", function () {
     var NO_ONE_WINS = null;
     var P1_WIN_SCORES = [1, 0];
     var P2_WIN_SCORES = [0, 1];
-    var TIE_SCORES = [0, 0];
+    // let TIE_SCORES = [0, 0];
     function expectException(turnIndexBeforeMove, turnCountBeforeMove, currentBuffs, boardBeforeMove, row, col, moveType, attackType, //not actually used here since we don't care about the delta
         gameOver) {
         var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: gameOver, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs } : null;
@@ -29,7 +29,6 @@ describe("In SnipeCity", function () {
         };
         var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs } : null;
         var move = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
-        console.log(move);
         expect(angular.equals(move, expectedMove)).toBe(true);
     }
     it("Initial move", function () {
