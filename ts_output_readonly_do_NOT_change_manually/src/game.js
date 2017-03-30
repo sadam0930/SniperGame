@@ -162,7 +162,7 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        var move = aiService.generateComputerMove(game.currentUpdateUI);
+        var move = aiService.generateComputerMove(game.currentUpdateUI.state, game.currentUpdateUI.turnIndex);
         log.info("Computer move: ", move);
         makeMove(move);
     }

@@ -171,7 +171,7 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    let move = aiService.generateComputerMove(currentUpdateUI);
+    let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
     log.info("Computer move: ", move);
     makeMove(move);
   }

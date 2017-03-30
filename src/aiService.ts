@@ -1,12 +1,14 @@
 module aiService {
-    var aiState: IUpdateUI = null;
+    var currentState: IState = null;
+    var currentTurnIndex: number = null;
     var cell: number[] = [];
     var moveType: string = '';
     var getBuff: boolean = false;
 
-    export function generateComputerMove(currentUpdateUI: IUpdateUI): IMove {
-        aiState = currentUpdateUI;
-        if (aiState.state === null) aiState.state = gameLogic.getInitialState();
+    export function generateComputerMove(currentState: IState, currentTurnIndex: number): IMove {
+        currentState = currentState;
+        currentTurnIndex = currentTurnIndex;
+        if (currentState === null) currentState = gameLogic.getInitialState();
         cell[0] = cell[1] = -1;
         moveType = '';
         getBuff = false;
@@ -17,11 +19,11 @@ module aiService {
             log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
             return;
         }
-        return gameLogic.createMove(aiState.state, cell[0], cell[1], moveType, aiState.turnIndex);
+        return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
     }
 
   function checkBoardForBuff() : boolean {
-      let moveBoard: Board = aiState.state.board[(aiState.turnIndex + 2)];
+      let moveBoard: Board = currentState.board[(currentTurnIndex + 2)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
               if (gameLogic.isABuff(moveBoard[i][j])) {
@@ -36,7 +38,7 @@ module aiService {
   }
 
   function canMove(): boolean {
-      let board: Board = aiState.state.board[(aiState.turnIndex + 2)];
+      let board: Board = currentState.board[(currentTurnIndex + 2)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
               if (board[i][j] === '') return true;
@@ -46,7 +48,7 @@ module aiService {
   }
 
   function canAttack(): boolean {
-      let board: Board = aiState.state.board[(aiState.turnIndex)];
+      let board: Board = currentState.board[(currentTurnIndex)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
               if (board[i][j] === '') return true;
@@ -59,8 +61,8 @@ module aiService {
       if (moveType === '') return;
       let safe_guard_counter: number = 0;
       let board: Board = (moveType === 'move') ? 
-          aiState.state.board[aiState.turnIndex + 2] : 
-          aiState.state.board[aiState.turnIndex];
+          currentState.board[currentTurnIndex + 2] : 
+          currentState.board[currentTurnIndex];
       let pos: number[] = gameLogic.getRandomPosition();
 
       while (board[pos[0]][pos[1]] !== '') {
@@ -85,7 +87,7 @@ module aiService {
   }
 
   function getMoveType(): void {
-      if (aiState.state.turnCounts[aiState.turnIndex] === 0) moveType = 'move';
+      if (currentState.turnCounts[currentTurnIndex] === 0) moveType = 'move';
       else if (checkBoardForBuff()) moveType = 'move';
       else {
           let move: boolean = canMove();

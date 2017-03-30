@@ -1,13 +1,15 @@
 var aiService;
 (function (aiService) {
-    var aiState = null;
+    var currentState = null;
+    var currentTurnIndex = null;
     var cell = [];
     var moveType = '';
     var getBuff = false;
-    function generateComputerMove(currentUpdateUI) {
-        aiState = currentUpdateUI;
-        if (aiState.state === null)
-            aiState.state = gameLogic.getInitialState();
+    function generateComputerMove(currentState, currentTurnIndex) {
+        currentState = currentState;
+        currentTurnIndex = currentTurnIndex;
+        if (currentState === null)
+            currentState = gameLogic.getInitialState();
         cell[0] = cell[1] = -1;
         moveType = '';
         getBuff = false;
@@ -19,14 +21,14 @@ var aiService;
             log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
             return;
         }
-        return gameLogic.createMove(aiState.state, cell[0], cell[1], moveType, aiState.turnIndex);
+        return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
     }
     aiService.generateComputerMove = generateComputerMove;
     function checkBoardForBuff() {
-        var moveBoard = aiState.state.board[(aiState.turnIndex + 2)];
+        var moveBoard = currentState.board[(currentTurnIndex + 2)];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
-                if (game.isABuff(moveBoard[i][j])) {
+                if (gameLogic.isABuff(moveBoard[i][j])) {
                     cell[0] = i;
                     cell[1] = j;
                     getBuff = true;
@@ -37,7 +39,7 @@ var aiService;
         return false;
     }
     function canMove() {
-        var board = aiState.state.board[(aiState.turnIndex + 2)];
+        var board = currentState.board[(currentTurnIndex + 2)];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
                 if (board[i][j] === '')
@@ -47,7 +49,7 @@ var aiService;
         return false;
     }
     function canAttack() {
-        var board = aiState.state.board[(aiState.turnIndex)];
+        var board = currentState.board[(currentTurnIndex)];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
                 if (board[i][j] === '')
@@ -61,8 +63,8 @@ var aiService;
             return;
         var safe_guard_counter = 0;
         var board = (moveType === 'move') ?
-            aiState.state.board[aiState.turnIndex + 2] :
-            aiState.state.board[aiState.turnIndex];
+            currentState.board[currentTurnIndex + 2] :
+            currentState.board[currentTurnIndex];
         var pos = gameLogic.getRandomPosition();
         while (board[pos[0]][pos[1]] !== '') {
             pos = gameLogic.getRandomPosition();
@@ -85,7 +87,7 @@ var aiService;
         cell[1] = pos[1];
     }
     function getMoveType() {
-        if (aiState.state.turnCounts[aiState.turnIndex] === 0)
+        if (currentState.turnCounts[currentTurnIndex] === 0)
             moveType = 'move';
         else if (checkBoardForBuff())
             moveType = 'move';
