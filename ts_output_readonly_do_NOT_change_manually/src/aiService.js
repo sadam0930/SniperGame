@@ -19,8 +19,7 @@ var aiService;
             log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
             return;
         }
-        log.info("Computer's move: " + moveType, cell);
-        makeComputerMove();
+        return gameLogic.createMove(aiState.state, cell[0], cell[1], moveType, aiState.turnIndex);
     }
     aiService.generateComputerMove = generateComputerMove;
     function checkBoardForBuff() {
@@ -108,11 +107,5 @@ var aiService;
                 log.info("Error: No moves available!");
         }
     }
-    function makeComputerMove() {
-        //stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number)
-        var computerMove = gameLogic.createMove(aiState.state, cell[0], cell[1], moveType, aiState.turnIndex);
-        game.makeMove(computerMove);
-    }
-    aiService.makeComputerMove = makeComputerMove;
 })(aiService || (aiService = {}));
 //# sourceMappingURL=aiService.js.map

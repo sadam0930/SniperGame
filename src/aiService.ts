@@ -4,7 +4,7 @@ module aiService {
     var moveType: string = '';
     var getBuff: boolean = false;
 
-    export function generateComputerMove(currentUpdateUI: IUpdateUI): void {
+    export function generateComputerMove(currentUpdateUI: IUpdateUI): IMove {
         aiState = currentUpdateUI;
         if (aiState.state === null) aiState.state = gameLogic.getInitialState();
         cell[0] = cell[1] = -1;
@@ -17,15 +17,14 @@ module aiService {
             log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
             return;
         }
-        log.info("Computer's move: " + moveType, cell);
-        makeComputerMove();
+        return gameLogic.createMove(aiState.state, cell[0], cell[1], moveType, aiState.turnIndex);
     }
 
   function checkBoardForBuff() : boolean {
       let moveBoard: Board = aiState.state.board[(aiState.turnIndex + 2)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
-              if (game.isABuff(moveBoard[i][j])) {
+              if (gameLogic.isABuff(moveBoard[i][j])) {
                   cell[0] = i;
                   cell[1] = j;
                   getBuff = true;
@@ -100,15 +99,6 @@ module aiService {
           else if (move && !attack) moveType = 'move';
           else log.info("Error: No moves available!");
       }
-  }
-
-  export function makeComputerMove(): void {
-    //stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number)
-    
-      let computerMove = gameLogic.createMove(aiState.state, 
-                                              cell[0], cell[1], moveType, 
-                                              aiState.turnIndex);
-      game.makeMove(computerMove);
   }
 
 }

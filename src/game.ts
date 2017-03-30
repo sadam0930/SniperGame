@@ -104,9 +104,7 @@ module game {
   }
 
   export function isABuff(cellValue: string): boolean {
-    if (cellValue === 'grenade') return true;
-    else if (cellValue === 'air strike') return true;
-    else return false;
+    return gameLogic.isABuff(cellValue);
   }
 
   export function hasBuff(): string {
@@ -173,15 +171,9 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    // let currentMove:IMove = {
-    //   endMatchScores: currentUpdateUI.endMatchScores,
-    //   state: currentUpdateUI.state,
-    //   turnIndex: currentUpdateUI.turnIndex,
-    // }
-    // let move = aiService.findComputerMove(currentMove);
-    // log.info("Computer move: ", move);
-    // makeMove(move);
-    aiService.generateComputerMove(currentUpdateUI);
+    let move = aiService.generateComputerMove(currentUpdateUI);
+    log.info("Computer move: ", move);
+    makeMove(move);
   }
 
   export function makeMove(move: IMove) {

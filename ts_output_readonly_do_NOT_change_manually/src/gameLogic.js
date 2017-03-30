@@ -201,7 +201,7 @@ var gameLogic;
             }
         }
         else if (moveType === 'move') {
-            if (game.isABuff(boardsAfterMove[playerID + 2][row][col]))
+            if (isABuff(boardsAfterMove[playerID + 2][row][col]))
                 buffsAfterMove[playerID] = boardsAfterMove[playerID + 2][row][col];
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
@@ -215,6 +215,12 @@ var gameLogic;
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;
+    function isABuff(cellValue) {
+        if (cellValue === 'grenade' || cellValue === 'air strike')
+            return true;
+        return false;
+    }
+    gameLogic.isABuff = isABuff;
     function assignNewPosition(board, row, col) {
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
