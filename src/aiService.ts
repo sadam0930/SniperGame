@@ -6,7 +6,7 @@ module aiService {
       
       let cell: number[] = [-1, -1];
       let moveType: string = '';
-      let getBuff: boolean = false; //immediately get buff and skip searching for free cells
+      let getBuff: boolean = checkBoardForBuff(currentState, currentTurnIndex, cell); //immediately get buff and skip searching for free cells
 
       moveType = getMoveType(currentState, currentTurnIndex, cell, getBuff);
       if (!getBuff) getCells(currentState, currentTurnIndex, moveType, cell);
@@ -18,14 +18,13 @@ module aiService {
       return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
   }
 
-  function checkBoardForBuff(currentState: IState, currentTurnIndex: number, cell: number[], getBuff: boolean) : boolean {
+  function checkBoardForBuff(currentState: IState, currentTurnIndex: number, cell: number[]) : boolean {
       let moveBoard: Board = currentState.board[(currentTurnIndex + 2)];
       for (let i = 0; i < gameLogic.ROWS; i++) {
           for (let j = 0; j < gameLogic.COLS; j++) {
               if (gameLogic.isABuff(moveBoard[i][j])) {
                   cell[0] = i;
                   cell[1] = j;
-                  getBuff = true;
                   return true;
               }
           }
