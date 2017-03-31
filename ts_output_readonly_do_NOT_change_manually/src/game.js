@@ -14,7 +14,6 @@ var game;
     // For community games.
     game.proposals = null;
     game.yourPlayerInfo = null;
-    game.buffs_enabled = true;
     game.prev_turn_index = null;
     game.turn_index = null;
     function init($rootScope_, $timeout_) {

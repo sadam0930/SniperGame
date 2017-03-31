@@ -9,8 +9,6 @@ var gameLogic;
     gameLogic.ROWS = 6;
     gameLogic.COLS = 5;
     gameLogic.NUMPLAYERS = 2;
-    gameLogic.freeCells = [];
-    gameLogic.playerPositions = [];
     /**
     * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''.
     * There are 4 boards. P1 is even boards. P2 is odd boards.
@@ -26,11 +24,6 @@ var gameLogic;
         for (var i = 0; i < gameLogic.NUMPLAYERS * 2; i++) {
             boards[i] = getBlankBoard();
         }
-        // log.log("generating player positions")
-        // let p1_pos = getRandomPosition();
-        // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
-        // let p2_pos = getRandomPosition();
-        // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
@@ -46,7 +39,7 @@ var gameLogic;
     }
     gameLogic.getBlankBoard = getBlankBoard;
     function getInitialState() {
-        return { board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0, 0], currentBuffs: ['', ''] };
+        return { board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0, 0], currentBuffs: ['', ''], buffsEnabled: true };
     }
     gameLogic.getInitialState = getInitialState;
     function getRandomPosition() {
@@ -88,7 +81,7 @@ var gameLogic;
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
-    function spawnPowerUps(boards, turnIndexBeforeMove) {
+    function spawnPowerUps(boards, turnIndexBeforeMove, keepSpawningBuffs) {
         if (turnIndexBeforeMove === -1)
             return;
         var safe_guard_counter = 0;
@@ -99,6 +92,7 @@ var gameLogic;
         else if (buff_type_num == 1)
             buff_type = 'air strike';
         else {
+            //toDo: Throw an error if this shouldn't happen
             log.info("spawnPowerUps() buff_type_num out of range.");
             return;
         }
@@ -121,8 +115,7 @@ var gameLogic;
                         break;
                 }
                 if (!found_free_pos) {
-                    game.buffs_enabled = false;
-                    return;
+                    keepSpawningBuffs = false;
                 }
             }
             if (found_free_pos)
@@ -161,6 +154,7 @@ var gameLogic;
             throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
         var current_buffs = stateBeforeMove.currentBuffs;
+        var buffsEnabled = stateBeforeMove.buffsEnabled;
         var attackType = current_buffs[playerID];
         var winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
         var endMatchScores;
@@ -180,6 +174,7 @@ var gameLogic;
         var boardMarker = winner[0] !== '' ? 'D' : 'B';
         var hit_location = Number(winner[1]);
         var buffsAfterMove = angular.copy(current_buffs);
+        var keepSpawningBuffs = stateBeforeMove.buffsEnabled;
         if (moveType === 'attack') {
             if (attackType === 'grenade') {
                 boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = 'B';
@@ -206,12 +201,12 @@ var gameLogic;
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
         var my_turn_count = playerTurnCount[turnIndexBeforeMove];
-        if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
-            spawnPowerUps(boardsAfterMove, turnIndexBeforeMove);
+        if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && buffsEnabled) {
+            spawnPowerUps(boardsAfterMove, turnIndexBeforeMove, keepSpawningBuffs);
         }
         playerTurnCount[turnIndexBeforeMove] += 1;
         var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
-        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove };
+        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;

@@ -12,6 +12,7 @@ interface IState {
   gameOver: boolean;
   turnCounts: number[];
   currentBuffs: string[];
+  buffsEnabled: boolean;
 }
 
 import gameService = gamingPlatform.gameService;
@@ -25,8 +26,6 @@ module gameLogic {
   export const ROWS = 6;
   export const COLS = 5;
   export const NUMPLAYERS = 2;
-  export let freeCells: Board[] = [];
-  export let playerPositions: number[][][] = [];
 
   /** 
   * Returns the initial Sniper boards, which is a ROWSxCOLS matrix containing ''. 
@@ -43,13 +42,6 @@ module gameLogic {
     for (let i = 0; i < NUMPLAYERS*2; i++) {
       boards[i] = getBlankBoard();
     }
-    
-    // log.log("generating player positions")
-    // let p1_pos = getRandomPosition();
-    // boards[2][p1_pos[0]][p1_pos[1]] = 'P';
-    // let p2_pos = getRandomPosition();
-    // boards[3][p2_pos[0]][p2_pos[1]] = 'P';
-
     return boards;
   }
 
@@ -65,7 +57,7 @@ module gameLogic {
   }
 
   export function getInitialState(): IState {
-    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0,0], currentBuffs: ['','']};
+    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0,0], currentBuffs: ['',''], buffsEnabled: true};
   }
 
   export function getRandomPosition(): number[] {
@@ -104,7 +96,7 @@ module gameLogic {
    * with index turnIndexBeforeMove makes a move in cell row X col.
    */
   
-  export function spawnPowerUps(boards: Board[], turnIndexBeforeMove: number): void {
+  export function spawnPowerUps(boards: Board[], turnIndexBeforeMove: number, keepSpawningBuffs: boolean): boolean {
     if (turnIndexBeforeMove === -1) return;
     let safe_guard_counter: number = 0;
     let buff_type_num: number  = getRandomIntInclusive(2);  
@@ -114,6 +106,7 @@ module gameLogic {
     else if (buff_type_num == 1) buff_type = 'air strike';  
     // else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
     else {
+      //toDo: Throw an error if this shouldn't happen
       log.info("spawnPowerUps() buff_type_num out of range.");
       return;
     }
@@ -137,9 +130,8 @@ module gameLogic {
           }
           if (found_free_pos) break;
         }
-        if (!found_free_pos) {
-          game.buffs_enabled = false;                  
-          return;
+        if (!found_free_pos) {               
+          keepSpawningBuffs = false;
         }
       }
       if (found_free_pos) break;
@@ -178,6 +170,7 @@ module gameLogic {
         
     // CHECK IF KILL SHOT
     let current_buffs: string[] = stateBeforeMove.currentBuffs;
+    let buffsEnabled: boolean = stateBeforeMove.buffsEnabled;
     let attackType: string = current_buffs[playerID];
     let winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
     let endMatchScores: number[];
@@ -198,6 +191,7 @@ module gameLogic {
     let boardMarker = winner[0] !== '' ? 'D' : 'B';
     let hit_location: number = Number(winner[1]);
     let buffsAfterMove = angular.copy(current_buffs);
+    let keepSpawningBuffs: boolean = stateBeforeMove.buffsEnabled;
 
     if (moveType === 'attack') {
       if (attackType === 'grenade') {
@@ -224,13 +218,13 @@ module gameLogic {
     }
 
     let my_turn_count: number = playerTurnCount[turnIndexBeforeMove];
-    if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && game.buffs_enabled) {
-      spawnPowerUps(boardsAfterMove, turnIndexBeforeMove);
+    if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && buffsEnabled) {
+      spawnPowerUps(boardsAfterMove, turnIndexBeforeMove, keepSpawningBuffs);
     }
     playerTurnCount[turnIndexBeforeMove] += 1;
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
-    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove};
+    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
   }
 

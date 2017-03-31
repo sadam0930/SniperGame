@@ -52,7 +52,8 @@ describe("aiService", function () {
                 delta: null,
                 gameOver: false,
                 turnCounts: [2, 1],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: true
             }
         };
         uiAfter = {
@@ -101,7 +102,8 @@ describe("aiService", function () {
                 },
                 gameOver: false,
                 turnCounts: [2, 2],
-                currentBuffs: ['', 'grenade']
+                currentBuffs: ['', 'grenade'],
+                buffsEnabled: true
             }
         };
         expectMove(uiBefore, uiAfter);
@@ -148,7 +150,8 @@ describe("aiService", function () {
                 delta: null,
                 gameOver: false,
                 turnCounts: [2, 1],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: true
             }
         };
         uiAfter = {
@@ -197,7 +200,8 @@ describe("aiService", function () {
                 },
                 gameOver: false,
                 turnCounts: [2, 2],
-                currentBuffs: ['', 'air strike']
+                currentBuffs: ['', 'air strike'],
+                buffsEnabled: true
             }
         };
         expectMove(uiBefore, uiAfter);
@@ -244,7 +248,8 @@ describe("aiService", function () {
                 delta: null,
                 gameOver: false,
                 turnCounts: [2, 2],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: false
             }
         };
         uiAfter = {
@@ -293,7 +298,8 @@ describe("aiService", function () {
                 },
                 gameOver: true,
                 turnCounts: [3, 2],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: false
             }
         };
         expectMove(uiBefore, uiAfter);
@@ -340,7 +346,8 @@ describe("aiService", function () {
                 delta: null,
                 gameOver: false,
                 turnCounts: [2, 2],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: false
             }
         };
         uiAfter = {
@@ -389,7 +396,8 @@ describe("aiService", function () {
                 },
                 gameOver: false,
                 turnCounts: [3, 2],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: false
             }
         };
         expectMove(uiBefore, uiAfter);
@@ -436,7 +444,8 @@ describe("aiService", function () {
                 delta: null,
                 gameOver: false,
                 turnCounts: [2, 2],
-                currentBuffs: ['', '']
+                currentBuffs: ['', ''],
+                buffsEnabled: false
             }
         };
         expectException(uiBefore);

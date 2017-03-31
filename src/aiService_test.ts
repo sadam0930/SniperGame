@@ -55,7 +55,8 @@ describe("aiService", function() {
               delta: null,
               gameOver: false,
               turnCounts: [2,1],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: true
           }
       };
       uiAfter = {
@@ -105,7 +106,8 @@ describe("aiService", function() {
               },
               gameOver: false,
               turnCounts: [2,2],
-              currentBuffs: ['', 'grenade']
+              currentBuffs: ['', 'grenade'],
+              buffsEnabled: true
           }
       };
 
@@ -156,7 +158,8 @@ describe("aiService", function() {
               delta: null,
               gameOver: false,
               turnCounts: [2,1],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: true
           }
       };
       uiAfter = {
@@ -206,7 +209,8 @@ describe("aiService", function() {
               },
               gameOver: false,
               turnCounts: [2,2],
-              currentBuffs: ['', 'air strike']
+              currentBuffs: ['', 'air strike'],
+              buffsEnabled: true
           }
       };
 
@@ -257,7 +261,8 @@ describe("aiService", function() {
               delta: null,
               gameOver: false,
               turnCounts: [2,2],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: false
           }
       };
       uiAfter = {
@@ -307,7 +312,8 @@ describe("aiService", function() {
               },
               gameOver: true,
               turnCounts: [3,2],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: false
           }
       };
 
@@ -358,7 +364,8 @@ describe("aiService", function() {
               delta: null,
               gameOver: false,
               turnCounts: [2,2],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: false
           }
       };
       uiAfter = {
@@ -408,7 +415,8 @@ describe("aiService", function() {
               },
               gameOver: false,
               turnCounts: [3,2],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: false
           }
       };
 
@@ -459,7 +467,8 @@ describe("aiService", function() {
               delta: null,
               gameOver: false,
               turnCounts: [2,2],
-              currentBuffs: ['', '']
+              currentBuffs: ['', ''],
+              buffsEnabled: false
           }
       };
       
