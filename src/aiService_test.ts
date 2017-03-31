@@ -3,15 +3,9 @@ describe("aiService", function() {
     let uiBefore: IMove = { endMatchScores: null, turnIndex: null, state: null };
     let uiAfter: IMove = { endMatchScores: null, turnIndex: null, state: null };
 
-    function expectException(uiBeforeMove: IMove, uiAfterMove: IMove): void {
-        let didThrowException: boolean = false;
-        try {
-            aiService.generateComputerMove(uiBeforeMove.state, uiBeforeMove.turnIndex);
-        } 
-        catch (e) {
-            didThrowException = true;
-        }
-        if (!didThrowException) throw new Error("We expect an illegal move, but createMove didn't throw any exception!")
+    function expectException(uiBeforeMove: IMove): void {
+        let aiMove = aiService.generateComputerMove(uiBeforeMove.state, uiBeforeMove.turnIndex);
+        if (aiMove !== null) throw new Error("generateComputerMove should have returned null!");
     }
 
     function expectMove(uiBeforeMove: IMove, uiAfterMove: IMove): void {
@@ -420,6 +414,57 @@ describe("aiService", function() {
         };
 
         expectMove(uiBefore, uiAfter);
+     
+    });
+
+    it("AI can't do anything, should do nothing", function() {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,          
+            state: {
+                board: 
+                    [
+                        [
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                        ],
+                        [
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                        ],
+                        [
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','P',],
+                        ],
+                        [
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','B',],
+                            ['B','B','B','B','P',],
+                        ]
+                    ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [2,2],
+                currentBuffs: ['', '']
+            }
+        };
+        
+        expectException(uiBefore);
      
     });
 });
