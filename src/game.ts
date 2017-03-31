@@ -20,7 +20,6 @@ module game {
   // For community games.
   export let proposals: number[][] = null;
   export let yourPlayerInfo: IPlayerInfo = null;
-  export let buffs_enabled: boolean = true;
   export let prev_turn_index: number = null;
   export let turn_index: number = null;
 

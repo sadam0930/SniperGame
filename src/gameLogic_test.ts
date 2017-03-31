@@ -12,13 +12,14 @@ describe("In SnipeCity", function() {
       turnIndexBeforeMove: number,
       turnCountBeforeMove: number[],
       currentBuffs: string[],
+      buffsEnabled: boolean,
       boardBeforeMove: Board[],
       row: number,
       col: number,
       moveType: string,
       attackType: string, //not actually used here since we don't care about the delta
       gameOver: boolean): void {
-    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: gameOver, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs} : null;
+    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: gameOver, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs, buffsEnabled: buffsEnabled} : null;
     // We expect an exception to be thrown :)
     let didThrowException = false;
     try {
@@ -35,6 +36,7 @@ describe("In SnipeCity", function() {
       turnIndexBeforeMove: number,
       turnCountBeforeMove: number[],
       currentBuffs: string[],
+      buffsEnabled: boolean,
       boardBeforeMove: Board[],
       row: number,
       col: number,
@@ -45,16 +47,56 @@ describe("In SnipeCity", function() {
       endMatchScores: number[],
       turnCountAfterMove: number[],
       buffsAfterMove: string[],
+      keepSpawningBuffs: boolean,
       gameOver: boolean): void {
     let expectedMove:IMove = {
         turnIndex: turnIndexAfterMove,
         endMatchScores: endMatchScores,
-        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove}
+        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs}
       };
-    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs} : null;
+    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs, buffsEnabled: buffsEnabled} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
     expect(angular.equals(move, expectedMove)).toBe(true);
   }
+
+  function expectBuff(
+      turnIndexBeforeMove: number,
+      turnCountBeforeMove: number[],
+      currentBuffs: string[],
+      buffsEnabled: boolean,
+      boardBeforeMove: Board[],
+      row: number,
+      col: number,
+      moveType: string,
+      attackType: string,
+      boardAfterMove: Board[],
+      turnIndexAfterMove: number,
+      endMatchScores: number[],
+      turnCountAfterMove: number[],
+      buffsAfterMove: string[],
+      keepSpawningBuffs: boolean,
+      gameOver: boolean,
+      expectedSpawnRow: number,
+      expectedSpawnCol: number): void {
+    let possibleBoardAfterMove1 = angular.copy(boardAfterMove);
+    let possibleBoardAfterMove2 = angular.copy(boardAfterMove);
+    possibleBoardAfterMove1[turnIndexBeforeMove+2][expectedSpawnRow][expectedSpawnCol] = 'grenade';
+    possibleBoardAfterMove2[turnIndexBeforeMove+2][expectedSpawnRow][expectedSpawnCol] = 'air strike';
+    let possibleMove1:IMove = {
+        turnIndex: turnIndexAfterMove,
+        endMatchScores: endMatchScores,
+        state: {board: possibleBoardAfterMove1, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs}
+      };
+    let possibleMove2:IMove = {
+        turnIndex: turnIndexAfterMove,
+        endMatchScores: endMatchScores,
+        state: {board: possibleBoardAfterMove2, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs}
+      };
+    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs, buffsEnabled: buffsEnabled} : null;
+    let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
+    let success = (angular.equals(move, possibleMove1) || angular.equals(move, possibleMove2)); 
+    expect(success).toBe(true);
+  }  
 
   it("Initial move", function() {
     let move: IMove = gameLogic.createInitialMove();
@@ -89,13 +131,14 @@ describe("In SnipeCity", function() {
           delta: null,
           gameOver: false,
           turnCounts: [0,0],
-          currentBuffs: ['','']}
+          currentBuffs: ['',''],
+          buffsEnabled: true}
       };
     expect(angular.equals(move, expectedMove)).toBe(true);
   });
   
   it("P1 moving in 0x0 from initial state", function() {
-    expectMove(P1_TURN, null, null, null, 0, 0, 'move', '',
+    expectMove(P1_TURN, null, null, null, null, 0, 0, 'move', '',
       [[['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -120,11 +163,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P2_TURN, NO_ONE_WINS, [1,0], ['',''], false);
+      P2_TURN, NO_ONE_WINS, [1,0], ['',''], true, false);
   });
 
   it("P2 moving in 1x1", function() {
-    expectMove(P2_TURN, [1,0], ['',''],
+    expectMove(P2_TURN, [1,0], ['',''], true,
       [[['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -174,11 +217,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [1,1], ['',''], false);
+      P1_TURN, NO_ONE_WINS, [1,1], ['',''], true, false);
   });
 
   it("P2 attacking in 1x1", function() {
-    expectMove(P2_TURN, [2,1], ['',''],
+    expectMove(P2_TURN, [2,1], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -228,11 +271,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [2,2], ['',''], false);
+      P1_TURN, NO_ONE_WINS, [2,2], ['',''], true, false);
   });
 
   it("P2 attacking with grenade in 1x1", function() {
-    expectMove(P2_TURN, [2,1], ['','grenade'],
+    expectMove(P2_TURN, [2,1], ['','grenade'], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -282,11 +325,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [2,2], ['',''], false);
+      P1_TURN, NO_ONE_WINS, [2,2], ['',''], true, false);
   });
 
   it("P2 attacking with air strike in 1x1", function() {
-    expectMove(P2_TURN, [2,1], ['','air strike'],
+    expectMove(P2_TURN, [2,1], ['','air strike'], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -336,11 +379,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [2,2], ['',''], false);
+      P1_TURN, NO_ONE_WINS, [2,2], ['',''], true, false);
   });
 
   it("atacking in a non-empty position is illegal", function() {
-    expectException(P1_TURN, [2,2], ['',''],
+    expectException(P1_TURN, [2,2], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -369,7 +412,7 @@ describe("In SnipeCity", function() {
   });
 
   it("cannot move after the game is over", function() {
-    expectException(P1_TURN, [2,2], ['',''],
+    expectException(P1_TURN, [2,2], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -398,7 +441,7 @@ describe("In SnipeCity", function() {
   });
 
   it("P1 moving in 2x1", function() { //current position is 2x0
-    expectMove(P1_TURN, [2,2], ['',''],
+    expectMove(P1_TURN, [2,2], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -448,11 +491,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      P2_TURN, NO_ONE_WINS, [3,2], ['',''], false);
+      P2_TURN, NO_ONE_WINS, [3,2], ['',''], true, false);
   });
 
   it("P2 wins by attacking in 2x1", function() {
-    expectMove(P2_TURN, [3,2], ['',''],
+    expectMove(P2_TURN, [3,2], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -502,11 +545,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      NO_ONE_TURN, P2_WIN_SCORES, [3,3], ['',''], true);
+      NO_ONE_TURN, P2_WIN_SCORES, [3,3], ['',''], true, true);
   });
 
   it("P1 wins by attacking in 1x1", function() {
-    expectMove(P1_TURN, [3,3], ['',''],
+    expectMove(P1_TURN, [3,3], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -556,11 +599,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      NO_ONE_TURN, P1_WIN_SCORES, [4,3], ['',''], true);
+      NO_ONE_TURN, P1_WIN_SCORES, [4,3], ['',''], true, true);
   });
 
   it("P1 wins with air strike in 0x1", function() {
-    expectMove(P1_TURN, [3,3], ['air strike',''],
+    expectMove(P1_TURN, [3,3], ['air strike',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -610,11 +653,11 @@ describe("In SnipeCity", function() {
       ['', 'B', '', '', ''],
       ['', 'B', '', '', ''],
       ['', 'B', '', '', '']]], 
-      NO_ONE_TURN, P1_WIN_SCORES, [4,3], ['',''], true);
+      NO_ONE_TURN, P1_WIN_SCORES, [4,3], ['',''], true, true);
   });
 
   it("P2 wins with grenade in 2x0", function() {
-    expectMove(P2_TURN, [4,3], ['','grenade'],
+    expectMove(P2_TURN, [4,3], ['','grenade'], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -664,11 +707,11 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
-      NO_ONE_TURN, P2_WIN_SCORES, [4,4], ['',''], true);
+      NO_ONE_TURN, P2_WIN_SCORES, [4,4], ['',''], true, true);
   });
 
   it("P1 attacking outside the board (in 0x7) is illegal", function() {
-    expectException(P1_TURN, [3,3], ['',''],
+    expectException(P1_TURN, [3,3], ['',''], true,
       [[['B', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -697,11 +740,11 @@ describe("In SnipeCity", function() {
   });
 
   it("P1 attacking on first move is illegal", function() {
-    expectException(P1_TURN, [0,0], null, null, 0, 1, 'attack', '', false);
+    expectException(P1_TURN, [0,0], null, null, null, 0, 1, 'attack', '', false);
   });
 
   it("P2 attacking on first move is illegal", function() {
-    expectException(P2_TURN, [1,0], ['',''],
+    expectException(P2_TURN, [1,0], ['',''], true,
       [[['', '', '', '', ''],
       ['', '', '', '', ''],
       ['', '', '', '', ''],
@@ -727,5 +770,59 @@ describe("In SnipeCity", function() {
       ['', '', '', '', ''],
       ['', '', '', '', '']]], 
       0, 1, 'attack', '', false);
+  });
+
+  it("Buff spawns in 5x4 after P2 attacks", function() {
+    expectBuff(P2_TURN, [6,5], ['',''], true,
+      [[['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', '', '']], 
+      [['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['P', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'P', '']]],
+      1, 1, 'attack', '',
+      [[['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', '', '']], 
+      [['', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['P', '', '', '', ''],
+      ['', 'B', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['', '', '', '', '']],
+      [['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'B', 'B'],
+      ['B', 'B', 'B', 'P', 'buff']]], 
+      P1_TURN, NO_ONE_WINS, [6,6], ['',''], true, false, 5, 4);
   });
 });

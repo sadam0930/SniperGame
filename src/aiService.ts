@@ -53,7 +53,6 @@ module aiService {
   }
 
   function getCells(currentState: IState, currentTurnIndex: number, moveType: string, cell: number[]): void {
-      if (moveType === '') return;
       let safe_guard_counter: number = 0;
       let board: Board = (moveType === 'move') ? 
           currentState.board[currentTurnIndex + 2] : 

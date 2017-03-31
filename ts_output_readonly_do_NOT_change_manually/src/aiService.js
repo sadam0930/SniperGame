@@ -52,8 +52,6 @@ var aiService;
         return false;
     }
     function getCells(currentState, currentTurnIndex, moveType, cell) {
-        if (moveType === '')
-            return;
         var safe_guard_counter = 0;
         var board = (moveType === 'move') ?
             currentState.board[currentTurnIndex + 2] :
