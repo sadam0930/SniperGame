@@ -3,10 +3,6 @@ describe("aiService", function() {
     let uiBefore: IMove = { endMatchScores: null, turnIndex: null, state: null };
     let uiAfter: IMove = { endMatchScores: null, turnIndex: null, state: null };
 
-    function createComputerMove(state: IState, turnIndex: number): IMove {
-        return aiService.generateComputerMove(state, turnIndex);
-    }
-
     function expectException(uiBeforeMove: IMove, uiAfterMove: IMove): void {
         let didThrowException: boolean = false;
         try {
