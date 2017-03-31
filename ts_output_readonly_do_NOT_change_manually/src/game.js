@@ -98,12 +98,7 @@ var game;
     }
     game.isProposal2 = isProposal2;
     function isABuff(cellValue) {
-        if (cellValue === 'grenade')
-            return true;
-        else if (cellValue === 'air strike')
-            return true;
-        else
-            return false;
+        return gameLogic.isABuff(cellValue);
     }
     game.isABuff = isABuff;
     function hasBuff() {
@@ -167,15 +162,9 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        // let currentMove:IMove = {
-        //   endMatchScores: currentUpdateUI.endMatchScores,
-        //   state: currentUpdateUI.state,
-        //   turnIndex: currentUpdateUI.turnIndex,
-        // }
-        // let move = aiService.findComputerMove(currentMove);
-        // log.info("Computer move: ", move);
-        // makeMove(move);
-        aiService.generateComputerMove(game.currentUpdateUI);
+        var move = aiService.generateComputerMove(game.currentUpdateUI.state, game.currentUpdateUI.turnIndex);
+        log.info("Computer move: ", move);
+        makeMove(move);
     }
     function makeMove(move) {
         if (game.didMakeMove) {

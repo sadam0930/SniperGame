@@ -218,7 +218,7 @@ module gameLogic {
 
     }
     else if (moveType === 'move') {
-      if (game.isABuff(boardsAfterMove[playerID + 2][row][col])) 
+      if (isABuff(boardsAfterMove[playerID + 2][row][col])) 
         buffsAfterMove[playerID] = boardsAfterMove[playerID + 2][row][col];
       assignNewPosition(boardsAfterMove[playerID + 2], row, col);
     }
@@ -232,6 +232,11 @@ module gameLogic {
     let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
     let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
+  }
+
+  export function isABuff(cellValue: string): boolean {
+    if (cellValue === 'grenade' || cellValue === 'air strike') return true;
+    return false;
   }
 
   function assignNewPosition(board: Board, row: number, col: number): void {

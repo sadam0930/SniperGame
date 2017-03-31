@@ -5,7 +5,7 @@ describe("In SnipeCity", function() {
   let NO_ONE_WINS: number[] = null;
   let P1_WIN_SCORES = [1, 0];
   let P2_WIN_SCORES = [0, 1];
-  let TIE_SCORES = [0, 0];
+  // let TIE_SCORES = [0, 0];
 
     
   function expectException(
@@ -53,7 +53,6 @@ describe("In SnipeCity", function() {
       };
     let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs} : null;
     let move: IMove = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
-    console.log(move);
     expect(angular.equals(move, expectedMove)).toBe(true);
   }
 
