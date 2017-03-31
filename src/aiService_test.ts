@@ -1,115 +1,469 @@
 describe("aiService", function() {
-  let P1_TURN = 0;
-  let AI_TURN = 1;
-  let NO_ONE_TURN = -1;
-  let NO_ONE_WINS: number[] = null;
-  let P1_WIN_SCORES = [1, 0];
-  let P2_WIN_SCORES = [0, 1];
-  
-  function createComputerMove(board: Board[], gameOver: boolean, turnCounts: number[], currentBuffs: string[], turnIndex: number): IMove {
-    let stateBeforeMove: IState = {board: board, delta: null, gameOver: gameOver, turnCounts: turnCounts, currentBuffs: currentBuffs};
-    return aiService.generateComputerMove(stateBeforeMove, turnIndex);
+  let uiBefore: IMove = { endMatchScores: null, turnIndex: null, state: null };
+  let uiAfter: IMove = { endMatchScores: null, turnIndex: null, state: null };
+
+  function expectException(uiBeforeMove: IMove): void {
+      let aiMove = aiService.generateComputerMove(uiBeforeMove.state, uiBeforeMove.turnIndex);
+      if (aiMove !== null) throw new Error("generateComputerMove should have returned null!");
   }
 
-  function expectException(
-      turnIndexBeforeMove: number,
-      turnCountBeforeMove: number[],
-      currentBuffs: string[],
-      boardBeforeMove: Board[],
-      row: number,
-      col: number,
-      moveType: string,
-      attackType: string, //not actually used here since we don't care about the delta
-      gameOver: boolean): void {
-    let stateBeforeMove: IState = boardBeforeMove ? {board: boardBeforeMove, delta: null, gameOver: gameOver, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs} : null;
-    // We expect an exception to be thrown :)
-    let didThrowException = false;
-    try {
-      createComputerMove(boardBeforeMove, gameOver, turnCountBeforeMove, currentBuffs, turnIndexBeforeMove);
-    } catch (e) {
-      didThrowException = true;
-    }
-    if (!didThrowException) {
-      throw new Error("We expect an illegal move, but createMove didn't throw any exception!")
-    }
+  function expectMove(uiBeforeMove: IMove, uiAfterMove: IMove): void {
+      let aiMove = aiService.generateComputerMove(uiBeforeMove.state, uiBeforeMove.turnIndex);
+      expect(angular.equals(aiMove, uiAfterMove)).toBe(true);
   }
 
-  function expectMove(
-      turnIndexBeforeMove: number,
-      turnCountBeforeMove: number[],
-      currentBuffs: string[],
-      boardBeforeMove: Board[],
-      row: number,
-      col: number,
-      moveType: string,
-      attackType: string,
-      boardAfterMove: Board[],
-      turnIndexAfterMove: number,
-      endMatchScores: number[],
-      turnCountAfterMove: number[],
-      buffsAfterMove: string[],
-      gameOver: boolean): void {
-    let expectedMove:IMove = {
-        turnIndex: P1_TURN,
-        endMatchScores: endMatchScores,
-        state: {board: boardAfterMove, delta: {row: row, col: col, moveType: moveType, attackType: attackType}, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove}
+  it("AI picks up grenade", function() {
+      uiBefore = {
+          endMatchScores: null,
+          turnIndex: 1,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['P','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','P','','',],
+                          ['','grenade','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ]
+                  ],
+              delta: null,
+              gameOver: false,
+              turnCounts: [2,1],
+              currentBuffs: ['', '']
+          }
       };
-    let aiMove = createComputerMove(boardBeforeMove, gameOver, turnCountBeforeMove, currentBuffs, turnIndexBeforeMove);
-    expect(angular.equals(aiMove, expectedMove)).toBe(true);
-  }
+      uiAfter = {
+          endMatchScores: null,
+          turnIndex: 0,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['P','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','P','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ]
+                  ],
+              delta: {
+                  row: 3, 
+                  col: 1, 
+                  moveType: 'move', 
+                  attackType: '' 
+              },
+              gameOver: false,
+              turnCounts: [2,2],
+              currentBuffs: ['', 'grenade']
+          }
+      };
 
-  it("computer moves to pick up buff", function() {
-    expectMove(AI_TURN, [2,1], ['',''],
-      [[['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']], 
-      [['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']],
-      [['P', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']],
-      [['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', 'P', '', ''],
-      ['', 'grenade', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']]], 
-      3, 1, 'move', '',
-      [[['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']], 
-      [['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']],
-      [['P', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']],
-      [['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', ''],
-      ['', 'P', '', '', ''],
-      ['', '', '', '', ''],
-      ['', '', '', '', '']]], 
-      P1_TURN, NO_ONE_WINS, [2,2], ['','grenade'], false);
+      expectMove(uiBefore, uiAfter);
+
   });
 
+  it("AI picks up air strike", function() {
+      uiBefore = {
+          endMatchScores: null,
+          turnIndex: 1,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['P','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','P','','',],
+                          ['','air strike','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ]
+                  ],
+              delta: null,
+              gameOver: false,
+              turnCounts: [2,1],
+              currentBuffs: ['', '']
+          }
+      };
+      uiAfter = {
+          endMatchScores: null,
+          turnIndex: 0,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['P','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ],
+                      [
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','','','','',],
+                          ['','P','','','',],
+                          ['','','','','',],
+                          ['','','','','',]
+                      ]
+                  ],
+              delta: {
+                  row: 3, 
+                  col: 1, 
+                  moveType: 'move', 
+                  attackType: '' 
+              },
+              gameOver: false,
+              turnCounts: [2,2],
+              currentBuffs: ['', 'air strike']
+          }
+      };
+
+      expectMove(uiBefore, uiAfter);
+   
+  });
+
+  it("AI can't move and can only attack one cell", function() {
+      uiBefore = {
+          endMatchScores: null,
+          turnIndex: 0,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ]
+                  ],
+              delta: null,
+              gameOver: false,
+              turnCounts: [2,2],
+              currentBuffs: ['', '']
+          }
+      };
+      uiAfter = {
+          endMatchScores: [1, 0],
+          turnIndex: -1,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','D',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','D',],
+                      ]
+                  ],
+              delta: {
+                  row: 5, 
+                  col: 4, 
+                  moveType: 'attack', 
+                  attackType: '' 
+              },
+              gameOver: true,
+              turnCounts: [3,2],
+              currentBuffs: ['', '']
+          }
+      };
+
+      expectMove(uiBefore, uiAfter);
+   
+  });
+
+  it("AI can't attack and can only move to one cell", function() {
+      uiBefore = {
+          endMatchScores: null,
+          turnIndex: 0,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','','P',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ]
+                  ],
+              delta: null,
+              gameOver: false,
+              turnCounts: [2,2],
+              currentBuffs: ['', '']
+          }
+      };
+      uiAfter = {
+          endMatchScores: null,
+          turnIndex: 1,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','P','',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ]
+                  ],
+              delta: {
+                  row: 5, 
+                  col: 3, 
+                  moveType: 'move', 
+                  attackType: '' 
+              },
+              gameOver: false,
+              turnCounts: [3,2],
+              currentBuffs: ['', '']
+          }
+      };
+
+      expectMove(uiBefore, uiAfter);
+   
+  });
+
+  it("AI can't do anything, should do nothing", function() {
+      uiBefore = {
+          endMatchScores: null,
+          turnIndex: 0,          
+          state: {
+              board: 
+                  [
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ],
+                      [
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','B',],
+                          ['B','B','B','B','P',],
+                      ]
+                  ],
+              delta: null,
+              gameOver: false,
+              turnCounts: [2,2],
+              currentBuffs: ['', '']
+          }
+      };
+      
+      expectException(uiBefore);
+   
+  });
 });

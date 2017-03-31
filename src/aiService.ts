@@ -13,7 +13,7 @@ module aiService {
       if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
           log.info("Failed to generate computer move.");
           log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
-          return;
+          return null;
       }
       return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
   }
