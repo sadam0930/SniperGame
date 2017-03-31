@@ -31,6 +31,26 @@ describe("In SnipeCity", function () {
         var move = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
         expect(angular.equals(move, expectedMove)).toBe(true);
     }
+    function expectBuff(turnIndexBeforeMove, turnCountBeforeMove, currentBuffs, buffsEnabled, boardBeforeMove, row, col, moveType, attackType, boardAfterMove, turnIndexAfterMove, endMatchScores, turnCountAfterMove, buffsAfterMove, keepSpawningBuffs, gameOver, expectedSpawnRow, expectedSpawnCol) {
+        var possibleBoardAfterMove1 = angular.copy(boardAfterMove);
+        var possibleBoardAfterMove2 = angular.copy(boardAfterMove);
+        possibleBoardAfterMove1[turnIndexBeforeMove + 2][expectedSpawnRow][expectedSpawnCol] = 'grenade';
+        possibleBoardAfterMove2[turnIndexBeforeMove + 2][expectedSpawnRow][expectedSpawnCol] = 'air strike';
+        var possibleMove1 = {
+            turnIndex: turnIndexAfterMove,
+            endMatchScores: endMatchScores,
+            state: { board: possibleBoardAfterMove1, delta: { row: row, col: col, moveType: moveType, attackType: attackType }, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs }
+        };
+        var possibleMove2 = {
+            turnIndex: turnIndexAfterMove,
+            endMatchScores: endMatchScores,
+            state: { board: possibleBoardAfterMove2, delta: { row: row, col: col, moveType: moveType, attackType: attackType }, gameOver: gameOver, turnCounts: turnCountAfterMove, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs }
+        };
+        var stateBeforeMove = boardBeforeMove ? { board: boardBeforeMove, delta: null, gameOver: false, turnCounts: turnCountBeforeMove, currentBuffs: currentBuffs, buffsEnabled: buffsEnabled } : null;
+        var move = gameLogic.createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove);
+        var success = (angular.equals(move, possibleMove1) || angular.equals(move, possibleMove2));
+        expect(success).toBe(true);
+    }
     it("Initial move", function () {
         var move = gameLogic.createInitialMove();
         var expectedMove = {
@@ -641,6 +661,55 @@ describe("In SnipeCity", function () {
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', '']]], 0, 1, 'attack', '', false);
+    });
+    it("Buff spawns in 5x4 after P2 attacks", function () {
+        expectBuff(P2_TURN, [6, 5], ['', ''], true, [[['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', '', '']],
+            [['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['P', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'P', '']]], 1, 1, 'attack', '', [[['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', '', '']],
+            [['', '', '', '', ''],
+                ['', 'B', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['P', '', '', '', ''],
+                ['', 'B', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', ''],
+                ['', '', '', '', '']],
+            [['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'B', 'B'],
+                ['B', 'B', 'B', 'P', 'buff']]], P1_TURN, NO_ONE_WINS, [6, 6], ['', ''], true, false, 5, 4);
     });
 });
 //# sourceMappingURL=gameLogic_test.js.map
