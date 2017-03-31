@@ -11,6 +11,7 @@ interface IState {
   delta: BoardDelta;
   gameOver: boolean;
   turnCounts: number[];
+  currentBuffs: string[];
 }
 
 import gameService = gamingPlatform.gameService;
@@ -64,8 +65,7 @@ module gameLogic {
   }
 
   export function getInitialState(): IState {
-    game.current_buff[0] = game.current_buff[1] = '';
-    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0,0]};
+    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0,0], currentBuffs: ['','']};
   }
 
   export function getRandomPosition(): number[] {
@@ -171,12 +171,14 @@ module gameLogic {
     board = boards[boardIdx];
 
     // CHECK IF LEGAL MOVE
+    if (row > ROWS || row < 0 || col > COLS || col < 0) throw new Error("Cannot move outside of board!");
     if (board[row][col] == 'P' || board[row][col] == 'B') throw new Error("One can only make a move in an empty position!");
     if (stateBeforeMove.gameOver) throw new Error("Game Over!");
     if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
         
     // CHECK IF KILL SHOT
-    let attackType: string = game.current_buff[playerID];
+    let current_buffs: string[] = stateBeforeMove.currentBuffs;
+    let attackType: string = current_buffs[playerID];
     let winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
     let endMatchScores: number[];
     endMatchScores = null;
@@ -195,18 +197,19 @@ module gameLogic {
     let boardsAfterMove = angular.copy(boards);
     let boardMarker = winner[0] !== '' ? 'D' : 'B';
     let hit_location: number = Number(winner[1]);
+    let buffsAfterMove = angular.copy(current_buffs);
 
     if (moveType === 'attack') {
-      if (game.current_buff[playerID] === 'grenade') {
+      if (attackType === 'grenade') {
         boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
         boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
-        game.current_buff[playerID] = '';
+        buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
       }
-      else if (game.current_buff[playerID] === 'air strike') {
+      else if (attackType === 'air strike') {
         for (let i = 0; i < ROWS; i++) boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
-        game.current_buff[playerID] = '';
+        buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][hit_location][col] = boardsAfterMove[(1 - playerID) + 2][hit_location][col] = boardMarker;
       }
       else {
@@ -215,8 +218,8 @@ module gameLogic {
 
     }
     else if (moveType === 'move') {
-      if (game.isABuff(boardsAfterMove[playerID + 2][row][col])) 
-        game.current_buff[playerID] = boardsAfterMove[playerID + 2][row][col];
+      if (isABuff(boardsAfterMove[playerID + 2][row][col])) 
+        buffsAfterMove[playerID] = boardsAfterMove[playerID + 2][row][col];
       assignNewPosition(boardsAfterMove[playerID + 2], row, col);
     }
 
@@ -227,8 +230,13 @@ module gameLogic {
     playerTurnCount[turnIndexBeforeMove] += 1;
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
-    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount};
+    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove};
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
+  }
+
+  export function isABuff(cellValue: string): boolean {
+    if (cellValue === 'grenade' || cellValue === 'air strike') return true;
+    return false;
   }
 
   function assignNewPosition(board: Board, row: number, col: number): void {

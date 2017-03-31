@@ -15,7 +15,6 @@ var game;
     game.proposals = null;
     game.yourPlayerInfo = null;
     game.buffs_enabled = true;
-    game.current_buff = [];
     game.prev_turn_index = null;
     game.turn_index = null;
     function init($rootScope_, $timeout_) {
@@ -99,36 +98,31 @@ var game;
     }
     game.isProposal2 = isProposal2;
     function isABuff(cellValue) {
-        if (cellValue === 'grenade')
-            return true;
-        else if (cellValue === 'air strike')
-            return true;
-        else
-            return false;
+        return gameLogic.isABuff(cellValue);
     }
     game.isABuff = isABuff;
     function hasBuff() {
-        if (game.yourPlayerIndex() === -1)
+        if (yourPlayerIndex() === -1)
             return '';
-        return game.current_buff[yourPlayerIndex()];
+        return game.state.currentBuffs[yourPlayerIndex()];
     }
     game.hasBuff = hasBuff;
     function buffDescription(buffName) {
-        if (game.current_buff[yourPlayerIndex()] === 'grenade') {
+        if (game.state.currentBuffs[yourPlayerIndex()] === 'grenade') {
             return 'Your next attack will hit 3 windows!';
         }
-        else if (game.current_buff[yourPlayerIndex()] === 'air strike') {
+        else if (game.state.currentBuffs[yourPlayerIndex()] === 'air strike') {
             return 'Your next attack will destroy all windows in the selected column!';
         }
         return '';
     }
     game.buffDescription = buffDescription;
     function isGrenade() {
-        return (game.current_buff[game.yourPlayerIndex()] === 'grenade');
+        return (game.state.currentBuffs[yourPlayerIndex()] === 'grenade');
     }
     game.isGrenade = isGrenade;
     function isAirStrike() {
-        return (game.current_buff[game.yourPlayerIndex()] === 'air strike');
+        return (game.state.currentBuffs[yourPlayerIndex()] === 'air strike');
     }
     game.isAirStrike = isAirStrike;
     game.gameWinner = null;
@@ -168,15 +162,9 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        // let currentMove:IMove = {
-        //   endMatchScores: currentUpdateUI.endMatchScores,
-        //   state: currentUpdateUI.state,
-        //   turnIndex: currentUpdateUI.turnIndex,
-        // }
-        // let move = aiService.findComputerMove(currentMove);
-        // log.info("Computer move: ", move);
-        // makeMove(move);
-        aiService.generateComputerMove(game.currentUpdateUI);
+        var move = aiService.generateComputerMove(game.currentUpdateUI.state, game.currentUpdateUI.turnIndex);
+        log.info("Computer move: ", move);
+        makeMove(move);
     }
     function makeMove(move) {
         if (game.didMakeMove) {
@@ -297,19 +285,25 @@ var game;
     function isP1() {
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             return true;
-        return (yourPlayerIndex() == 0);
+        else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+            isGameOver() && (game.gameWinner === 1))
+            return true;
+        else
+            return (yourPlayerIndex() === 0);
     }
     game.isP1 = isP1;
     function isP2() {
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             return false;
-        return (yourPlayerIndex() == 1);
+        else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+            isGameOver() && (game.gameWinner === 2))
+            return true;
+        else
+            return (yourPlayerIndex() === 1);
     }
     game.isP2 = isP2;
     function isGameOver() {
-        if (isFirstMove() || (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1))
-            return;
-        return (game.currentUpdateUI.state.gameOver);
+        return (game.currentUpdateUI.turnIndex === -1);
     }
     game.isGameOver = isGameOver;
 })(game || (game = {}));

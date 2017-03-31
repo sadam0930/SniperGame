@@ -159,11 +159,14 @@
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
 		        <div ng-if="!game.firstMove()">	        
-		        	<div class="turnDisplay" ng-if="game.isMyTurn() && !isGameOver()"> 
+		        	<div class="turnDisplay" ng-if="game.isMyTurn() && !game.isGameOver()"> 
 			        	<text>Your turn.</text>
 			       	</div>
-			       	<div class="turnDisplay" ng-if="!game.isMyTurn() && !isGameOver()"> 
+			       	<div class="turnDisplay" ng-if="!game.isMyTurn() && !game.isGameOver()"> 
 			        	<text>Opponent's turn.</text>
+			       	</div>
+			       	<div class="turnDisplay" ng-if="game.isGameOver()"> 
+			        	<text><br/></text>
 			       	</div>
 		        </div>
 <!-- GAME OVER BANNER -->

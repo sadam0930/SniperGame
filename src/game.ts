@@ -21,7 +21,6 @@ module game {
   export let proposals: number[][] = null;
   export let yourPlayerInfo: IPlayerInfo = null;
   export let buffs_enabled: boolean = true;
-  export let current_buff: string[] = [];
   export let prev_turn_index: number = null;
   export let turn_index: number = null;
 
@@ -105,32 +104,30 @@ module game {
   }
 
   export function isABuff(cellValue: string): boolean {
-    if (cellValue === 'grenade') return true;
-    else if (cellValue === 'air strike') return true;
-    else return false;
+    return gameLogic.isABuff(cellValue);
   }
 
   export function hasBuff(): string {
-    if (game.yourPlayerIndex() === -1) return '';
-    return game.current_buff[yourPlayerIndex()];
+    if (yourPlayerIndex() === -1) return '';
+    return state.currentBuffs[yourPlayerIndex()];
   }
 
   export function buffDescription(buffName: string): string {
-    if (game.current_buff[yourPlayerIndex()] === 'grenade') {
+    if (state.currentBuffs[yourPlayerIndex()] === 'grenade') {
       return 'Your next attack will hit 3 windows!';
     }
-    else if (game.current_buff[yourPlayerIndex()] === 'air strike') {
+    else if (state.currentBuffs[yourPlayerIndex()] === 'air strike') {
       return 'Your next attack will destroy all windows in the selected column!';
     }
     return '';
   }
 
   export function isGrenade(): boolean {
-  	return (current_buff[game.yourPlayerIndex()] === 'grenade');
+  	return (state.currentBuffs[yourPlayerIndex()] === 'grenade');
   }
 
   export function isAirStrike(): boolean {
-  	return (current_buff[game.yourPlayerIndex()] === 'air strike');
+  	return (state.currentBuffs[yourPlayerIndex()] === 'air strike');
   }
   
   export let gameWinner: number = null;
@@ -147,12 +144,12 @@ module game {
       state = gameLogic.getInitialState();
     }
     if (params.endMatchScores != null) {
-      game.gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
+      gameWinner = (params.endMatchScores[0] > params.endMatchScores[1]) ? 1 : 2;
     } else {
-      game.gameWinner = null;
+      gameWinner = null;
     }
-    game.prev_turn_index = game.turn_index;
-    game.turn_index = params.turnIndex;
+    prev_turn_index = turn_index;
+    turn_index = params.turnIndex;
 
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
@@ -174,15 +171,9 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    // let currentMove:IMove = {
-    //   endMatchScores: currentUpdateUI.endMatchScores,
-    //   state: currentUpdateUI.state,
-    //   turnIndex: currentUpdateUI.turnIndex,
-    // }
-    // let move = aiService.findComputerMove(currentMove);
-    // log.info("Computer move: ", move);
-    // makeMove(move);
-    aiService.generateComputerMove(currentUpdateUI);
+    let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
+    log.info("Computer move: ", move);
+    makeMove(move);
   }
 
   export function makeMove(move: IMove) {
@@ -261,7 +252,7 @@ module game {
     let board_number: number = (board + yourPlayerIndex());
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') board_number = board;
     if (yourPlayerIndex() === -1) {
-      if (game.gameWinner != null) board_number = (board + game.gameWinner - 1);
+      if (gameWinner != null) board_number = (board + gameWinner - 1);
       else return;
     }
     return state.board[board_number][row][col] === pieceKind;
@@ -301,17 +292,20 @@ module game {
 
   export function isP1(): boolean {
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') return true;
-    return (yourPlayerIndex() == 0);
+    else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+        isGameOver() && (gameWinner === 1)) return true;
+    else return (yourPlayerIndex() === 0);
   }
 
   export function isP2(): boolean {
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') return false;
-    return (yourPlayerIndex() == 1);
+    else if ((yourPlayerIndex() !== 0) && (yourPlayerIndex() !== 1) &&
+        isGameOver() && (gameWinner === 2)) return true;
+    else return (yourPlayerIndex() === 1);
   }
 
   export function isGameOver(): boolean {
-    if (isFirstMove() || (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)) return;
-    return (currentUpdateUI.state.gameOver);
+    return (currentUpdateUI.turnIndex === -1);
   }
 
 }
