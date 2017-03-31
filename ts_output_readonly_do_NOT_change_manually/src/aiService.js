@@ -7,7 +7,7 @@ var aiService;
         var cell = [-1, -1];
         var moveType = '';
         var getBuff = checkBoardForBuff(currentState, currentTurnIndex, cell); //immediately get buff and skip searching for free cells
-        moveType = getMoveType(currentState, currentTurnIndex, cell, getBuff);
+        moveType = getMoveType(currentState, currentTurnIndex, cell);
         if (!getBuff)
             getCells(currentState, currentTurnIndex, moveType, cell);
         if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
@@ -79,11 +79,11 @@ var aiService;
         cell[0] = pos[0];
         cell[1] = pos[1];
     }
-    function getMoveType(currentState, currentTurnIndex, cell, getBuff) {
+    function getMoveType(currentState, currentTurnIndex, cell) {
         var moveType;
         if (currentState.turnCounts[currentTurnIndex] === 0)
             moveType = 'move';
-        else if (checkBoardForBuff(currentState, currentTurnIndex, cell, getBuff))
+        else if (checkBoardForBuff(currentState, currentTurnIndex, cell))
             moveType = 'move';
         else {
             var move = canMove(currentState, currentTurnIndex);
