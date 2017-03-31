@@ -8,7 +8,7 @@ module aiService {
       let moveType: string = '';
       let getBuff: boolean = checkBoardForBuff(currentState, currentTurnIndex, cell); //immediately get buff and skip searching for free cells
 
-      moveType = getMoveType(currentState, currentTurnIndex, cell, getBuff);
+      moveType = getMoveType(currentState, currentTurnIndex, cell);
       if (!getBuff) getCells(currentState, currentTurnIndex, moveType, cell);
       if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
           log.info("Failed to generate computer move.");
@@ -81,10 +81,10 @@ module aiService {
       cell[1] = pos[1];
   }
 
-  function getMoveType(currentState: IState, currentTurnIndex: number, cell: number[], getBuff: boolean): string {
+  function getMoveType(currentState: IState, currentTurnIndex: number, cell: number[]): string {
       let moveType: string;
       if (currentState.turnCounts[currentTurnIndex] === 0) moveType = 'move';
-      else if (checkBoardForBuff(currentState, currentTurnIndex, cell, getBuff)) moveType = 'move';
+      else if (checkBoardForBuff(currentState, currentTurnIndex, cell)) moveType = 'move';
       else {
           let move: boolean = canMove(currentState, currentTurnIndex);
           let attack: boolean = canAttack(currentState, currentTurnIndex);
