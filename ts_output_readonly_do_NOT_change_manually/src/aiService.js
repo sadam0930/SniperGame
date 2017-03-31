@@ -6,7 +6,7 @@ var aiService;
             currentState = gameLogic.getInitialState();
         var cell = [-1, -1];
         var moveType = '';
-        var getBuff = false; //immediately get buff and skip searching for free cells
+        var getBuff = checkBoardForBuff(currentState, currentTurnIndex, cell); //immediately get buff and skip searching for free cells
         moveType = getMoveType(currentState, currentTurnIndex, cell, getBuff);
         if (!getBuff)
             getCells(currentState, currentTurnIndex, moveType, cell);
@@ -18,14 +18,13 @@ var aiService;
         return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
     }
     aiService.generateComputerMove = generateComputerMove;
-    function checkBoardForBuff(currentState, currentTurnIndex, cell, getBuff) {
+    function checkBoardForBuff(currentState, currentTurnIndex, cell) {
         var moveBoard = currentState.board[(currentTurnIndex + 2)];
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
                 if (gameLogic.isABuff(moveBoard[i][j])) {
                     cell[0] = i;
                     cell[1] = j;
-                    getBuff = true;
                     return true;
                 }
             }
