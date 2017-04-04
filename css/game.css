@@ -153,6 +153,15 @@ body {
 .window.supplyCrate{
   background-image: url("../img/supplies.png"); 
 }
+.window.broken2 {
+  background-image: url("../img/broken_window2.png");
+}
+.window.blank2 {
+  background-image: url("../img/window2.png");
+}
+.window.deadPlayer2{
+  background-image: url("../img/dead2.png");
+}
 .col{
   height: 100%;
   float:left;

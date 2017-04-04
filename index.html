@@ -105,11 +105,11 @@
 		          			<div ng-repeat="col in num_cols_as_list" class="col" style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
 							<!-- WINDOW EFFECTS -->
 								<!-- WINDOW PANE -->
-		                		<a href="#" class="window blank" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
+		                		<a href="#" class="window blank2" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
 								<!-- BROKEN GLASS -->
-			                	<a href="#" class="window broken" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
+			                	<a href="#" class="window broken2" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
 								<!-- DEAD CHARACTER -->
-								<a href="#" class="window deadPlayer" ng-if="game.isDead(0, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
+								<a href="#" class="window deadPlayer2" ng-if="game.isDead(0, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
 		          			</div>
 			    		</div>
 			    	</div>
