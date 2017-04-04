@@ -22,7 +22,7 @@ textarea, input {
   display: none !important;
 }
 body {
-  background-color: rgb(250,250,250);
+  background-color: lightgrey;
 }
 
 * {-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;}
