@@ -131,6 +131,7 @@ var game;
         game.currentUpdateUI = params;
         clearAnimationTimeout();
         game.state = params.state;
+        playAudio();
         if (isFirstMove()) {
             game.state = gameLogic.getInitialState();
         }
@@ -148,6 +149,25 @@ var game;
         game.animationEndedTimeout = game.$timeout(animationEndedCallback, 500);
     }
     game.updateUI = updateUI;
+    // Currently set to play audio every time updateUI is called
+    function playAudio() {
+        if (game.state === null || game.state.delta === null)
+            return;
+        var audio = new Audio();
+        if (game.state.delta.moveType === 'attack') {
+            // Attack-audio sounds
+            if (game.state.delta.attackType === '') {
+                audio = new Audio('audio/silencer.wav');
+            }
+            else if (game.state.delta.attackType === 'grenade') {
+                audio = new Audio('audio/grenade.wav');
+            }
+            else if (game.state.delta.attackType === 'air strike') {
+                audio = new Audio('audio/air_strike.wav');
+            }
+        }
+        audio.play();
+    }
     function animationEndedCallback() {
         log.info("Animation ended");
         maybeSendComputerMove();

@@ -201,7 +201,7 @@ var gameLogic;
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
         var my_turn_count = playerTurnCount[turnIndexBeforeMove];
-        if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && buffsEnabled) {
+        if ((my_turn_count > 0) && (my_turn_count % 3 == 0) && buffsEnabled) {
             spawnPowerUps(boardsAfterMove, turnIndexBeforeMove, keepSpawningBuffs);
         }
         playerTurnCount[turnIndexBeforeMove] += 1;
