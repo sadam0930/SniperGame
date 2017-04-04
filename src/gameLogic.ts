@@ -218,7 +218,7 @@ module gameLogic {
     }
 
     let my_turn_count: number = playerTurnCount[turnIndexBeforeMove];
-    if ((my_turn_count > 0) && (my_turn_count % 5 == 0) && buffsEnabled) {
+    if ((my_turn_count > 0) && (my_turn_count % 3 == 0) && buffsEnabled) {
       spawnPowerUps(boardsAfterMove, turnIndexBeforeMove, keepSpawningBuffs);
     }
     playerTurnCount[turnIndexBeforeMove] += 1;

@@ -138,6 +138,7 @@ module game {
     currentUpdateUI = params;
     clearAnimationTimeout();
     state = params.state;
+    playAudio();
     
     if (isFirstMove()) {
       state = gameLogic.getInitialState();
@@ -154,6 +155,26 @@ module game {
     // because if we call aiService now
     // then the animation will be paused until the javascript finishes.
     animationEndedTimeout = $timeout(animationEndedCallback, 500);
+  }
+
+  // Currently set to play audio every time updateUI is called
+  function playAudio() {
+    if (state === null || state.delta === null) return;
+    
+    var audio = new Audio();
+    if (state.delta.moveType === 'attack') {        
+      // Attack-audio sounds
+      if (state.delta.attackType === '') {
+        audio = new Audio('audio/explosion.wav');
+      }
+      else if (state.delta.attackType === 'grenade') {
+        audio = new Audio('audio/grenade.wav');
+      }
+      else if (state.delta.attackType === 'air strike') {
+        audio = new Audio('audio/air_strike.wav');
+      }
+    }
+    audio.play();
   }
 
   function animationEndedCallback() {
