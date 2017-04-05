@@ -342,8 +342,15 @@ module game {
       'toggleFortify'
   ];
 
+  function buttonPreCheck(): boolean {
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return false;
+    else if (document.getElementById('attackBoard') === null) return false;
+    else if (state.buffCDs === null) return false;
+    else return true;
+  }
+
   function updateButtonIcons(): void {
-    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
+    if (!buttonPreCheck()) return;
 
     for (let i = 0; i < buttonList.length; i++) {
       let thisEle = document.getElementById(buttonList[i]);
@@ -369,9 +376,7 @@ module game {
   }
 
   export function resetHighlights(): void {
-    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
-
-    if (document.getElementById('attackBoard') === null) return;
+    if (!buttonPreCheck()) return;
 
     for (let i = 0; i < buttonList.length; i++) {
       let thisEle = document.getElementById(buttonList[i]);
@@ -380,7 +385,7 @@ module game {
   }
 
   export function toggleBuff(buttonID: string): void {
-    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
+    if (!buttonPreCheck()) return;
 
     let elementToggled = document.getElementById(buttonID);
     let buffID: string = buttonID.replace('toggle', '')[0];

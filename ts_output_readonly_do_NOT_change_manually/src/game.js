@@ -337,8 +337,18 @@ var game;
         'toggleSprayBullets',
         'toggleFortify'
     ];
-    function updateButtonIcons() {
+    function buttonPreCheck() {
         if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+            return false;
+        else if (document.getElementById('attackBoard') === null)
+            return false;
+        else if (game.state.buffCDs === null)
+            return false;
+        else
+            return true;
+    }
+    function updateButtonIcons() {
+        if (!buttonPreCheck())
             return;
         for (var i = 0; i < buttonList.length; i++) {
             var thisEle = document.getElementById(buttonList[i]);
@@ -362,9 +372,7 @@ var game;
         }
     }
     function resetHighlights() {
-        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
-            return;
-        if (document.getElementById('attackBoard') === null)
+        if (!buttonPreCheck())
             return;
         for (var i = 0; i < buttonList.length; i++) {
             var thisEle = document.getElementById(buttonList[i]);
@@ -373,7 +381,7 @@ var game;
     }
     game.resetHighlights = resetHighlights;
     function toggleBuff(buttonID) {
-        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+        if (!buttonPreCheck())
             return;
         var elementToggled = document.getElementById(buttonID);
         var buffID = buttonID.replace('toggle', '')[0];
