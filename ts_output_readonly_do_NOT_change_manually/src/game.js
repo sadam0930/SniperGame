@@ -96,12 +96,8 @@ var game;
         return game.proposals && game.proposals[row][col] == 2;
     }
     game.isProposal2 = isProposal2;
-    function isABuff(cellValue) {
-        return gameLogic.isABuff(cellValue);
-    }
-    game.isABuff = isABuff;
     function hasBuff() {
-        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+        if (yourPlayerIndex() === -1)
             return '';
         return game.state.currentBuffs[yourPlayerIndex()];
     }
@@ -143,6 +139,7 @@ var game;
         }
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
+        resetHighlights();
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
         // then the animation will be paused until the javascript finishes.
@@ -159,11 +156,14 @@ var game;
             if (game.state.delta.attackType === '') {
                 audio = new Audio('audio/rifle.wav');
             }
-            else if (game.state.delta.attackType === 'grenade') {
+            else if (game.state.delta.attackType === 'G') {
                 audio = new Audio('audio/grenade.wav');
             }
-            else if (game.state.delta.attackType === 'air strike') {
+            else if (game.state.delta.attackType === 'A') {
                 audio = new Audio('audio/air_strike.wav');
+            }
+            else if (game.state.delta.attackType === 'S') {
+                audio = new Audio('audio/rifle.wav');
             }
         }
         audio.play();
@@ -181,9 +181,9 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        var move = aiService.generateComputerMove(game.currentUpdateUI.state, game.currentUpdateUI.turnIndex);
-        log.info("Computer move: ", move);
-        makeMove(move);
+        // let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
+        // log.info("Computer move: ", move);
+        // makeMove(move);
     }
     function makeMove(move) {
         if (game.didMakeMove) {
@@ -233,11 +233,14 @@ var game;
     }
     game.isMyTurn = isMyTurn;
     game.theWinner = '';
+    // USE THIS TO THROW UP A STATUS MESSAGE SHOWING YOUR ATTACK WAS CANCELLED OUT
+    game.wasOpponentFortified = false;
     function cellClicked(row, col, moveType) {
         log.info("Clicked on cell:", row, col);
         if (!isHumanTurn())
             return;
         var nextMove = null;
+        game.wasOpponentFortified = (game.state.currentBuffs[(1 - yourPlayerIndex())] === 'F');
         try {
             nextMove = gameLogic.createMove(game.state, row, col, moveType, game.currentUpdateUI.turnIndex);
         }
@@ -327,25 +330,33 @@ var game;
         return (game.currentUpdateUI.turnIndex === -1);
     }
     game.isGameOver = isGameOver;
-    function toggleBuff(buttonID) {
+    function resetHighlights() {
+        if (document.getElementById('attackBoard') === null)
+            return;
         var buttonList = [
             'toggleGrenade',
             'toggleAirStrike',
-            'toggleBulletSpray',
-            'toggleReinforceWindows'
+            'toggleSprayBullets',
+            'toggleFortify'
         ];
+        for (var i = 0; i < buttonList.length; i++) {
+            var thisEle = document.getElementById(buttonList[i]);
+            thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+        }
+    }
+    game.resetHighlights = resetHighlights;
+    function toggleBuff(buttonID) {
         var elementToggled = document.getElementById(buttonID);
         // BUTTON IS ON, TURN IT OFF
         if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
             elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+            game.state.currentBuffs[yourPlayerIndex()] = '';
         }
         else {
             // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
-            for (var i = 0; i < buttonList.length; i++) {
-                var thisEle = document.getElementById(buttonList[i]);
-                thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
-            }
+            resetHighlights();
             elementToggled.className += " highlighted";
+            game.state.currentBuffs[yourPlayerIndex()] = buttonID.replace('toggle', '')[0];
         }
     }
     game.toggleBuff = toggleBuff;

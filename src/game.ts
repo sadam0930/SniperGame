@@ -102,12 +102,8 @@ module game {
     return proposals && proposals[row][col] == 2;
   }
 
-  export function isABuff(cellValue: string): boolean {
-    return gameLogic.isABuff(cellValue);
-  }
-
   export function hasBuff(): string {
-    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return '';
+    if (yourPlayerIndex() === -1) return '';
     return state.currentBuffs[yourPlayerIndex()];
   }
 
@@ -150,6 +146,7 @@ module game {
     }
     prev_turn_index = turn_index;
     turn_index = params.turnIndex;
+    resetHighlights();
 
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
@@ -167,11 +164,14 @@ module game {
       if (state.delta.attackType === '') {
         audio = new Audio('audio/rifle.wav');
       }
-      else if (state.delta.attackType === 'grenade') {
+      else if (state.delta.attackType === 'G') {
         audio = new Audio('audio/grenade.wav');
       }
-      else if (state.delta.attackType === 'air strike') {
+      else if (state.delta.attackType === 'A') {
         audio = new Audio('audio/air_strike.wav');
+      }
+      else if (state.delta.attackType === 'S') {
+        audio = new Audio('audio/rifle.wav');
       }
     }
     audio.play();
@@ -191,9 +191,9 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
-    log.info("Computer move: ", move);
-    makeMove(move);
+    // let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
+    // log.info("Computer move: ", move);
+    // makeMove(move);
   }
 
   export function makeMove(move: IMove) {
@@ -249,10 +249,14 @@ module game {
 
   export let theWinner: string = '';
 
+  // USE THIS TO THROW UP A STATUS MESSAGE SHOWING YOUR ATTACK WAS CANCELLED OUT
+  export let wasOpponentFortified: boolean = false;
+
   export function cellClicked(row: number, col: number, moveType: string): void {
     log.info("Clicked on cell:", row, col);
     if (!isHumanTurn()) return;
     let nextMove: IMove = null;
+    wasOpponentFortified = (state.currentBuffs[(1 - yourPlayerIndex())] === 'F');
     try {
       nextMove = gameLogic.createMove(
           state, row, col, moveType, currentUpdateUI.turnIndex);
@@ -269,6 +273,7 @@ module game {
   }
 
   function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
+
     let board_number: number = (board + yourPlayerIndex());
     if (yourPlayerIndex() == -2) return;
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') board_number = board;
@@ -329,28 +334,36 @@ module game {
     return (currentUpdateUI.turnIndex === -1);
   }
 
-  export function toggleBuff(buttonID: string): void {
+  export function resetHighlights(): void {
+    if (document.getElementById('attackBoard') === null) return;
     let buttonList: string[] = [
-        'toggleGrenade', 
-        'toggleAirStrike',
-        'toggleBulletSpray',
-        'toggleReinforceWindows'
+      'toggleGrenade', 
+      'toggleAirStrike',
+      'toggleSprayBullets',
+      'toggleFortify'
     ];
+    for (let i = 0; i < buttonList.length; i++) {
+      let thisEle = document.getElementById(buttonList[i]);
+      thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+    }
+  }
+
+  export function toggleBuff(buttonID: string): void {
+
 
     let elementToggled = document.getElementById(buttonID);
 
     // BUTTON IS ON, TURN IT OFF
     if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
       elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+      state.currentBuffs[yourPlayerIndex()] = '';
     }
     // BUTTON IS NOT ON, TURN IT ON
     else {
       // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
-      for (let i = 0; i < buttonList.length; i++) {
-        let thisEle = document.getElementById(buttonList[i]);
-        thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
-      }
+      resetHighlights();
       elementToggled.className += " highlighted";
+      state.currentBuffs[yourPlayerIndex()] = buttonID.replace('toggle', '')[0];
     }
   }
 }
