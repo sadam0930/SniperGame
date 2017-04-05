@@ -64,10 +64,11 @@ body {
 }
 .btn-container{
   float:left;
-  width: 50%;
+  width: 25%;
   text-align: center;
 }
 .btn {
+  box-sizing: content-box;
   width:90%; 
   padding:9.5% 0%; 
   font-family: Open Sans, Helvetica, Arial, sans-serif; 
@@ -79,9 +80,13 @@ body {
   text-decoration: none;
   border-style: outset;
   /*border-color: darkslategrey;*/
-  border-width: thin;
+  border-width: .5vw;
 }
-.btn.btn-attack{
+.btn.highlighted{
+   border-style: inset;
+   border-color: #ffffcc;
+}
+/*.btn.btn-attack{
   background-color: #B22222; 
 }
 .btn.btn-attack:active{
@@ -92,7 +97,7 @@ body {
 }
 .btn.btn-move:active{
   top: 3px; outline: none; 
-}
+}*/
 #buttonArea {
   float: left;
   clear: both;
