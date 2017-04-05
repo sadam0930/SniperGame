@@ -157,7 +157,7 @@ var game;
         if (game.state.delta.moveType === 'attack') {
             // Attack-audio sounds
             if (game.state.delta.attackType === '') {
-                audio = new Audio('audio/explosion.wav');
+                audio = new Audio('audio/rifle.wav');
             }
             else if (game.state.delta.attackType === 'grenade') {
                 audio = new Audio('audio/grenade.wav');
