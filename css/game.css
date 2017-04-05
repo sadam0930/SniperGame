@@ -80,7 +80,7 @@ body {
   text-decoration: none;
   border-style: outset;
   /*border-color: darkslategrey;*/
-  border-width: .5vw;
+  border-width: .3vw;
 }
 .btn.highlighted{
    border-style: inset;
