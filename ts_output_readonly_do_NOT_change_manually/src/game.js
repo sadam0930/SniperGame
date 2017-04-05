@@ -16,6 +16,7 @@ var game;
     game.yourPlayerInfo = null;
     game.prev_turn_index = null;
     game.turn_index = null;
+    game.audio_enabled = true;
     function init($rootScope_, $timeout_) {
         game.$rootScope = $rootScope_;
         game.$timeout = $timeout_;
@@ -127,7 +128,6 @@ var game;
         game.currentUpdateUI = params;
         clearAnimationTimeout();
         game.state = params.state;
-        playAudio();
         if (isFirstMove()) {
             game.state = gameLogic.getInitialState();
         }
@@ -139,6 +139,8 @@ var game;
         }
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
+        if (!isMyTurn())
+            playAudio(game.state);
         resetHighlights();
         updateButtonIcons();
         // We calculate the AI move only after the animation finishes,
@@ -147,26 +149,31 @@ var game;
         game.animationEndedTimeout = game.$timeout(animationEndedCallback, 500);
     }
     game.updateUI = updateUI;
+    function toggleAudio() {
+        game.audio_enabled = !game.audio_enabled;
+    }
+    game.toggleAudio = toggleAudio;
     // Currently set to play audio every time updateUI is called
-    function playAudio() {
-        if (game.state === null || game.state.delta === null)
+    function playAudio(state) {
+        if (state.delta === null || !game.audio_enabled)
             return;
         var audio = new Audio();
-        if (game.state.delta.moveType === 'attack') {
+        if (state.delta.moveType === 'attack') {
             // Attack-audio sounds
-            if (game.state.delta.attackType === '' || game.state.delta.attackType === 'F') {
+            if (state.delta.attackType === '' || state.delta.attackType === 'F') {
                 audio = new Audio('audio/rifle.wav');
             }
-            else if (game.state.delta.attackType === 'G') {
+            else if (state.delta.attackType === 'G') {
                 audio = new Audio('audio/grenade.wav');
             }
-            else if (game.state.delta.attackType === 'A') {
+            else if (state.delta.attackType === 'A') {
                 audio = new Audio('audio/air_strike.wav');
             }
-            else if (game.state.delta.attackType === 'S') {
+            else if (state.delta.attackType === 'S') {
                 audio = new Audio('audio/rifle.wav');
             }
         }
+        state.audioPlayed[yourPlayerIndex()] = true;
         audio.play();
     }
     function animationEndedCallback() {
@@ -250,6 +257,7 @@ var game;
             return;
         }
         // Move is legal, make it!
+        playAudio(nextMove.state);
         makeMove(nextMove);
     }
     game.cellClicked = cellClicked;
