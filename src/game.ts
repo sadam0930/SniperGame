@@ -22,6 +22,7 @@ module game {
   export let yourPlayerInfo: IPlayerInfo = null;
   export let prev_turn_index: number = null;
   export let turn_index: number = null;
+  export let audio_enabled: boolean = true;
 
   export function init($rootScope_: angular.IScope, $timeout_: angular.ITimeoutService) {
     $rootScope = $rootScope_;
@@ -134,8 +135,7 @@ module game {
     currentUpdateUI = params;
     clearAnimationTimeout();
     state = params.state;
-    playAudio();
-    
+        
     if (isFirstMove()) {
       state = gameLogic.getInitialState();
     }
@@ -146,6 +146,7 @@ module game {
     }
     prev_turn_index = turn_index;
     turn_index = params.turnIndex;
+    if (!isMyTurn()) playAudio(state);
     resetHighlights();
     updateButtonIcons();
 
@@ -155,9 +156,13 @@ module game {
     animationEndedTimeout = $timeout(animationEndedCallback, 500);
   }
 
+  export function toggleAudio() {
+    audio_enabled = !audio_enabled;
+  }
+
   // Currently set to play audio every time updateUI is called
-  function playAudio() {
-    if (state === null || state.delta === null) return;
+  function playAudio(state: IState) {
+    if (state.delta === null || !audio_enabled) return;
     
     var audio = new Audio();
     if (state.delta.moveType === 'attack') {        
@@ -175,6 +180,7 @@ module game {
         audio = new Audio('audio/rifle.wav');
       }
     }
+    state.audioPlayed[yourPlayerIndex()] = true;
     audio.play();
   }
 
@@ -266,6 +272,7 @@ module game {
       return;
     }
     // Move is legal, make it!
+    playAudio(nextMove.state);
     makeMove(nextMove);
   }
 
