@@ -270,7 +270,7 @@ module game {
 
   function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
     let board_number: number = (board + yourPlayerIndex());
-    if (yourPlayerIndex() === -2) return;
+    if (yourPlayerIndex() == -2) return;
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') board_number = board;
     if (yourPlayerIndex() === -1) {
       if (gameWinner != null) board_number = (board + gameWinner - 1);
@@ -329,6 +329,30 @@ module game {
     return (currentUpdateUI.turnIndex === -1);
   }
 
+  export function toggleBuff(buttonID: string): void {
+    let buttonList: string[] = [
+        'toggleGrenade', 
+        'toggleAirStrike',
+        'toggleBulletSpray',
+        'toggleReinforceWindows'
+    ];
+
+    let elementToggled = document.getElementById(buttonID);
+
+    // BUTTON IS ON, TURN IT OFF
+    if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
+      elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+    }
+    // BUTTON IS NOT ON, TURN IT ON
+    else {
+      // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
+      for (let i = 0; i < buttonList.length; i++) {
+        let thisEle = document.getElementById(buttonList[i]);
+        thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+      }
+      elementToggled.className += " highlighted";
+    }
+  }
 }
 
 // CONTROLLER

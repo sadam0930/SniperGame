@@ -255,7 +255,7 @@ var game;
     game.shouldShowImage = shouldShowImage;
     function isPiece(board, row, col, pieceKind) {
         var board_number = (board + yourPlayerIndex());
-        if (yourPlayerIndex() === -2)
+        if (yourPlayerIndex() == -2)
             return;
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             board_number = board;
@@ -327,6 +327,28 @@ var game;
         return (game.currentUpdateUI.turnIndex === -1);
     }
     game.isGameOver = isGameOver;
+    function toggleBuff(buttonID) {
+        var buttonList = [
+            'toggleGrenade',
+            'toggleAirStrike',
+            'toggleBulletSpray',
+            'toggleReinforceWindows'
+        ];
+        var elementToggled = document.getElementById(buttonID);
+        // BUTTON IS ON, TURN IT OFF
+        if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
+            elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+        }
+        else {
+            // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
+            for (var i = 0; i < buttonList.length; i++) {
+                var thisEle = document.getElementById(buttonList[i]);
+                thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+            }
+            elementToggled.className += " highlighted";
+        }
+    }
+    game.toggleBuff = toggleBuff;
 })(game || (game = {}));
 // CONTROLLER
 var app = angular.module('myApp', ['gameServices']);
