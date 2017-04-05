@@ -80,12 +80,10 @@ var gameLogic;
      */
     function updateBuffCDs(buffCDs, pid) {
         var newBuffCDs = angular.copy(buffCDs);
-        console.log(newBuffCDs);
         newBuffCDs[pid].Grenade = ((newBuffCDs[pid].Grenade !== 0) ? (newBuffCDs[pid].Grenade - 1) : 0);
         newBuffCDs[pid].SprayBullets = ((newBuffCDs[pid].SprayBullets !== 0) ? (newBuffCDs[pid].SprayBullets - 1) : 0);
         newBuffCDs[pid].AirStrike = ((newBuffCDs[pid].AirStrike !== 0) ? (newBuffCDs[pid].AirStrike - 1) : 0);
         newBuffCDs[pid].Fortify = ((newBuffCDs[pid].Fortify !== 0) ? (newBuffCDs[pid].Fortify - 1) : 0);
-        console.log("\n\nHIHIHIHIHUPDATEBUFFCDS\n\n");
         return newBuffCDs;
     }
     function triggerCD(attackType, buffCDs, playerID) {
