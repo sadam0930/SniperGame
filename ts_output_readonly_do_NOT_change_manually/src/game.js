@@ -173,7 +173,6 @@ var game;
                 audio = new Audio('audio/rifle.wav');
             }
         }
-        state.audioPlayed[yourPlayerIndex()] = true;
         audio.play();
     }
     function animationEndedCallback() {

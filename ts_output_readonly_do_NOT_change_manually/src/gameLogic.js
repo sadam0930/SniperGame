@@ -200,7 +200,7 @@ var gameLogic;
         endMatchScores = null;
         var turnIndex;
         var isGameOver = false;
-        if (moveType === 'attack' && winner[0] !== '') {
+        if (moveType === 'attack' && winner[0] !== '' && (current_buffs[1 - playerID]) !== 'F') {
             // Game over
             log.info("Game over! Winner is: ", winner[0]);
             turnIndex = -1;
