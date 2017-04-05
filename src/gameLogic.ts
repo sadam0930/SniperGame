@@ -19,7 +19,6 @@ interface IState {
   gameOver: boolean;
   turnCounts: number[];
   currentBuffs: string[];
-  audioPlayed: boolean[];
   buffCDs: BuffCDs[];
 }
 
@@ -89,7 +88,6 @@ module gameLogic {
       gameOver: false, 
       turnCounts: [0,0], 
       currentBuffs: ['',''], 
-      audioPlayed: [false, false],
       buffCDs: getInitialBuffCDs()
     };
   }
@@ -281,7 +279,6 @@ module gameLogic {
       gameOver: isGameOver, 
       turnCounts: playerTurnCount, 
       currentBuffs: buffsAfterMove, 
-      audioPlayed: [false, false],
       buffCDs: buffCDs
     };
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
