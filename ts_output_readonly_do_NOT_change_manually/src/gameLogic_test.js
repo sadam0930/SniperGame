@@ -461,7 +461,7 @@ describe("In SnipeCity", function () {
                 ['', '', '', '', '']]], NO_ONE_TURN, P2_WIN_SCORES, [3, 3], ['', ''], true, true);
     });
     it("P1 wins by attacking in 1x1", function () {
-        expectMove(P1_TURN, [3, 3], ['', ''], true, [[['B', '', '', '', ''],
+        expectMove(P1_TURN, [2, 2], ['', ''], true, [[['B', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
@@ -507,10 +507,10 @@ describe("In SnipeCity", function () {
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
-                ['', '', '', '', '']]], NO_ONE_TURN, P1_WIN_SCORES, [4, 3], ['', ''], true, true);
+                ['', '', '', '', '']]], NO_ONE_TURN, P1_WIN_SCORES, [3, 2], ['', ''], true, true);
     });
     it("P1 wins with air strike in 0x1", function () {
-        expectMove(P1_TURN, [3, 3], ['air strike', ''], true, [[['B', '', '', '', ''],
+        expectMove(P1_TURN, [2, 2], ['air strike', ''], true, [[['B', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
@@ -556,10 +556,10 @@ describe("In SnipeCity", function () {
                 ['', 'B', '', '', ''],
                 ['', 'B', '', '', ''],
                 ['', 'B', '', '', ''],
-                ['', 'B', '', '', '']]], NO_ONE_TURN, P1_WIN_SCORES, [4, 3], ['', ''], true, true);
+                ['', 'B', '', '', '']]], NO_ONE_TURN, P1_WIN_SCORES, [3, 2], ['', ''], true, true);
     });
     it("P2 wins with grenade in 2x0", function () {
-        expectMove(P2_TURN, [4, 3], ['', 'grenade'], true, [[['B', '', '', '', ''],
+        expectMove(P2_TURN, [5, 4], ['', 'grenade'], true, [[['B', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
@@ -605,7 +605,7 @@ describe("In SnipeCity", function () {
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
                 ['', '', '', '', ''],
-                ['', '', '', '', '']]], NO_ONE_TURN, P2_WIN_SCORES, [4, 4], ['', ''], true, true);
+                ['', '', '', '', '']]], NO_ONE_TURN, P2_WIN_SCORES, [5, 5], ['', ''], true, true);
     });
     it("P1 attacking outside the board (in 0x7) is illegal", function () {
         expectException(P1_TURN, [3, 3], ['', ''], true, [[['B', '', '', '', ''],
@@ -663,7 +663,7 @@ describe("In SnipeCity", function () {
                 ['', '', '', '', '']]], 0, 1, 'attack', '', false);
     });
     it("Buff spawns in 5x4 after P2 attacks", function () {
-        expectBuff(P2_TURN, [6, 5], ['', ''], true, [[['B', 'B', 'B', 'B', 'B'],
+        expectBuff(P2_TURN, [4, 3], ['', ''], true, [[['B', 'B', 'B', 'B', 'B'],
                 ['B', 'B', 'B', 'B', 'B'],
                 ['B', 'B', 'B', 'B', 'B'],
                 ['B', 'B', 'B', 'B', 'B'],
@@ -709,7 +709,7 @@ describe("In SnipeCity", function () {
                 ['B', 'B', 'B', 'B', 'B'],
                 ['B', 'B', 'B', 'B', 'B'],
                 ['B', 'B', 'B', 'B', 'B'],
-                ['B', 'B', 'B', 'P', 'buff']]], P1_TURN, NO_ONE_WINS, [6, 6], ['', ''], true, false, 5, 4);
+                ['B', 'B', 'B', 'P', 'buff']]], P1_TURN, NO_ONE_WINS, [4, 4], ['', ''], true, false, 5, 4);
     });
 });
 //# sourceMappingURL=gameLogic_test.js.map

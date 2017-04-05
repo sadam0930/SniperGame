@@ -101,7 +101,7 @@ var game;
     }
     game.isABuff = isABuff;
     function hasBuff() {
-        if (yourPlayerIndex() === -1)
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
             return '';
         return game.state.currentBuffs[yourPlayerIndex()];
     }

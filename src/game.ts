@@ -107,7 +107,7 @@ module game {
   }
 
   export function hasBuff(): string {
-    if (yourPlayerIndex() === -1) return '';
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return '';
     return state.currentBuffs[yourPlayerIndex()];
   }
 
