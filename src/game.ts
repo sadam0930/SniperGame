@@ -161,7 +161,7 @@ module game {
     var audio = new Audio();
     if (state.delta.moveType === 'attack') {        
       // Attack-audio sounds
-      if (state.delta.attackType === '') {
+      if (state.delta.attackType === '' || state.delta.attackType === 'F') {
         audio = new Audio('audio/rifle.wav');
       }
       else if (state.delta.attackType === 'G') {

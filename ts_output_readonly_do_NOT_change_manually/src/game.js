@@ -153,7 +153,7 @@ var game;
         var audio = new Audio();
         if (game.state.delta.moveType === 'attack') {
             // Attack-audio sounds
-            if (game.state.delta.attackType === '') {
+            if (game.state.delta.attackType === '' || game.state.delta.attackType === 'F') {
                 audio = new Audio('audio/rifle.wav');
             }
             else if (game.state.delta.attackType === 'G') {
