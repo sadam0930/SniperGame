@@ -147,6 +147,7 @@ module game {
     prev_turn_index = turn_index;
     turn_index = params.turnIndex;
     resetHighlights();
+    updateButtonIcons();
 
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
@@ -334,14 +335,44 @@ module game {
     return (currentUpdateUI.turnIndex === -1);
   }
 
-  export function resetHighlights(): void {
-    if (document.getElementById('attackBoard') === null) return;
-    let buttonList: string[] = [
+  var buttonList: string[] = [
       'toggleGrenade', 
       'toggleAirStrike',
       'toggleSprayBullets',
       'toggleFortify'
-    ];
+  ];
+
+  function updateButtonIcons(): void {
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
+
+    for (let i = 0; i < buttonList.length; i++) {
+      let thisEle = document.getElementById(buttonList[i]);
+      let buffID: string = buttonList[i].replace('toggle', '')[0];
+      let cdRemaining: number = gameLogic.checkCD(buffID, state.buffCDs, yourPlayerIndex());
+
+      if (cdRemaining > 0) {
+        thisEle.className = "btn btn-buff t" + cdRemaining;
+      }
+      else if (buffID === 'G') {
+        thisEle.className = "btn btn-buff grenade";
+      }
+      else if (buffID === 'A') {
+        thisEle.className = "btn btn-buff missile";
+      }
+      else if (buffID === 'S') {
+        thisEle.className = "btn btn-buff sprayBullets";
+      }
+      else if (buffID === 'F') {
+        thisEle.className = "btn btn-buff fortify";
+      }
+    }
+  }
+
+  export function resetHighlights(): void {
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
+
+    if (document.getElementById('attackBoard') === null) return;
+
     for (let i = 0; i < buttonList.length; i++) {
       let thisEle = document.getElementById(buttonList[i]);
       thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
@@ -349,10 +380,13 @@ module game {
   }
 
   export function toggleBuff(buttonID: string): void {
-
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
 
     let elementToggled = document.getElementById(buttonID);
-
+    let buffID: string = buttonID.replace('toggle', '')[0];
+    let cdRemaining: number = gameLogic.checkCD(buffID, state.buffCDs, yourPlayerIndex());
+    if (cdRemaining > 0) return;
+    
     // BUTTON IS ON, TURN IT OFF
     if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
       elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
@@ -363,7 +397,7 @@ module game {
       // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
       resetHighlights();
       elementToggled.className += " highlighted";
-      state.currentBuffs[yourPlayerIndex()] = buttonID.replace('toggle', '')[0];
+      state.currentBuffs[yourPlayerIndex()] = buffID;
     }
   }
 }

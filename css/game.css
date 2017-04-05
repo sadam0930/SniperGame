@@ -118,7 +118,7 @@ body {
 .building{
   background-image: url("../img/wall.png");
   background-size: 15%;
-  animation:rotateme 1.5s linear;
+  /*animation:rotateme 1.5s linear;*/
 }
 @keyframes rotateme { 
   20% { transform: scale(2,2); }
@@ -402,12 +402,39 @@ body {
   background-position: center;
   background-size: 50%
 }
+/*CD TIMERS*/
+.btn-buff.t1{
+  background-color: orange;
+}
+.btn-buff.t2{
+  background-color: yellow;
+}
+.btn-buff.t3{
+  background-color: green;
+}
+.btn-buff.t4{
+  background-color: blue;
+}
+.btn-buff.t5{
+  background-color: red;
+}
+/*CD TIMERS*/
+
+/*BUFF ICONS*/
 .btn-buff.grenade{
   background-image: url("../img/grenade.png");
 }
 .btn-buff.missile{
   background-image: url("../img/missile.png");
 }
+.btn-buff.sprayBullets{
+  background-image: url("../img/grenade.png");
+}
+.btn-buff.fortify{
+  background-image: url("../img/missile.png");
+}
+/*BUFF ICONS*/
+
 /* Manipulate size for screen size */
 @media only screen and (max-device-width:1025px){
    /* default iPad Pro screens */

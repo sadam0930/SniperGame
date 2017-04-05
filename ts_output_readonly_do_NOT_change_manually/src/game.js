@@ -140,6 +140,7 @@ var game;
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
         resetHighlights();
+        updateButtonIcons();
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
         // then the animation will be paused until the javascript finishes.
@@ -330,15 +331,41 @@ var game;
         return (game.currentUpdateUI.turnIndex === -1);
     }
     game.isGameOver = isGameOver;
+    var buttonList = [
+        'toggleGrenade',
+        'toggleAirStrike',
+        'toggleSprayBullets',
+        'toggleFortify'
+    ];
+    function updateButtonIcons() {
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+            return;
+        for (var i = 0; i < buttonList.length; i++) {
+            var thisEle = document.getElementById(buttonList[i]);
+            var buffID = buttonList[i].replace('toggle', '')[0];
+            var cdRemaining = gameLogic.checkCD(buffID, game.state.buffCDs, yourPlayerIndex());
+            if (cdRemaining > 0) {
+                thisEle.className = "btn btn-buff t" + cdRemaining;
+            }
+            else if (buffID === 'G') {
+                thisEle.className = "btn btn-buff grenade";
+            }
+            else if (buffID === 'A') {
+                thisEle.className = "btn btn-buff missile";
+            }
+            else if (buffID === 'S') {
+                thisEle.className = "btn btn-buff sprayBullets";
+            }
+            else if (buffID === 'F') {
+                thisEle.className = "btn btn-buff fortify";
+            }
+        }
+    }
     function resetHighlights() {
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+            return;
         if (document.getElementById('attackBoard') === null)
             return;
-        var buttonList = [
-            'toggleGrenade',
-            'toggleAirStrike',
-            'toggleSprayBullets',
-            'toggleFortify'
-        ];
         for (var i = 0; i < buttonList.length; i++) {
             var thisEle = document.getElementById(buttonList[i]);
             thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
@@ -346,7 +373,13 @@ var game;
     }
     game.resetHighlights = resetHighlights;
     function toggleBuff(buttonID) {
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+            return;
         var elementToggled = document.getElementById(buttonID);
+        var buffID = buttonID.replace('toggle', '')[0];
+        var cdRemaining = gameLogic.checkCD(buffID, game.state.buffCDs, yourPlayerIndex());
+        if (cdRemaining > 0)
+            return;
         // BUTTON IS ON, TURN IT OFF
         if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
             elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
@@ -356,7 +389,7 @@ var game;
             // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
             resetHighlights();
             elementToggled.className += " highlighted";
-            game.state.currentBuffs[yourPlayerIndex()] = buttonID.replace('toggle', '')[0];
+            game.state.currentBuffs[yourPlayerIndex()] = buffID;
         }
     }
     game.toggleBuff = toggleBuff;
