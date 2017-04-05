@@ -60,7 +60,6 @@ var gameLogic;
             gameOver: false,
             turnCounts: [0, 0],
             currentBuffs: ['', ''],
-            audioPlayed: [false, false],
             buffCDs: getInitialBuffCDs()
         };
     }
@@ -263,7 +262,6 @@ var gameLogic;
             gameOver: isGameOver,
             turnCounts: playerTurnCount,
             currentBuffs: buffsAfterMove,
-            audioPlayed: [false, false],
             buffCDs: buffCDs
         };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
