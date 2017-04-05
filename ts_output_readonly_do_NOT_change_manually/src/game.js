@@ -101,7 +101,7 @@ var game;
     }
     game.isABuff = isABuff;
     function hasBuff() {
-        if (yourPlayerIndex() === -1)
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
             return '';
         return game.state.currentBuffs[yourPlayerIndex()];
     }
@@ -255,6 +255,8 @@ var game;
     game.shouldShowImage = shouldShowImage;
     function isPiece(board, row, col, pieceKind) {
         var board_number = (board + yourPlayerIndex());
+        if (yourPlayerIndex() === -2)
+            return;
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             board_number = board;
         if (yourPlayerIndex() === -1) {
