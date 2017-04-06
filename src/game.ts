@@ -146,7 +146,8 @@ module game {
     }
     prev_turn_index = turn_index;
     turn_index = params.turnIndex;
-    if (!isMyTurn()) playAudio(state);
+    // if (!isMyTurn()) playAudio(state);
+    playAudio(state);
     resetHighlights();
     updateButtonIcons();
 
@@ -197,9 +198,9 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    // let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
-    // log.info("Computer move: ", move);
-    // makeMove(move);
+    let move = aiService.generateComputerMove(state, currentUpdateUI.turnIndex);
+    log.info("Computer move: ", move);
+    makeMove(move);
   }
 
   export function makeMove(move: IMove) {
@@ -271,7 +272,7 @@ module game {
       return;
     }
     // Move is legal, make it!
-    playAudio(nextMove.state);
+    // playAudio(nextMove.state);
     makeMove(nextMove);
   }
 

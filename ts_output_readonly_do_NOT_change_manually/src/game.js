@@ -139,8 +139,8 @@ var game;
         }
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
-        if (!isMyTurn())
-            playAudio(game.state);
+        // if (!isMyTurn()) playAudio(state);
+        playAudio(game.state);
         resetHighlights();
         updateButtonIcons();
         // We calculate the AI move only after the animation finishes,
@@ -188,9 +188,9 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        // let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
-        // log.info("Computer move: ", move);
-        // makeMove(move);
+        var move = aiService.generateComputerMove(game.state, game.currentUpdateUI.turnIndex);
+        log.info("Computer move: ", move);
+        makeMove(move);
     }
     function makeMove(move) {
         if (game.didMakeMove) {
@@ -256,7 +256,7 @@ var game;
             return;
         }
         // Move is legal, make it!
-        playAudio(nextMove.state);
+        // playAudio(nextMove.state);
         makeMove(nextMove);
     }
     game.cellClicked = cellClicked;
