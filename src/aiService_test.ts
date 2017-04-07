@@ -1,5 +1,3 @@
-
-
 describe("aiService", function() {
   let uiBefore: IMove = { endMatchScores: null, turnIndex: null, state: null };
   let uiAfter: IMove = { endMatchScores: null, turnIndex: null, state: null };
