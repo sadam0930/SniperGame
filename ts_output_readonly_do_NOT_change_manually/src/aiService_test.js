@@ -1515,5 +1515,82 @@ describe("aiService", function () {
         };
         expectMove(uiBefore, uiAfter, true, false);
     });
+    it("Initial state is null, create a state", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: null
+        };
+        uiAfter = aiService.generateComputerMove(uiBefore.state, uiBefore.turnIndex);
+        if (uiAfter.endMatchScores !== null)
+            throw new Error("endMatchScores should have been null!");
+        if (uiAfter.turnIndex !== 1)
+            throw new Error("turnIndex should have been 1!");
+        if (uiAfter.state === null)
+            throw new Error("state should have been created!");
+    });
+    it("No empty cell, should throw error", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 1,
+            state: {
+                board: [
+                    [
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                    ],
+                    [
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                    ],
+                    [
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'P',],
+                    ],
+                    [
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'B',],
+                        ['B', 'B', 'B', 'B', 'P',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [4, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        uiAfter = aiService.generateComputerMove(uiBefore.state, uiBefore.turnIndex);
+        if (uiAfter !== null)
+            throw new Error("Move should have been null!");
+    });
 });
 //# sourceMappingURL=aiService_test.js.map
