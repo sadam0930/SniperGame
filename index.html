@@ -151,10 +151,10 @@
         	<div id="help" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_intro()">
         		<a href="#" class="btn btn-help">?</a>
         	</div>
-        	<div id="buff" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_buff()" ng-if=" game.hasBuff() !== '' && !isGameOver() ">
+        	<!-- <div id="buff" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_buff()" ng-if=" game.hasBuff() !== '' && !isGameOver() ">
         		<a href="#" class="btn btn-buff grenade" ng-if="game.isGrenade()">&nbsp</a>
         		<a href="#" class="btn btn-buff missile" ng-if="game.isAirStrike()">&nbsp</a>
-        	</div>
+        	</div> -->
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
@@ -165,9 +165,6 @@
 			       	<div class="turnDisplay" ng-if="!game.isMyTurn() && !game.isGameOver()"> 
 			        	<text>Opponent's turn.</text>
 			       	</div>
-<!-- 			       	<div class="turnDisplay" ng-if="game.isGameOver()"> 
-			        	<text><br/></text>
-			       	</div> -->
 		        </div>
 <!-- GAME OVER BANNER -->
 			    <div ng-if="isGameOver()" class="controlArea turnDisplay" id="makeFirstMove">
@@ -178,13 +175,7 @@
 		        	<text>Select your starting position.</text>
 		        </div>
 <!-- BUTTONS -->
-<!-- 				<div class="btn-container" ng-click="pressed_attack_button()"> 
-		        	<a href="#" class="btn btn-attack">Attack</a>
-		       	</div>
-		        <div class="btn-container" ng-click="pressed_move_button()"> 
-		        	<a href="#" class="btn btn-move">Move</a>
-		       	</div> -->
-		       	<div ng-if="!game.firstMove()">
+		       	<div class="buffControls" ng-if="!game.firstMove()">
 			       	<div class="btn-container" ng-click="game.toggleBuff('toggleGrenade')"> 
 			        	<a href="#" class="btn btn-buff grenade" id="toggleGrenade"></a>
 			       	</div>
