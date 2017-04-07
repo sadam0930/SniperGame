@@ -12,10 +12,10 @@ var aiService;
         var moveType = 'attack';
         getAttackType(currState, pid);
         // TEMP CODE UNTIL WE REMOVE MOVEMENT
-        if (currState.turnCounts[pid] === 0) {
-            pos = gameLogic.getRandomPosition();
-            moveType = 'move';
-        }
+        // if (currState.turnCounts[pid] === 0) {
+        // 	pos = gameLogic.getRandomPosition();
+        // 	moveType = 'move';
+        // }
         // END OF TEMP CODE
         if ((pos[0] === -1) || (pos[1] === -1)) {
             log.info("Error: AI failed to select a proper move: pos=" + pos + ", pid=" + pid + ", moveType=" + moveType);

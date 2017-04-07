@@ -24,6 +24,10 @@ var gameLogic;
         for (var i = 0; i < gameLogic.NUMPLAYERS * 2; i++) {
             boards[i] = getBlankBoard();
         }
+        var pos = getRandomPosition();
+        boards[gameLogic.NUMPLAYERS][pos[0]][pos[1]] = 'P';
+        pos = getRandomPosition();
+        boards[(gameLogic.NUMPLAYERS + 1)][pos[0]][pos[1]] = 'P';
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
@@ -186,8 +190,7 @@ var gameLogic;
             throw new Error("One can only make a move in an empty position!");
         if (stateBeforeMove.gameOver)
             throw new Error("Game Over!");
-        if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType))
-            throw new Error("Must place position on first move!");
+        // if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
         var current_buffs = stateBeforeMove.currentBuffs;
         var attackType = current_buffs[playerID];

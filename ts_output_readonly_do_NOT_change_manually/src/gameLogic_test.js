@@ -1,4 +1,4 @@
-describe("In SnipeCity", function () {
+describe("gameLogic_test", function () {
     var uiBefore = { endMatchScores: null, turnIndex: null, state: null };
     var uiAfter = { endMatchScores: null, turnIndex: null, state: null };
     function troubleshoot(move) {
@@ -406,75 +406,15 @@ describe("In SnipeCity", function () {
         expectMove(uiBefore, uiAfter, true, false);
     });
     it("createMove called with state === null", function () {
-        uiBefore = {
-            endMatchScores: null,
-            turnIndex: 0,
-            state: null
-        };
-        uiAfter = {
-            endMatchScores: null,
-            turnIndex: 1,
-            state: {
-                board: [
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['P', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ]
-                ],
-                delta: {
-                    row: 0,
-                    col: 0,
-                    moveType: 'move',
-                    attackType: ''
-                },
-                gameOver: false,
-                turnCounts: [1, 0],
-                currentBuffs: ['', ''],
-                buffCDs: [
-                    {
-                        Grenade: 0,
-                        SprayBullets: 0,
-                        AirStrike: 0,
-                        Fortify: 0
-                    },
-                    {
-                        Grenade: 0,
-                        SprayBullets: 0,
-                        AirStrike: 0,
-                        Fortify: 0
-                    }
-                ]
-            }
-        };
-        expectMove(uiBefore, uiAfter, true, false);
+        var threwException = false;
+        try {
+            gameLogic.createMove(null, 0, 0, "attack", 0);
+        }
+        catch (e) {
+            threwException = true;
+        }
+        if (threwException)
+            throw new Error("gameLogic.createMove() failed to create a state!");
     });
     it("Attempt to move out of bounds", function () {
         uiBefore = {
@@ -537,68 +477,71 @@ describe("In SnipeCity", function () {
         };
         expectError(uiBefore, 10, 10, 'move', false);
     });
-    it("Attempt to move to non-empty position", function () {
-        uiBefore = {
-            endMatchScores: null,
-            turnIndex: 0,
-            state: {
-                board: [
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['B', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['B', '', 'P', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['', '', 'P', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ]
-                ],
-                delta: null,
-                gameOver: false,
-                turnCounts: [3, 3],
-                currentBuffs: ['', ''],
-                buffCDs: [
-                    {
-                        Grenade: 0,
-                        SprayBullets: 0,
-                        AirStrike: 0,
-                        Fortify: 0
-                    },
-                    {
-                        Grenade: 0,
-                        SprayBullets: 0,
-                        AirStrike: 0,
-                        Fortify: 0
-                    }
-                ]
-            }
-        };
-        expectError(uiBefore, 0, 0, 'move', false);
-    });
-    it("Attempt to move after game is over", function () {
+    // THERE IS NO MOVE!
+    //
+    // it("Attempt to move to non-empty position", function() {
+    //     uiBefore = {
+    //         endMatchScores: null,
+    //         turnIndex: 0,          
+    //         state: {
+    //             board: 
+    //                 [
+    //                     [
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ],
+    //                     [
+    //                         ['B','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ],
+    //                     [
+    //                         ['B','','P','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ],
+    //                     [
+    //                         ['','','P','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ]
+    //                 ],
+    //             delta: null,
+    //             gameOver: false,
+    //             turnCounts: [3,3],
+    //             currentBuffs: ['', ''],
+    //             buffCDs: [
+    //                 {
+    //                     Grenade: 0,
+    //                     SprayBullets: 0,
+    //                     AirStrike: 0,
+    //                     Fortify: 0
+    //                 },
+    //                 {
+    //                     Grenade: 0,
+    //                     SprayBullets: 0,
+    //                     AirStrike: 0,
+    //                     Fortify: 0
+    //                 }
+    //             ]
+    //         }
+    //     };
+    //     expectError(uiBefore, 0, 0, 'move', false);
+    // });
+    it("Attempt to attack after game is over", function () {
         uiBefore = {
             endMatchScores: [1, 0],
             turnIndex: 0,
@@ -657,69 +600,70 @@ describe("In SnipeCity", function () {
                 ]
             }
         };
-        expectError(uiBefore, 0, 0, 'move', false);
-    });
-    it("Attempt to attack on first move", function () {
-        uiBefore = {
-            endMatchScores: null,
-            turnIndex: 0,
-            state: {
-                board: [
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ],
-                    [
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                        ['', '', '', '', '',],
-                    ]
-                ],
-                delta: null,
-                gameOver: false,
-                turnCounts: [0, 0],
-                currentBuffs: ['', ''],
-                buffCDs: [
-                    {
-                        Grenade: 0,
-                        SprayBullets: 0,
-                        AirStrike: 0,
-                        Fortify: 0
-                    },
-                    {
-                        Grenade: 0,
-                        SprayBullets: 0,
-                        AirStrike: 0,
-                        Fortify: 0
-                    }
-                ]
-            }
-        };
         expectError(uiBefore, 0, 0, 'attack', false);
     });
+    // it("Attempt to attack on first move", function() {
+    //     uiBefore = {
+    //         endMatchScores: null,
+    //         turnIndex: 0,          
+    //         state: {
+    //             board: 
+    //                 [
+    //                     [
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ],
+    //                     [
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ],
+    //                     [
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ],
+    //                     [
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                         ['','','','','',],
+    //                     ]
+    //                 ],
+    //             delta: null,
+    //             gameOver: false,
+    //             turnCounts: [0,0],
+    //             currentBuffs: ['', ''],
+    //             buffCDs: [
+    //                 {
+    //                     Grenade: 0,
+    //                     SprayBullets: 0,
+    //                     AirStrike: 0,
+    //                     Fortify: 0
+    //                 },
+    //                 {
+    //                     Grenade: 0,
+    //                     SprayBullets: 0,
+    //                     AirStrike: 0,
+    //                     Fortify: 0
+    //                 }
+    //             ]
+    //         }
+    //     };
+    //     expectError(uiBefore, 0, 0, 'attack', false);
+    // });
     it("Attempt to use a CD when it's not ready", function () {
         uiBefore = {
             endMatchScores: null,

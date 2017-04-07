@@ -369,16 +369,7 @@ module game {
       if (cdRemaining > 0) {
         thisEle.className = "btn btn-buff " + buffCSSClass + " t" + cdRemaining;
       }
-      else if (buffID === 'G') {
-        thisEle.className = "btn btn-buff " + buffCSSClass;
-      }
-      else if (buffID === 'A') {
-        thisEle.className = "btn btn-buff " + buffCSSClass;
-      }
-      else if (buffID === 'S') {
-        thisEle.className = "btn btn-buff " + buffCSSClass;
-      }
-      else if (buffID === 'F') {
+      else {
         thisEle.className = "btn btn-buff " + buffCSSClass;
       }
     }
@@ -429,8 +420,8 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   // BOARD ATTRIBUTES //
 
   $scope.board_size = .8;
-  $scope.is_attacking = false;
-  $scope.is_moving = true;
+  $scope.is_attacking = true;
+  $scope.is_moving = false;
   $scope.show_intro = false;
   $scope.show_buff_info = false;
 
