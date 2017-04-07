@@ -237,9 +237,9 @@ module gameLogic {
       	buffsAfterMove[playerID] = buffsAfterMove[(1 - playerID)] = '';
       }	
       else if (attackType === 'G') {
-        boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
+        if ((col - 1) < COLS && (col - 1) >= 0) boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
-        boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
+        if ((col + 1) < COLS && (col + 1) >= 0) boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
         buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
       }

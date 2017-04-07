@@ -29,6 +29,12 @@ module.exports = function(config) {
       dir : 'coverage/'
     },
 
+    browserConsoleLogOptions: {
+      level: "log", 
+      format: "%b %T: %m", 
+      terminal: true
+    },
+
     autoWatch : true,
 
     frameworks: ['jasmine'],
