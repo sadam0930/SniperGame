@@ -18,11 +18,6 @@ describe("aiService", function() {
       console.log(move.state.buffCDs);
   }
 
-  function expectException(uiBeforeMove: IMove): void {
-      let aiMove = aiService.generateComputerMove(uiBeforeMove.state, uiBeforeMove.turnIndex);
-      if (aiMove !== null) throw new Error("generateComputerMove should have returned null!");
-  }
-
   function expectMove(uiBeforeMove: IMove, uiAfterMove: IMove, expectedOutcome: boolean, troubleshooting: boolean): void {      
       let aiMove = aiService.generateComputerMove(uiBeforeMove.state, uiBeforeMove.turnIndex);
       if (troubleshooting) troubleshoot(aiMove);
