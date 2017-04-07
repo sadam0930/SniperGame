@@ -13,7 +13,7 @@ module aiService {
 		getAttackType(currState, pid);
 
 		// TEMP CODE UNTIL WE REMOVE MOVEMENT
-		if (game.firstMove()) {
+		if (currState.turnCounts[pid] === 0) {
 			pos = gameLogic.getRandomPosition();
 			moveType = 'move';
 		}
