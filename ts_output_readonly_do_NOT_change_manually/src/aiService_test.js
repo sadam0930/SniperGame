@@ -1,4 +1,4 @@
-describe("aiService", function () {
+describe("aiService_test", function () {
     var uiBefore = { endMatchScores: null, turnIndex: null, state: null };
     var uiAfter = { endMatchScores: null, turnIndex: null, state: null };
     function troubleshoot(move) {

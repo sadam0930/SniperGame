@@ -49,6 +49,10 @@ module gameLogic {
     for (let i = 0; i < NUMPLAYERS*2; i++) {
       boards[i] = getBlankBoard();
     }
+    let pos: number[] = getRandomPosition();
+    boards[NUMPLAYERS][pos[0]][pos[1]] = 'P';
+    pos = getRandomPosition();
+    boards[(NUMPLAYERS + 1)][pos[0]][pos[1]] = 'P';
     return boards;
   }
 
@@ -203,7 +207,7 @@ module gameLogic {
     if (row > ROWS || row < 0 || col > COLS || col < 0) throw new Error("Cannot move outside of board!");
     if (board[row][col] == 'P' || board[row][col] == 'B') throw new Error("One can only make a move in an empty position!");
     if (stateBeforeMove.gameOver) throw new Error("Game Over!");
-    if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
+    // if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
 
         
     // CHECK IF KILL SHOT
