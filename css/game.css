@@ -83,8 +83,8 @@ body {
   border-width: .3vw;
 }
 .btn.highlighted{
-   border-style: inset;
-   border-color: #ffffcc;
+  border-style: inset;
+  background-color: slategray
 }
 /*.btn.btn-attack{
   background-color: #B22222; 
@@ -394,13 +394,15 @@ body {
 .btn-help{
   color: yellow;
 }
-#buff{
+/*#buff{
   top: 17%;
-}
+}*/
 .btn-buff{
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 50%
+  background-size: 40%;
+  padding: 25% 0%;
+  background-color: darkgrey;
 }
 /*CD TIMERS*/
 .btn-buff.t1{
@@ -428,10 +430,14 @@ body {
   background-image: url("../img/missile.png");
 }
 .btn-buff.sprayBullets{
-  background-image: url("../img/grenade.png");
+  background-image: url("../img/spray.png");
 }
 .btn-buff.fortify{
-  background-image: url("../img/missile.png");
+  background-image: url("../img/shield.png");
+}
+.buffControls{
+  padding: 1%;
+  overflow: auto;
 }
 /*BUFF ICONS*/
 
