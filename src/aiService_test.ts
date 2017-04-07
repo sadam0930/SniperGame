@@ -1,4 +1,4 @@
-describe("aiService", function() {
+describe("aiService_test", function() {
   let uiBefore: IMove = { endMatchScores: null, turnIndex: null, state: null };
   let uiAfter: IMove = { endMatchScores: null, turnIndex: null, state: null };
 

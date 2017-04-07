@@ -39,7 +39,7 @@
   				</div> 
 		    </div>
 <!-- MOVE BOARD -->
-      		<div class="board" id="moveBoard" ng-if="game.firstMove()" style="height:{{board_size * 100}}%;">
+      		<div class="board" id="moveBoard" ng-if="false" style="height:{{board_size * 100}}%;">
 				<!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 					<!-- INNER BUILDING -->
@@ -94,7 +94,7 @@
 	        	</div>
 			</div>
 <!-- ATTACK BOARD -->
-	      	<div class="board" id="attackBoard" ng-if="!game.firstMove()" style="height:{{board_size * 100}}%;">
+	      	<div class="board" id="attackBoard" ng-if="true" style="height:{{board_size * 100}}%;">
 				<!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 					<!-- INNER BUILDING -->
@@ -158,7 +158,7 @@
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
-		        <div ng-if="!game.firstMove()">	        
+		        <div ng-if="true">	        
 		        	<div class="turnDisplay" ng-if="game.isMyTurn() && !game.isGameOver()"> 
 			        	<text>Your turn.</text>
 			       	</div>
@@ -174,11 +174,11 @@
 		        	<text>Player {{game.gameWinner}} wins!</text>
 		        </div>
 <!-- FIRST MOVE BANNER -->
-		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
+<!-- 		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
 		        	<text>Select your starting position.</text>
-		        </div>
+		        </div> -->
 <!-- BUTTONS -->
-		       	<div class="buffControls" ng-if="!game.firstMove()">
+		       	<div class="buffControls" ng-if="true">
 			       	<div class="btn-container" ng-click="game.toggleBuff('toggleGrenade')"> 
 			        	<a href="#" class="btn btn-buff grenade" id="toggleGrenade"></a>
 			       	</div>
