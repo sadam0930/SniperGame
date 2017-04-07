@@ -165,6 +165,9 @@
 			       	<div class="turnDisplay" ng-if="!game.isMyTurn() && !game.isGameOver()"> 
 			        	<text>Opponent's turn.</text>
 			       	</div>
+			       	<div class="turnDisplay" ng-if="game.isGameOver()"> 
+			        	<text><br/></text>
+			       	</div>
 		        </div>
 <!-- GAME OVER BANNER -->
 			    <div ng-if="isGameOver()" class="controlArea turnDisplay" id="makeFirstMove">
