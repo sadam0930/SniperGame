@@ -192,8 +192,10 @@ var gameLogic;
         var current_buffs = stateBeforeMove.currentBuffs;
         var attackType = current_buffs[playerID];
         // IF CD ISN'T UP, SET ATTACK TO NORMAL ATTACK
-        if (checkCD(attackType, stateBeforeMove.buffCDs, playerID) !== 0)
+        if (checkCD(attackType, stateBeforeMove.buffCDs, playerID) !== 0) {
             attackType = '';
+            stateBeforeMove.currentBuffs[playerID] = '';
+        }
         var winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
         var endMatchScores;
         endMatchScores = null;
@@ -203,7 +205,7 @@ var gameLogic;
             // Game over
             log.info("Game over! Winner is: ", winner[0]);
             turnIndex = -1;
-            endMatchScores = (winner[0] === 'P1') ? [1, 0] : (winner[0] === 'P2') ? [0, 1] : [0, 0];
+            endMatchScores = (winner[0] === 'P1') ? [1, 0] : [0, 1];
             isGameOver = true;
         }
         // UPDATE BOARDS
@@ -285,7 +287,7 @@ var gameLogic;
     }
     gameLogic.createInitialMove = createInitialMove;
     function forSimpleTestHtml() {
-        var move = createMove(null, 0, 0, 'attack', 0);
+        var move = createMove(null, 0, 0, 'move', 0);
         log.log("move=", move);
     }
     gameLogic.forSimpleTestHtml = forSimpleTestHtml;

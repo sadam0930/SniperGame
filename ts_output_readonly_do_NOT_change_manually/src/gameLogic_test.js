@@ -1,20 +1,994 @@
 describe("In SnipeCity", function () {
-    /*
-    1. gameLogic.createInitialMove() produces correct IMove
-    2. P1 attacks
-    3. P2 attacks
-    4. P1 attacks with grenade
-    5. P2 attacks with grenade
-    6. P1 attacks with spray
-    7. P2 attacks with spray
-    8. P1 attacks with air strike
-    9. P2 attacks with air strike
-    10. P1 attacks with fortiy
-    11. P2 attacks with fortify
-    12. P1 attacks, P2 has fortify
-    13. P2 attacks, P1 has fortify
-      
-      with and without kill shots
-    */
+    var uiBefore = { endMatchScores: null, turnIndex: null, state: null };
+    var uiAfter = { endMatchScores: null, turnIndex: null, state: null };
+    function troubleshoot(move) {
+        console.log(move.endMatchScores);
+        console.log(move.turnIndex);
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < gameLogic.ROWS; j++) {
+                console.log(move.state.board[i][j]);
+            }
+            console.log("\n");
+        }
+        console.log(move.state.delta);
+        console.log(move.state.gameOver);
+        console.log(move.state.turnCounts);
+        console.log(move.state.currentBuffs);
+        console.log(move.state.buffCDs);
+    }
+    function expectError(uiBeforeMove, row, col, moveType, troubleshooting) {
+        var threwException = false;
+        try {
+            var move = gameLogic.createMove(uiBeforeMove.state, row, col, moveType, uiBeforeMove.turnIndex);
+        }
+        catch (e) {
+            threwException = true;
+        }
+        if (!threwException)
+            throw new Error("Failed to produce an illegal move!");
+    }
+    function expectMove(uiBeforeMove, uiAfterMove, expectedOutcome, troubleshooting) {
+        var move = gameLogic.createMove(uiBeforeMove.state, uiAfterMove.state.delta.row, uiAfterMove.state.delta.col, uiAfterMove.state.delta.moveType, uiBeforeMove.turnIndex);
+        if (troubleshooting)
+            troubleshoot(move);
+        expect(angular.equals(move, uiAfterMove)).toBe(expectedOutcome);
+    }
+    it("P1 attacks with grenade", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['G', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        uiAfter = {
+            endMatchScores: null,
+            turnIndex: 1,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', 'B', 'B', 'B', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', 'B', 'B', 'B', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: {
+                    row: 1,
+                    col: 2,
+                    moveType: 'attack',
+                    attackType: 'G'
+                },
+                gameOver: false,
+                turnCounts: [4, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 3,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectMove(uiBefore, uiAfter, true, false);
+    });
+    it("P1 kills P2 with left-grenade-hit", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['G', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        uiAfter = {
+            endMatchScores: [1, 0],
+            turnIndex: -1,
+            state: {
+                board: [
+                    [
+                        ['', '', 'D', 'B', 'B',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'D', 'B', 'B',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: {
+                    row: 0,
+                    col: 3,
+                    moveType: 'attack',
+                    attackType: 'G'
+                },
+                gameOver: true,
+                turnCounts: [4, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 3,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectMove(uiBefore, uiAfter, true, false);
+    });
+    it("P1 kills P2 with right-grenade-hit", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['G', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        uiAfter = {
+            endMatchScores: [1, 0],
+            turnIndex: -1,
+            state: {
+                board: [
+                    [
+                        ['B', 'B', 'D', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['B', 'B', 'D', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: {
+                    row: 0,
+                    col: 1,
+                    moveType: 'attack',
+                    attackType: 'G'
+                },
+                gameOver: true,
+                turnCounts: [4, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 3,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectMove(uiBefore, uiAfter, true, false);
+    });
+    it("createMove called with state === null", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: null
+        };
+        uiAfter = {
+            endMatchScores: null,
+            turnIndex: 1,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['P', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: {
+                    row: 0,
+                    col: 0,
+                    moveType: 'move',
+                    attackType: ''
+                },
+                gameOver: false,
+                turnCounts: [1, 0],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectMove(uiBefore, uiAfter, true, false);
+    });
+    it("Attempt to move out of bounds", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectError(uiBefore, 10, 10, 'move', false);
+    });
+    it("Attempt to move to non-empty position", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['B', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['B', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectError(uiBefore, 0, 0, 'move', false);
+    });
+    it("Attempt to move after game is over", function () {
+        uiBefore = {
+            endMatchScores: [1, 0],
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', 'D', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'D', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: true,
+                turnCounts: [3, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectError(uiBefore, 0, 0, 'move', false);
+    });
+    it("Attempt to attack on first move", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [0, 0],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectError(uiBefore, 0, 0, 'attack', false);
+    });
+    it("Attempt to use a CD when it's not ready", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['G', ''],
+                buffCDs: [
+                    {
+                        Grenade: 3,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        uiAfter = {
+            endMatchScores: null,
+            turnIndex: 1,
+            state: {
+                board: [
+                    [
+                        ['', '', 'B', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', 'B', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: {
+                    row: 0,
+                    col: 2,
+                    moveType: 'attack',
+                    attackType: ''
+                },
+                gameOver: false,
+                turnCounts: [4, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 2,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectMove(uiBefore, uiAfter, true, false);
+    });
+    it("Move to new position", function () {
+        uiBefore = {
+            endMatchScores: null,
+            turnIndex: 0,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: null,
+                gameOver: false,
+                turnCounts: [3, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        uiAfter = {
+            endMatchScores: null,
+            turnIndex: 1,
+            state: {
+                board: [
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', 'P', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ],
+                    [
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', 'P', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                        ['', '', '', '', '',],
+                    ]
+                ],
+                delta: {
+                    row: 2,
+                    col: 1,
+                    moveType: 'move',
+                    attackType: ''
+                },
+                gameOver: false,
+                turnCounts: [4, 3],
+                currentBuffs: ['', ''],
+                buffCDs: [
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    },
+                    {
+                        Grenade: 0,
+                        SprayBullets: 0,
+                        AirStrike: 0,
+                        Fortify: 0
+                    }
+                ]
+            }
+        };
+        expectMove(uiBefore, uiAfter, true, false);
+    });
+    it("gameLogic.createInitialMove() test", function () {
+        var move = gameLogic.createInitialMove();
+        if (move === null)
+            throw new Error("Move should not be null!");
+        if (move.endMatchScores !== null)
+            throw new Error("endMatchScores should be null!");
+        if (move.turnIndex !== 0)
+            throw new Error("turnIndex should be 0!");
+        if (move.state === null)
+            throw new Error("State should not be null!");
+    });
+    it("gameLogic.forSimpleTestHtml() test", function () {
+        var threwException = false;
+        try {
+            gameLogic.forSimpleTestHtml();
+        }
+        catch (e) {
+            threwException = true;
+        }
+        if (threwException)
+            throw new Error("gameLogic.forSimpleTestHtml() threw an error!");
+    });
 });
 //# sourceMappingURL=gameLogic_test.js.map
