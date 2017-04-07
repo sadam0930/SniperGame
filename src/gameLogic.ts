@@ -135,7 +135,7 @@ module gameLogic {
 
   function getWinner(row: number, col: number, turnIndexBeforeMove: number, boards: Board[], attackType: string): string[] {
     let opponentMoveBoard: number = (1 - turnIndexBeforeMove + 2);
-    if (attackType === '') {
+    if (attackType === '' || attackType === 'F') {
       if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (turnIndexBeforeMove + 1)), ('' + (col))];
     }
     else if (attackType === 'G') {
@@ -216,7 +216,7 @@ module gameLogic {
     endMatchScores = null;
     let turnIndex: number;
     let isGameOver: boolean = false;
-    if (moveType === 'attack' && winner[0] !== '' && (current_buffs[1 - playerID]) !== 'F') {
+    if (moveType === 'attack' && winner[0] !== '' && (current_buffs[1 - playerID] !== 'F')) {
       // Game over
       log.info("Game over! Winner is: ", winner[0]);
       turnIndex = -1;
