@@ -361,23 +361,25 @@ module game {
 
     for (let i = 0; i < buttonList.length; i++) {
       let thisEle = document.getElementById(buttonList[i]);
+      let buffCSSClass: string = buttonList[i].replace('toggle', '');
       let buffID: string = buttonList[i].replace('toggle', '')[0];
+      buffCSSClass = buffID.toLowerCase() + buffCSSClass.slice(1);
       let cdRemaining: number = gameLogic.checkCD(buffID, state.buffCDs, yourPlayerIndex());
 
       if (cdRemaining > 0) {
-        thisEle.className = "btn btn-buff t" + cdRemaining;
+        thisEle.className = "btn btn-buff " + buffCSSClass + " t" + cdRemaining;
       }
       else if (buffID === 'G') {
-        thisEle.className = "btn btn-buff grenade";
+        thisEle.className = "btn btn-buff " + buffCSSClass;
       }
       else if (buffID === 'A') {
-        thisEle.className = "btn btn-buff missile";
+        thisEle.className = "btn btn-buff " + buffCSSClass;
       }
       else if (buffID === 'S') {
-        thisEle.className = "btn btn-buff sprayBullets";
+        thisEle.className = "btn btn-buff " + buffCSSClass;
       }
       else if (buffID === 'F') {
-        thisEle.className = "btn btn-buff fortify";
+        thisEle.className = "btn btn-buff " + buffCSSClass;
       }
     }
   }

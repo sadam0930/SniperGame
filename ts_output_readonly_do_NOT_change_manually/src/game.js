@@ -359,22 +359,24 @@ var game;
             return;
         for (var i = 0; i < buttonList.length; i++) {
             var thisEle = document.getElementById(buttonList[i]);
+            var buffCSSClass = buttonList[i].replace('toggle', '');
             var buffID = buttonList[i].replace('toggle', '')[0];
+            buffCSSClass = buffID.toLowerCase() + buffCSSClass.slice(1);
             var cdRemaining = gameLogic.checkCD(buffID, game.state.buffCDs, yourPlayerIndex());
             if (cdRemaining > 0) {
-                thisEle.className = "btn btn-buff t" + cdRemaining;
+                thisEle.className = "btn btn-buff " + buffCSSClass + " t" + cdRemaining;
             }
             else if (buffID === 'G') {
-                thisEle.className = "btn btn-buff grenade";
+                thisEle.className = "btn btn-buff " + buffCSSClass;
             }
             else if (buffID === 'A') {
-                thisEle.className = "btn btn-buff missile";
+                thisEle.className = "btn btn-buff " + buffCSSClass;
             }
             else if (buffID === 'S') {
-                thisEle.className = "btn btn-buff sprayBullets";
+                thisEle.className = "btn btn-buff " + buffCSSClass;
             }
             else if (buffID === 'F') {
-                thisEle.className = "btn btn-buff fortify";
+                thisEle.className = "btn btn-buff " + buffCSSClass;
             }
         }
     }
