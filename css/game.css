@@ -427,7 +427,7 @@ body {
 .btn-buff.grenade{
   background-image: url("../img/grenade.png");
 }
-.btn-buff.missile{
+.btn-buff.airStrike{
   background-image: url("../img/missile.png");
 }
 .btn-buff.sprayBullets{
