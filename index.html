@@ -28,10 +28,10 @@
     	<div id="gameArea">
 <!-- STATUS BAR -->
   			<div class="turnDisplay" id="topDisplay">
-  				<div ng-if="!game.isGameOver() && is_moving">
+  				<!-- <div ng-if="!game.isGameOver() && is_moving">
   					Choose a position to move to! <br>
-  				</div> 
-  				<div ng-if="!game.isGameOver() && is_attacking">
+  				</div>  -->
+  				<div ng-if="!game.isGameOver()">
   					Choose a window to attack! <br>
   				</div> 
   			    <div ng-if="game.isGameOver()">
@@ -170,7 +170,7 @@
 			       	</div>
 		        </div>
 <!-- GAME OVER BANNER -->
-			    <div ng-if="isGameOver()" class="controlArea turnDisplay" id="makeFirstMove">
+			    <div ng-if="isGameOver()" class="controlArea turnDisplay">
 		        	<text>Player {{game.gameWinner}} wins!</text>
 		        </div>
 <!-- FIRST MOVE BANNER -->
