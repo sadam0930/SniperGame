@@ -22,6 +22,7 @@ module game {
   export let yourPlayerInfo: IPlayerInfo = null;
   export let prev_turn_index: number = null;
   export let turn_index: number = null;
+  export let audio_enabled: boolean = true;
 
   export function init($rootScope_: angular.IScope, $timeout_: angular.ITimeoutService) {
     $rootScope = $rootScope_;
@@ -102,10 +103,6 @@ module game {
     return proposals && proposals[row][col] == 2;
   }
 
-  export function isABuff(cellValue: string): boolean {
-    return gameLogic.isABuff(cellValue);
-  }
-
   export function hasBuff(): string {
     if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return '';
     return state.currentBuffs[yourPlayerIndex()];
@@ -138,8 +135,7 @@ module game {
     currentUpdateUI = params;
     clearAnimationTimeout();
     state = params.state;
-    playAudio();
-    
+        
     if (isFirstMove()) {
       state = gameLogic.getInitialState();
     }
@@ -150,6 +146,10 @@ module game {
     }
     prev_turn_index = turn_index;
     turn_index = params.turnIndex;
+    // if (!isMyTurn()) playAudio(state);
+    playAudio(state);
+    resetHighlights();
+    updateButtonIcons();
 
     // We calculate the AI move only after the animation finishes,
     // because if we call aiService now
@@ -157,21 +157,28 @@ module game {
     animationEndedTimeout = $timeout(animationEndedCallback, 500);
   }
 
+  export function toggleAudio() {
+    audio_enabled = !audio_enabled;
+  }
+
   // Currently set to play audio every time updateUI is called
-  function playAudio() {
-    if (state === null || state.delta === null) return;
+  function playAudio(state: IState) {
+    if (state.delta === null || !audio_enabled) return;
     
     var audio = new Audio();
     if (state.delta.moveType === 'attack') {        
       // Attack-audio sounds
-      if (state.delta.attackType === '') {
+      if (state.delta.attackType === '' || state.delta.attackType === 'F') {
         audio = new Audio('audio/rifle.wav');
       }
-      else if (state.delta.attackType === 'grenade') {
+      else if (state.delta.attackType === 'G') {
         audio = new Audio('audio/grenade.wav');
       }
-      else if (state.delta.attackType === 'air strike') {
+      else if (state.delta.attackType === 'A') {
         audio = new Audio('audio/air_strike.wav');
+      }
+      else if (state.delta.attackType === 'S') {
+        audio = new Audio('audio/rifle.wav');
       }
     }
     audio.play();
@@ -191,7 +198,7 @@ module game {
 
   function maybeSendComputerMove() {
     if (!isComputerTurn()) return;
-    let move = aiService.generateComputerMove(currentUpdateUI.state, currentUpdateUI.turnIndex);
+    let move = aiService.generateComputerMove(state, currentUpdateUI.turnIndex);
     log.info("Computer move: ", move);
     makeMove(move);
   }
@@ -249,10 +256,14 @@ module game {
 
   export let theWinner: string = '';
 
+  // USE THIS TO THROW UP A STATUS MESSAGE SHOWING YOUR ATTACK WAS CANCELLED OUT
+  export let wasOpponentFortified: boolean = false;
+
   export function cellClicked(row: number, col: number, moveType: string): void {
     log.info("Clicked on cell:", row, col);
     if (!isHumanTurn()) return;
     let nextMove: IMove = null;
+    wasOpponentFortified = (state.currentBuffs[(1 - yourPlayerIndex())] === 'F');
     try {
       nextMove = gameLogic.createMove(
           state, row, col, moveType, currentUpdateUI.turnIndex);
@@ -261,6 +272,7 @@ module game {
       return;
     }
     // Move is legal, make it!
+    // playAudio(nextMove.state);
     makeMove(nextMove);
   }
 
@@ -269,8 +281,9 @@ module game {
   }
 
   function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
+
     let board_number: number = (board + yourPlayerIndex());
-    if (yourPlayerIndex() === -2) return;
+    if (yourPlayerIndex() == -2) return;
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') board_number = board;
     if (yourPlayerIndex() === -1) {
       if (gameWinner != null) board_number = (board + gameWinner - 1);
@@ -329,6 +342,71 @@ module game {
     return (currentUpdateUI.turnIndex === -1);
   }
 
+  var buttonList: string[] = [
+      'toggleGrenade', 
+      'toggleAirStrike',
+      'toggleSprayBullets',
+      'toggleFortify'
+  ];
+
+  function buttonPreCheck(): boolean {
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return false;
+    else if (document.getElementById('attackBoard') === null) return false;
+    else if (state.buffCDs === null) return false;
+    else return true;
+  }
+
+  function updateButtonIcons(): void {
+    if (!buttonPreCheck()) return;
+
+    for (let i = 0; i < buttonList.length; i++) {
+      let thisEle = document.getElementById(buttonList[i]);
+      let buffCSSClass: string = buttonList[i].replace('toggle', '');
+      let buffID: string = buttonList[i].replace('toggle', '')[0];
+      buffCSSClass = buffID.toLowerCase() + buffCSSClass.slice(1);
+      let cdRemaining: number = gameLogic.checkCD(buffID, state.buffCDs, yourPlayerIndex());
+
+      if (cdRemaining > 0) {
+        thisEle.className = "btn btn-buff " + buffCSSClass + " t" + cdRemaining;
+        thisEle.innerHTML = "" + cdRemaining;
+      }
+      else {
+        thisEle.className = "btn btn-buff " + buffCSSClass;
+        thisEle.innerHTML = "&nbsp;";
+      }
+    }
+  }
+
+  export function resetHighlights(): void {
+    if (!buttonPreCheck()) return;
+
+    for (let i = 0; i < buttonList.length; i++) {
+      let thisEle = document.getElementById(buttonList[i]);
+      thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+    }
+  }
+
+  export function toggleBuff(buttonID: string): void {
+    if (!buttonPreCheck()) return;
+
+    let elementToggled = document.getElementById(buttonID);
+    let buffID: string = buttonID.replace('toggle', '')[0];
+    let cdRemaining: number = gameLogic.checkCD(buffID, state.buffCDs, yourPlayerIndex());
+    if (cdRemaining > 0) return;
+    
+    // BUTTON IS ON, TURN IT OFF
+    if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
+      elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+      state.currentBuffs[yourPlayerIndex()] = '';
+    }
+    // BUTTON IS NOT ON, TURN IT ON
+    else {
+      // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
+      resetHighlights();
+      elementToggled.className += " highlighted";
+      state.currentBuffs[yourPlayerIndex()] = buffID;
+    }
+  }
 }
 
 // CONTROLLER
@@ -344,8 +422,8 @@ app.controller('MainController', ['$scope', '$rootScope', function($scope: any, 
   // BOARD ATTRIBUTES //
 
   $scope.board_size = .8;
-  $scope.is_attacking = false;
-  $scope.is_moving = true;
+  $scope.is_attacking = true;
+  $scope.is_moving = false;
   $scope.show_intro = false;
   $scope.show_buff_info = false;
 

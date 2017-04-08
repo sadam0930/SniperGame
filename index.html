@@ -28,10 +28,10 @@
     	<div id="gameArea">
 <!-- STATUS BAR -->
   			<div class="turnDisplay" id="topDisplay">
-  				<div ng-if="!game.isGameOver() && is_moving">
+  				<!-- <div ng-if="!game.isGameOver() && is_moving">
   					Choose a position to move to! <br>
-  				</div> 
-  				<div ng-if="!game.isGameOver() && is_attacking">
+  				</div>  -->
+  				<div ng-if="!game.isGameOver()">
   					Choose a window to attack! <br>
   				</div> 
   			    <div ng-if="game.isGameOver()">
@@ -39,7 +39,7 @@
   				</div> 
 		    </div>
 <!-- MOVE BOARD -->
-      		<div class="board" id="moveBoard" ng-if="is_moving" style="height:{{board_size * 100}}%;">
+      		<div class="board" id="moveBoard" ng-if="false" style="height:{{board_size * 100}}%;">
 				<!-- BUILDING -->
       			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
 					<!-- INNER BUILDING -->
@@ -74,6 +74,39 @@
 		    			</div>
 			    	</div>
 				</div>
+			</div>
+<!-- ATTACK BOARD -->
+	      	<div class="board" id="attackBoard" ng-if="true" style="height:{{board_size * 100}}%;">
+				<!-- BUILDING -->
+      			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
+					<!-- INNER BUILDING -->
+      				<div class="windowContainer">	
+						<!-- ROWS -->
+		        		<div ng-repeat="row in num_rows_as_list" style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
+							<!-- COLUMNS -->
+		          			<div ng-repeat="col in num_cols_as_list" class="col" style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
+							<!-- WINDOW EFFECTS -->
+								<!-- WINDOW PANE -->
+		                		<a href="#" class="window blank" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
+								<!-- BROKEN GLASS -->
+			                	<a href="#" class="window broken" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
+								<!-- DEAD CHARACTER -->
+								<a href="#" class="window deadPlayer" ng-if="game.isDead(0, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
+		          			</div>
+			    		</div>
+			    	</div>
+					<!-- GROUND FLOOR / DOOR -->
+			    	<div class="groundFloor">
+			    		<div class="graffitiContainer">
+			    			<div class="graffiti p1" ng-if="game.isP2()"></div>
+			    			<div class="graffiti p2" ng-if="game.isP1()"></div>
+			    			<div class="graffiti graf"></div>
+			    		</div>
+			    		<div class="doorContainer">
+			    			<div class="door"></div>
+		    			</div>
+			    	</div>
+				</div>
 <!-- HELICOPTER -->
 				<div class="helimation helicopterContainer">
 	            	<div class="helicopter">
@@ -92,39 +125,6 @@
 	                	</div>
 	            	</div>
 	        	</div>
-			</div>
-<!-- ATTACK BOARD -->
-	      	<div class="board" id="attackBoard" ng-if="is_attacking" style="height:{{board_size * 100}}%;">
-				<!-- BUILDING -->
-      			<div class="building" style="position:absolute; top:15%; left:15%; width:70%; height:80%;">
-					<!-- INNER BUILDING -->
-      				<div class="windowContainer">	
-						<!-- ROWS -->
-		        		<div ng-repeat="row in num_rows_as_list" style="position:absolute; top:{{(row * row_size)}}%; left:0; width:100%; height:{{row_size}}%;">
-							<!-- COLUMNS -->
-		          			<div ng-repeat="col in num_cols_as_list" class="col" style="width:{{col_size}}%;" id="{{'attackBoard' + row + 'x' + col}}">
-							<!-- WINDOW EFFECTS -->
-								<!-- WINDOW PANE -->
-		                		<a href="#" class="window blank2" ng-if="game.isBlank(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
-								<!-- BROKEN GLASS -->
-			                	<a href="#" class="window broken2" ng-if="game.isBroken(0, row, col)" ng-click="game.cellClicked(row, col, 'attack')"></a>
-								<!-- DEAD CHARACTER -->
-								<a href="#" class="window deadPlayer2" ng-if="game.isDead(0, row, col)" ng-click="game.cellClicked(row, col, 'move')"></a>
-		          			</div>
-			    		</div>
-			    	</div>
-					<!-- GROUND FLOOR / DOOR -->
-			    	<div class="groundFloor">
-			    		<div class="graffitiContainer">
-			    			<div class="graffiti p1" ng-if="game.isP2()"></div>
-			    			<div class="graffiti p2" ng-if="game.isP1()"></div>
-			    			<div class="graffiti graf"></div>
-			    		</div>
-			    		<div class="doorContainer">
-			    			<div class="door"></div>
-		    			</div>
-			    	</div>
-				</div>
 			</div>
 <!-- HINT DISPLAY -->
 	    	<div id="hint" style="display:none">
@@ -151,14 +151,14 @@
         	<div id="help" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_intro()">
         		<a href="#" class="btn btn-help">?</a>
         	</div>
-        	<div id="buff" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_buff()" ng-if=" game.hasBuff() !== '' && !isGameOver() ">
+        	<!-- <div id="buff" class="hints btn-container" onclick="toggleHint()" ng-click="pressed_buff()" ng-if=" game.hasBuff() !== '' && !isGameOver() ">
         		<a href="#" class="btn btn-buff grenade" ng-if="game.isGrenade()">&nbsp</a>
         		<a href="#" class="btn btn-buff missile" ng-if="game.isAirStrike()">&nbsp</a>
-        	</div>
+        	</div> -->
 <!-- CONTROL AREA -->
 		    <div class="controlArea"
 		        style="position:absolute; top:{{controls_top_pos}}%; left:0; width:100%; height:{{controls_size * 100}}%;">
-		        <div ng-if="!game.firstMove()">	        
+		        <div ng-if="true">	        
 		        	<div class="turnDisplay" ng-if="game.isMyTurn() && !game.isGameOver()"> 
 			        	<text>Your turn.</text>
 			       	</div>
@@ -170,20 +170,28 @@
 			       	</div>
 		        </div>
 <!-- GAME OVER BANNER -->
-			    <div ng-if="isGameOver()" class="controlArea turnDisplay" id="makeFirstMove">
+			    <div ng-if="isGameOver()" class="controlArea turnDisplay">
 		        	<text>Player {{game.gameWinner}} wins!</text>
 		        </div>
 <!-- FIRST MOVE BANNER -->
-		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
+<!-- 		        <div ng-if="game.firstMove()" class="controlArea turnDisplay" id="makeFirstMove">
 		        	<text>Select your starting position.</text>
-		        </div>
+		        </div> -->
 <!-- BUTTONS -->
-				<div class="btn-container" ng-click="pressed_attack_button()"> 
-		        	<a href="#" class="btn btn-attack">Attack</a>
-		       	</div>
-		        <div class="btn-container" ng-click="pressed_move_button()"> 
-		        	<a href="#" class="btn btn-move">Move</a>
-		       	</div>
+		       	<div class="buffControls" ng-if="true">
+			       	<div class="btn-container" ng-click="game.toggleBuff('toggleGrenade')"> 
+			        	<a href="#" class="btn btn-buff grenade" id="toggleGrenade">&nbsp;</a>
+			       	</div>
+			       	<div class="btn-container" ng-click="game.toggleBuff('toggleAirStrike')"> 
+			        	<a href="#" class="btn btn-buff airStrike" id="toggleAirStrike">&nbsp;</a>
+			       	</div>
+					<div class="btn-container" ng-click="game.toggleBuff('toggleSprayBullets')"> 
+			        	<a href="#" class="btn btn-buff sprayBullets" id="toggleSprayBullets">&nbsp;</a>
+			       	</div>
+			       	<div class="btn-container" ng-click="game.toggleBuff('toggleFortify')"> 
+			        	<a href="#" class="btn btn-buff fortify" id="toggleFortify">&nbsp;</a>
+			       	</div>
+			    </div>
 		    </div>
 	    </div>
 	    <script>

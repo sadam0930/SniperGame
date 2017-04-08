@@ -1,106 +1,66 @@
 var aiService;
 (function (aiService) {
-    function generateComputerMove(currentState, currentTurnIndex) {
-        currentTurnIndex = currentTurnIndex;
-        if (currentState === null)
-            currentState = gameLogic.getInitialState();
-        var cell = [-1, -1];
-        var moveType = '';
-        var getBuff = checkBoardForBuff(currentState, currentTurnIndex, cell); //immediately get buff and skip searching for free cells
-        moveType = getMoveType(currentState, currentTurnIndex, cell);
-        if (!getBuff)
-            getCells(currentState, currentTurnIndex, moveType, cell);
-        if (moveType === '' || cell[0] === -1 || cell[1] === -1) {
-            log.info("Failed to generate computer move.");
-            log.info("cell[0]: " + cell[0] + " cell[1]: " + cell[1] + " moveType: " + moveType);
+    function generateComputerMove(state, turnIndexBeforeMove) {
+        var currState = null;
+        var pid = null;
+        if (state === null)
+            currState = gameLogic.getInitialState();
+        else
+            currState = state;
+        pid = turnIndexBeforeMove;
+        var pos = getAttackPos(currState, pid);
+        var moveType = 'attack';
+        getAttackType(currState, pid);
+        // TEMP CODE UNTIL WE REMOVE MOVEMENT
+        // if (currState.turnCounts[pid] === 0) {
+        // 	pos = gameLogic.getRandomPosition();
+        // 	moveType = 'move';
+        // }
+        // END OF TEMP CODE
+        if ((pos[0] === -1) || (pos[1] === -1)) {
+            log.info("Error: AI failed to select a proper move: pos=" + pos + ", pid=" + pid + ", moveType=" + moveType);
             return null;
         }
-        return gameLogic.createMove(currentState, cell[0], cell[1], moveType, currentTurnIndex);
+        else {
+            log.info("Computer: " + moveType + " @ " + pos);
+        }
+        return (gameLogic.createMove(currState, pos[0], pos[1], moveType, pid));
     }
     aiService.generateComputerMove = generateComputerMove;
-    function checkBoardForBuff(currentState, currentTurnIndex, cell) {
-        var moveBoard = currentState.board[(currentTurnIndex + 2)];
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                if (gameLogic.isABuff(moveBoard[i][j])) {
-                    cell[0] = i;
-                    cell[1] = j;
-                    return true;
-                }
-            }
-        }
-        return false;
+    function getAttackType(currState, pid) {
+        if (gameLogic.checkCD('G', currState.buffCDs, pid) === 0)
+            currState.currentBuffs[pid] = 'G';
+        else if (gameLogic.checkCD('S', currState.buffCDs, pid) === 0)
+            currState.currentBuffs[pid] = 'S';
+        else if (gameLogic.checkCD('A', currState.buffCDs, pid) === 0)
+            currState.currentBuffs[pid] = 'A';
+        else if (gameLogic.checkCD('F', currState.buffCDs, pid) === 0)
+            currState.currentBuffs[pid] = 'F';
+        else
+            currState.currentBuffs[pid] = '';
     }
-    function canMove(currentState, currentTurnIndex) {
-        var board = currentState.board[(currentTurnIndex + 2)];
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                if (board[i][j] === '')
-                    return true;
-            }
-        }
-        return false;
-    }
-    function canAttack(currentState, currentTurnIndex) {
-        var board = currentState.board[(currentTurnIndex)];
-        for (var i = 0; i < gameLogic.ROWS; i++) {
-            for (var j = 0; j < gameLogic.COLS; j++) {
-                if (board[i][j] === '')
-                    return true;
-            }
-        }
-        return false;
-    }
-    function getCells(currentState, currentTurnIndex, moveType, cell) {
+    function getAttackPos(currState, pid) {
         var safe_guard_counter = 0;
-        var board = (moveType === 'move') ?
-            currentState.board[currentTurnIndex + 2] :
-            currentState.board[currentTurnIndex];
-        var pos = gameLogic.getRandomPosition();
-        while (board[pos[0]][pos[1]] !== '') {
-            pos = gameLogic.getRandomPosition();
+        var board = currState.board[pid];
+        var cell = gameLogic.getRandomPosition();
+        while (board[cell[0]][cell[1]] !== '') {
             if (safe_guard_counter > 30) {
                 for (var i = 0; i < gameLogic.ROWS; i++) {
                     for (var j = 0; j < gameLogic.COLS; j++) {
                         if (board[i][j] === '') {
                             cell[0] = i;
                             cell[1] = j;
-                            return;
+                            return cell;
                         }
                     }
                 }
                 log.info("Error: Could not find an empty cell!");
-                return;
+                return [-1, -1];
             }
+            cell = gameLogic.getRandomPosition();
             safe_guard_counter += 1;
         }
-        cell[0] = pos[0];
-        cell[1] = pos[1];
-    }
-    function getMoveType(currentState, currentTurnIndex, cell) {
-        var moveType;
-        if (currentState.turnCounts[currentTurnIndex] === 0)
-            moveType = 'move';
-        else if (checkBoardForBuff(currentState, currentTurnIndex, cell))
-            moveType = 'move';
-        else {
-            var move = canMove(currentState, currentTurnIndex);
-            var attack = canAttack(currentState, currentTurnIndex);
-            if (move && attack) {
-                var moveAsInt = (gameLogic.getRandomIntInclusive(10) + 1);
-                if (moveAsInt <= 3)
-                    moveType = 'move'; // 30% chance to move
-                else
-                    moveType = 'attack'; // 70% chance to attack
-            }
-            else if (!move && attack)
-                moveType = 'attack';
-            else if (move && !attack)
-                moveType = 'move';
-            else
-                log.info("Error: No moves available!");
-        }
-        return moveType;
+        return cell;
     }
 })(aiService || (aiService = {}));
 //# sourceMappingURL=aiService.js.map

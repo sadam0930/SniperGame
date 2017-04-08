@@ -64,10 +64,11 @@ body {
 }
 .btn-container{
   float:left;
-  width: 50%;
+  width: 25%;
   text-align: center;
 }
 .btn {
+  box-sizing: content-box;
   width:90%; 
   padding:9.5% 0%; 
   font-family: Open Sans, Helvetica, Arial, sans-serif; 
@@ -79,9 +80,13 @@ body {
   text-decoration: none;
   border-style: outset;
   /*border-color: darkslategrey;*/
-  border-width: thin;
+  border-width: .3vw;
 }
-.btn.btn-attack{
+.btn.highlighted{
+  border-style: inset;
+  background-color: slategray
+}
+/*.btn.btn-attack{
   background-color: #B22222; 
 }
 .btn.btn-attack:active{
@@ -92,7 +97,7 @@ body {
 }
 .btn.btn-move:active{
   top: 3px; outline: none; 
-}
+}*/
 #buttonArea {
   float: left;
   clear: both;
@@ -113,7 +118,7 @@ body {
 .building{
   background-image: url("../img/wall.png");
   background-size: 15%;
-  animation:rotateme 1.5s linear;
+  /*animation:rotateme 1.5s linear;*/
 }
 @keyframes rotateme { 
   20% { transform: scale(2,2); }
@@ -211,7 +216,7 @@ body {
 
 /* Helicopter */
 .helimation {
-    animation: traverse_screen 5s ease-in-out; 
+    animation: traverse_screen 10s ease-in-out infinite; 
 }
 .helicopterContainer{
   height: 10%;
@@ -345,10 +350,21 @@ body {
   100% { transform: rotate(360deg); } 
 }
 @keyframes traverse_screen {
-  0% { transform: translate(0%, -250%); } 
-  30% { transform: translate(0%, 250%); }
+  /*0% { transform: translate(0%, -250%); } 
+  15% { transform: translate(0%, 250%); }
   45% { transform: translate(0%, 150%); }
-  100% { transform: translate(-600%, 150%); } 
+  100% { transform: translate(-600%, 150%); } */
+  0% { 
+    transform: translate(200%, 150%);
+  }
+  50% { 
+    transform: translate(-600%, 150%) 
+               rotateY(180deg);
+  }
+  100% {
+    transform: translate(200%, 150%) 
+               rotateY(0deg);
+  }
 }
 /* End Helicopter */
 #hint{
@@ -369,6 +385,7 @@ body {
 #hint .btn-container{
   float: none;
   margin: 5% 25% 0%;
+  width: inherit;
 }
 .btn-close{
   background-color: darkslategrey;
@@ -389,20 +406,57 @@ body {
 .btn-help{
   color: yellow;
 }
-#buff{
+/*#buff{
   top: 17%;
-}
+}*/
 .btn-buff{
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 50%
+  background-size: 40%;
+  padding: 18% 0%;
+  background-color: darkgrey;
+  font-weight: bold;
+  font-family: sans-serif;
+  font-size: x-large;
 }
+/*CD TIMERS*/
+.btn-buff.t1{
+  background-color: orange;
+}
+.btn-buff.t2{
+  background-color: yellow;
+}
+.btn-buff.t3{
+  background-color: green;
+}
+.btn-buff.t4{
+  background-color: blue;
+}
+.btn-buff.t5{
+  background-color: red;
+}
+/*CD TIMERS*/
+
+/*BUFF ICONS*/
 .btn-buff.grenade{
   background-image: url("../img/grenade.png");
 }
-.btn-buff.missile{
+.btn-buff.airStrike{
   background-image: url("../img/missile.png");
 }
+.btn-buff.sprayBullets{
+  background-image: url("../img/spray.png");
+}
+.btn-buff.fortify{
+  background-image: url("../img/shield.png");
+}
+.buffControls{
+  padding: 1%;
+  overflow: auto;
+  height: 63%;
+}
+/*BUFF ICONS*/
+
 /* Manipulate size for screen size */
 @media only screen and (max-device-width:1025px){
    /* default iPad Pro screens */

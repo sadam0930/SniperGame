@@ -16,6 +16,7 @@ var game;
     game.yourPlayerInfo = null;
     game.prev_turn_index = null;
     game.turn_index = null;
+    game.audio_enabled = true;
     function init($rootScope_, $timeout_) {
         game.$rootScope = $rootScope_;
         game.$timeout = $timeout_;
@@ -96,10 +97,6 @@ var game;
         return game.proposals && game.proposals[row][col] == 2;
     }
     game.isProposal2 = isProposal2;
-    function isABuff(cellValue) {
-        return gameLogic.isABuff(cellValue);
-    }
-    game.isABuff = isABuff;
     function hasBuff() {
         if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
             return '';
@@ -131,7 +128,6 @@ var game;
         game.currentUpdateUI = params;
         clearAnimationTimeout();
         game.state = params.state;
-        playAudio();
         if (isFirstMove()) {
             game.state = gameLogic.getInitialState();
         }
@@ -143,27 +139,38 @@ var game;
         }
         game.prev_turn_index = game.turn_index;
         game.turn_index = params.turnIndex;
+        // if (!isMyTurn()) playAudio(state);
+        playAudio(game.state);
+        resetHighlights();
+        updateButtonIcons();
         // We calculate the AI move only after the animation finishes,
         // because if we call aiService now
         // then the animation will be paused until the javascript finishes.
         game.animationEndedTimeout = game.$timeout(animationEndedCallback, 500);
     }
     game.updateUI = updateUI;
+    function toggleAudio() {
+        game.audio_enabled = !game.audio_enabled;
+    }
+    game.toggleAudio = toggleAudio;
     // Currently set to play audio every time updateUI is called
-    function playAudio() {
-        if (game.state === null || game.state.delta === null)
+    function playAudio(state) {
+        if (state.delta === null || !game.audio_enabled)
             return;
         var audio = new Audio();
-        if (game.state.delta.moveType === 'attack') {
+        if (state.delta.moveType === 'attack') {
             // Attack-audio sounds
-            if (game.state.delta.attackType === '') {
+            if (state.delta.attackType === '' || state.delta.attackType === 'F') {
                 audio = new Audio('audio/rifle.wav');
             }
-            else if (game.state.delta.attackType === 'grenade') {
+            else if (state.delta.attackType === 'G') {
                 audio = new Audio('audio/grenade.wav');
             }
-            else if (game.state.delta.attackType === 'air strike') {
+            else if (state.delta.attackType === 'A') {
                 audio = new Audio('audio/air_strike.wav');
+            }
+            else if (state.delta.attackType === 'S') {
+                audio = new Audio('audio/rifle.wav');
             }
         }
         audio.play();
@@ -181,7 +188,7 @@ var game;
     function maybeSendComputerMove() {
         if (!isComputerTurn())
             return;
-        var move = aiService.generateComputerMove(game.currentUpdateUI.state, game.currentUpdateUI.turnIndex);
+        var move = aiService.generateComputerMove(game.state, game.currentUpdateUI.turnIndex);
         log.info("Computer move: ", move);
         makeMove(move);
     }
@@ -233,11 +240,14 @@ var game;
     }
     game.isMyTurn = isMyTurn;
     game.theWinner = '';
+    // USE THIS TO THROW UP A STATUS MESSAGE SHOWING YOUR ATTACK WAS CANCELLED OUT
+    game.wasOpponentFortified = false;
     function cellClicked(row, col, moveType) {
         log.info("Clicked on cell:", row, col);
         if (!isHumanTurn())
             return;
         var nextMove = null;
+        game.wasOpponentFortified = (game.state.currentBuffs[(1 - yourPlayerIndex())] === 'F');
         try {
             nextMove = gameLogic.createMove(game.state, row, col, moveType, game.currentUpdateUI.turnIndex);
         }
@@ -246,6 +256,7 @@ var game;
             return;
         }
         // Move is legal, make it!
+        // playAudio(nextMove.state);
         makeMove(nextMove);
     }
     game.cellClicked = cellClicked;
@@ -255,7 +266,7 @@ var game;
     game.shouldShowImage = shouldShowImage;
     function isPiece(board, row, col, pieceKind) {
         var board_number = (board + yourPlayerIndex());
-        if (yourPlayerIndex() === -2)
+        if (yourPlayerIndex() == -2)
             return;
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             board_number = board;
@@ -327,6 +338,71 @@ var game;
         return (game.currentUpdateUI.turnIndex === -1);
     }
     game.isGameOver = isGameOver;
+    var buttonList = [
+        'toggleGrenade',
+        'toggleAirStrike',
+        'toggleSprayBullets',
+        'toggleFortify'
+    ];
+    function buttonPreCheck() {
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+            return false;
+        else if (document.getElementById('attackBoard') === null)
+            return false;
+        else if (game.state.buffCDs === null)
+            return false;
+        else
+            return true;
+    }
+    function updateButtonIcons() {
+        if (!buttonPreCheck())
+            return;
+        for (var i = 0; i < buttonList.length; i++) {
+            var thisEle = document.getElementById(buttonList[i]);
+            var buffCSSClass = buttonList[i].replace('toggle', '');
+            var buffID = buttonList[i].replace('toggle', '')[0];
+            buffCSSClass = buffID.toLowerCase() + buffCSSClass.slice(1);
+            var cdRemaining = gameLogic.checkCD(buffID, game.state.buffCDs, yourPlayerIndex());
+            if (cdRemaining > 0) {
+                thisEle.className = "btn btn-buff " + buffCSSClass + " t" + cdRemaining;
+                thisEle.innerHTML = "" + cdRemaining;
+            }
+            else {
+                thisEle.className = "btn btn-buff " + buffCSSClass;
+                thisEle.innerHTML = "&nbsp;";
+            }
+        }
+    }
+    function resetHighlights() {
+        if (!buttonPreCheck())
+            return;
+        for (var i = 0; i < buttonList.length; i++) {
+            var thisEle = document.getElementById(buttonList[i]);
+            thisEle.className = thisEle.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+        }
+    }
+    game.resetHighlights = resetHighlights;
+    function toggleBuff(buttonID) {
+        if (!buttonPreCheck())
+            return;
+        var elementToggled = document.getElementById(buttonID);
+        var buffID = buttonID.replace('toggle', '')[0];
+        var cdRemaining = gameLogic.checkCD(buffID, game.state.buffCDs, yourPlayerIndex());
+        if (cdRemaining > 0)
+            return;
+        // BUTTON IS ON, TURN IT OFF
+        if (elementToggled.className.match(/(?:^|\s)highlighted(?!\S)/)) {
+            elementToggled.className = elementToggled.className.replace(/(?:^|\s)highlighted(?!\S)/g, '');
+            game.state.currentBuffs[yourPlayerIndex()] = '';
+        }
+        else {
+            // TURN OFF OTHER HIGHLIGHTS BEFORE HIGHLIGHTING THIS BUTTON
+            resetHighlights();
+            elementToggled.className += " highlighted";
+            game.state.currentBuffs[yourPlayerIndex()] = buffID;
+        }
+    }
+    game.toggleBuff = toggleBuff;
 })(game || (game = {}));
 // CONTROLLER
 var app = angular.module('myApp', ['gameServices']);
@@ -339,8 +415,8 @@ app.run(['$rootScope', '$timeout',
 app.controller('MainController', ['$scope', '$rootScope', function ($scope, $rootScope) {
         // BOARD ATTRIBUTES //
         $scope.board_size = .8;
-        $scope.is_attacking = false;
-        $scope.is_moving = true;
+        $scope.is_attacking = true;
+        $scope.is_moving = false;
         $scope.show_intro = false;
         $scope.show_buff_info = false;
         $scope.pressed_intro = function () {

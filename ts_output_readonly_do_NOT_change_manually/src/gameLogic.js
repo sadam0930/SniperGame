@@ -24,6 +24,10 @@ var gameLogic;
         for (var i = 0; i < gameLogic.NUMPLAYERS * 2; i++) {
             boards[i] = getBlankBoard();
         }
+        var pos = getRandomPosition();
+        boards[gameLogic.NUMPLAYERS][pos[0]][pos[1]] = 'P';
+        pos = getRandomPosition();
+        boards[(gameLogic.NUMPLAYERS + 1)][pos[0]][pos[1]] = 'P';
         return boards;
     }
     gameLogic.getInitialBoards = getInitialBoards;
@@ -38,8 +42,30 @@ var gameLogic;
         return board;
     }
     gameLogic.getBlankBoard = getBlankBoard;
+    function getInitialBuffCDs() {
+        var buffCDs1 = {
+            Grenade: 0,
+            SprayBullets: 0,
+            AirStrike: 0,
+            Fortify: 0
+        };
+        var buffCDs2 = {
+            Grenade: 0,
+            SprayBullets: 0,
+            AirStrike: 0,
+            Fortify: 0
+        };
+        return [buffCDs1, buffCDs2];
+    }
     function getInitialState() {
-        return { board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0, 0], currentBuffs: ['', ''], buffsEnabled: true };
+        return {
+            board: getInitialBoards(),
+            delta: null,
+            gameOver: false,
+            turnCounts: [0, 0],
+            currentBuffs: ['', ''],
+            buffCDs: getInitialBuffCDs()
+        };
     }
     gameLogic.getInitialState = getInitialState;
     function getRandomPosition() {
@@ -55,13 +81,48 @@ var gameLogic;
      * Compares the coordinates the player attacked
      * with the opponents position board
      */
+    function updateBuffCDs(buffCDs, pid) {
+        var newBuffCDs = angular.copy(buffCDs);
+        newBuffCDs[pid].Grenade = ((newBuffCDs[pid].Grenade !== 0) ? (newBuffCDs[pid].Grenade - 1) : 0);
+        newBuffCDs[pid].SprayBullets = ((newBuffCDs[pid].SprayBullets !== 0) ? (newBuffCDs[pid].SprayBullets - 1) : 0);
+        newBuffCDs[pid].AirStrike = ((newBuffCDs[pid].AirStrike !== 0) ? (newBuffCDs[pid].AirStrike - 1) : 0);
+        newBuffCDs[pid].Fortify = ((newBuffCDs[pid].Fortify !== 0) ? (newBuffCDs[pid].Fortify - 1) : 0);
+        return newBuffCDs;
+    }
+    function triggerCD(attackType, buffCDs, playerID) {
+        var tempBuffCDs = angular.copy(buffCDs);
+        if (attackType === '')
+            return tempBuffCDs;
+        else if (attackType === 'G')
+            tempBuffCDs[playerID].Grenade = 3;
+        else if (attackType === 'S')
+            tempBuffCDs[playerID].SprayBullets = 4;
+        else if (attackType === 'A')
+            tempBuffCDs[playerID].AirStrike = 5;
+        else if (attackType === 'F')
+            tempBuffCDs[playerID].Fortify = 5;
+        return tempBuffCDs;
+    }
+    function checkCD(attackType, buffCDs, playerID) {
+        if (attackType === '')
+            return 0;
+        else if (attackType === 'G')
+            return buffCDs[playerID].Grenade;
+        else if (attackType === 'S')
+            return buffCDs[playerID].SprayBullets;
+        else if (attackType === 'A')
+            return buffCDs[playerID].AirStrike;
+        else if (attackType === 'F')
+            return buffCDs[playerID].Fortify;
+    }
+    gameLogic.checkCD = checkCD;
     function getWinner(row, col, turnIndexBeforeMove, boards, attackType) {
         var opponentMoveBoard = (1 - turnIndexBeforeMove + 2);
-        if (attackType === '') {
+        if (attackType === '' || attackType === 'F') {
             if (boards[opponentMoveBoard][row][col] === 'P')
-                return [('P' + (turnIndexBeforeMove + 1)), 'c'];
+                return [('P' + (turnIndexBeforeMove + 1)), ('' + (col))];
         }
-        else if (attackType === 'grenade') {
+        else if (attackType === 'G') {
             if (boards[opponentMoveBoard][row][col - 1] === 'P')
                 return [('P' + (turnIndexBeforeMove + 1)), ('' + (col - 1))];
             else if (boards[opponentMoveBoard][row][col] === 'P')
@@ -69,11 +130,34 @@ var gameLogic;
             else if (boards[opponentMoveBoard][row][col + 1] === 'P')
                 return [('P' + (turnIndexBeforeMove + 1)), ('' + (col + 1))];
         }
-        else if (attackType === 'air strike') {
+        else if (attackType === 'A') {
             for (var i = 0; i < gameLogic.ROWS; i++) {
                 if (boards[opponentMoveBoard][i][col] === 'P')
                     return [('P' + (turnIndexBeforeMove + 1)), ('' + i)];
             }
+        }
+        else if (attackType === 'S') {
+            var returnArray = [];
+            returnArray[0] = returnArray[1] = returnArray[2] = '';
+            var attackPos = [];
+            attackPos[0] = row + ',' + col;
+            for (var i = 1; i < 4; i++) {
+                var randPos = getRandomPosition();
+                attackPos[i] = randPos[0] + ',' + randPos[1];
+            }
+            for (var i = 0; i < attackPos.length; i++) {
+                var r = Number(attackPos[i].split(',')[0]);
+                var c = Number(attackPos[i].split(',')[1]);
+                if (boards[opponentMoveBoard][r][c] === 'P') {
+                    returnArray[0] = ('P' + (turnIndexBeforeMove + 1));
+                    returnArray[1] = attackPos[i];
+                }
+                else {
+                    returnArray[2] += (attackPos[i] + ';');
+                }
+            }
+            returnArray[2] = returnArray[2].substring(0, (returnArray[2].length - 1));
+            return returnArray;
         }
         return ['', ''];
     }
@@ -81,50 +165,6 @@ var gameLogic;
      * Returns the move that should be performed when player
      * with index turnIndexBeforeMove makes a move in cell row X col.
      */
-    function spawnPowerUps(boards, turnIndexBeforeMove, keepSpawningBuffs) {
-        if (turnIndexBeforeMove === -1)
-            return;
-        var safe_guard_counter = 0;
-        var buff_type_num = getRandomIntInclusive(2);
-        var buff_type = '';
-        if (buff_type_num == 0)
-            buff_type = 'grenade';
-        else if (buff_type_num == 1)
-            buff_type = 'air strike';
-        else {
-            //toDo: Throw an error if this shouldn't happen
-            log.info("spawnPowerUps() buff_type_num out of range.");
-            return;
-        }
-        var move_board = (2 + turnIndexBeforeMove); // move board where buff is visible
-        var buff_pos = getRandomPosition();
-        var found_free_pos = false;
-        while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
-            buff_pos = getRandomPosition();
-            if (safe_guard_counter > 30) {
-                for (var i = 0; i < gameLogic.ROWS; i++) {
-                    for (var j = 0; j < gameLogic.COLS; j++) {
-                        if (boards[move_board][i][j] === '') {
-                            buff_pos[0] = i;
-                            buff_pos[1] = j;
-                            found_free_pos = true;
-                            break;
-                        }
-                    }
-                    if (found_free_pos)
-                        break;
-                }
-                if (!found_free_pos) {
-                    keepSpawningBuffs = false;
-                }
-            }
-            if (found_free_pos)
-                break;
-            safe_guard_counter += 1;
-        }
-        boards[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
-    }
-    gameLogic.spawnPowerUps = spawnPowerUps;
     function createMove(stateBeforeMove, row, col, moveType, turnIndexBeforeMove) {
         // GET CURRENT BOARDS
         if (!stateBeforeMove) {
@@ -150,22 +190,25 @@ var gameLogic;
             throw new Error("One can only make a move in an empty position!");
         if (stateBeforeMove.gameOver)
             throw new Error("Game Over!");
-        if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType))
-            throw new Error("Must place position on first move!");
+        // if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
         // CHECK IF KILL SHOT
         var current_buffs = stateBeforeMove.currentBuffs;
-        var buffsEnabled = stateBeforeMove.buffsEnabled;
         var attackType = current_buffs[playerID];
+        // IF CD ISN'T UP, SET ATTACK TO NORMAL ATTACK
+        if (checkCD(attackType, stateBeforeMove.buffCDs, playerID) !== 0) {
+            attackType = '';
+            stateBeforeMove.currentBuffs[playerID] = '';
+        }
         var winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
         var endMatchScores;
         endMatchScores = null;
         var turnIndex;
         var isGameOver = false;
-        if (moveType === 'attack' && winner[0] !== '') {
+        if (moveType === 'attack' && winner[0] !== '' && (current_buffs[1 - playerID] !== 'F')) {
             // Game over
             log.info("Game over! Winner is: ", winner[0]);
             turnIndex = -1;
-            endMatchScores = winner[0] === 'P1' ? [1, 0] : winner[0] === 'P2' ? [0, 1] : [0, 0];
+            endMatchScores = (winner[0] === 'P1') ? [1, 0] : [0, 1];
             isGameOver = true;
         }
         // UPDATE BOARDS
@@ -174,48 +217,63 @@ var gameLogic;
         var boardMarker = winner[0] !== '' ? 'D' : 'B';
         var hit_location = Number(winner[1]);
         var buffsAfterMove = angular.copy(current_buffs);
-        var keepSpawningBuffs = stateBeforeMove.buffsEnabled;
+        var buffCDs = updateBuffCDs(stateBeforeMove.buffCDs, playerID);
         if (moveType === 'attack') {
-            if (attackType === 'grenade') {
-                boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = 'B';
+            buffCDs = triggerCD(attackType, buffCDs, playerID);
+            if (buffsAfterMove[(1 - playerID)] === 'F') {
+                buffsAfterMove[playerID] = buffsAfterMove[(1 - playerID)] = '';
+            }
+            else if (attackType === 'G') {
+                if ((col - 1) < gameLogic.COLS && (col - 1) >= 0)
+                    boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = 'B';
                 boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
-                boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = 'B';
+                if ((col + 1) < gameLogic.COLS && (col + 1) >= 0)
+                    boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = 'B';
                 buffsAfterMove[playerID] = '';
                 if (winner[1] != '')
                     boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
             }
-            else if (attackType === 'air strike') {
+            else if (attackType === 'A') {
                 for (var i = 0; i < gameLogic.ROWS; i++)
                     boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
                 buffsAfterMove[playerID] = '';
                 if (winner[1] != '')
                     boardsAfterMove[playerID][hit_location][col] = boardsAfterMove[(1 - playerID) + 2][hit_location][col] = boardMarker;
             }
+            else if (attackType === 'S') {
+                var hitList = winner[2].split(';');
+                for (var i = 0; i < hitList.length; i++) {
+                    var r = Number(hitList[i].split(',')[0]);
+                    var c = Number(hitList[i].split(',')[1]);
+                    boardsAfterMove[playerID][r][c] = boardsAfterMove[(1 - playerID) + 2][r][c] = 'B';
+                }
+                if (winner[1] !== '') {
+                    var r = Number(winner[1].split(',')[0]);
+                    var c = Number(winner[1].split(',')[1]);
+                    boardsAfterMove[playerID][r][c] = boardsAfterMove[(1 - playerID) + 2][r][c] = 'D';
+                }
+                buffsAfterMove[playerID] = '';
+            }
             else {
                 boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
             }
         }
         else if (moveType === 'move') {
-            if (isABuff(boardsAfterMove[playerID + 2][row][col]))
-                buffsAfterMove[playerID] = boardsAfterMove[playerID + 2][row][col];
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
-        }
-        var my_turn_count = playerTurnCount[turnIndexBeforeMove];
-        if ((my_turn_count > 0) && (my_turn_count % 3 == 0) && buffsEnabled) {
-            spawnPowerUps(boardsAfterMove, turnIndexBeforeMove, keepSpawningBuffs);
         }
         playerTurnCount[turnIndexBeforeMove] += 1;
         var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
-        var state = { delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs };
+        var state = {
+            delta: delta,
+            board: boardsAfterMove,
+            gameOver: isGameOver,
+            turnCounts: playerTurnCount,
+            currentBuffs: buffsAfterMove,
+            buffCDs: buffCDs
+        };
         return { endMatchScores: endMatchScores, turnIndex: turnIndex, state: state };
     }
     gameLogic.createMove = createMove;
-    function isABuff(cellValue) {
-        if (cellValue === 'grenade' || cellValue === 'air strike')
-            return true;
-        return false;
-    }
-    gameLogic.isABuff = isABuff;
     function assignNewPosition(board, row, col) {
         for (var i = 0; i < gameLogic.ROWS; i++) {
             for (var j = 0; j < gameLogic.COLS; j++) {
@@ -232,7 +290,7 @@ var gameLogic;
     }
     gameLogic.createInitialMove = createInitialMove;
     function forSimpleTestHtml() {
-        var move = createMove(null, 0, 0, 'attack', 0);
+        var move = createMove(null, 0, 0, 'move', 0);
         log.log("move=", move);
     }
     gameLogic.forSimpleTestHtml = forSimpleTestHtml;

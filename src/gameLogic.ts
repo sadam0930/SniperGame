@@ -1,4 +1,11 @@
 type Board = string[][];
+
+interface BuffCDs {
+  Grenade: number;
+  SprayBullets: number;
+  AirStrike: number;
+  Fortify: number;
+}
 interface BoardDelta {
   row: number;
   col: number;
@@ -12,7 +19,7 @@ interface IState {
   gameOver: boolean;
   turnCounts: number[];
   currentBuffs: string[];
-  buffsEnabled: boolean;
+  buffCDs: BuffCDs[];
 }
 
 import gameService = gamingPlatform.gameService;
@@ -42,6 +49,10 @@ module gameLogic {
     for (let i = 0; i < NUMPLAYERS*2; i++) {
       boards[i] = getBlankBoard();
     }
+    let pos: number[] = getRandomPosition();
+    boards[NUMPLAYERS][pos[0]][pos[1]] = 'P';
+    pos = getRandomPosition();
+    boards[(NUMPLAYERS + 1)][pos[0]][pos[1]] = 'P';
     return boards;
   }
 
@@ -56,8 +67,33 @@ module gameLogic {
     return board;
   }
 
+  function getInitialBuffCDs(): BuffCDs[] {
+    let buffCDs1: BuffCDs = {
+      Grenade: 0,
+      SprayBullets: 0,
+      AirStrike: 0,
+      Fortify: 0
+    };
+    let buffCDs2: BuffCDs = {
+      Grenade: 0,
+      SprayBullets: 0,
+      AirStrike: 0,
+      Fortify: 0
+    };
+
+    return [buffCDs1, buffCDs2];
+  }
+
   export function getInitialState(): IState {
-    return {board: getInitialBoards(), delta: null, gameOver: false, turnCounts: [0,0], currentBuffs: ['',''], buffsEnabled: true};
+
+    return {
+      board: getInitialBoards(), 
+      delta: null, 
+      gameOver: false, 
+      turnCounts: [0,0], 
+      currentBuffs: ['',''], 
+      buffCDs: getInitialBuffCDs()
+    };
   }
 
   export function getRandomPosition(): number[] {
@@ -73,20 +109,71 @@ module gameLogic {
    * Compares the coordinates the player attacked 
    * with the opponents position board
    */
+
+  function updateBuffCDs(buffCDs: BuffCDs[], pid: number): BuffCDs[] {
+    let newBuffCDs: BuffCDs[] = angular.copy(buffCDs);
+    newBuffCDs[pid].Grenade = ((newBuffCDs[pid].Grenade !== 0) ? (newBuffCDs[pid].Grenade - 1) : 0);
+    newBuffCDs[pid].SprayBullets = ((newBuffCDs[pid].SprayBullets !== 0) ? (newBuffCDs[pid].SprayBullets - 1) : 0);
+    newBuffCDs[pid].AirStrike = ((newBuffCDs[pid].AirStrike !== 0) ? (newBuffCDs[pid].AirStrike - 1) : 0);
+    newBuffCDs[pid].Fortify = ((newBuffCDs[pid].Fortify !== 0) ? (newBuffCDs[pid].Fortify - 1) : 0);
+    return newBuffCDs;
+  }
+
+  function triggerCD(attackType: string, buffCDs: BuffCDs[], playerID: number): BuffCDs[] {
+  	let tempBuffCDs: BuffCDs[] = angular.copy(buffCDs);
+  	if (attackType === '') return tempBuffCDs;
+  	else if (attackType === 'G') tempBuffCDs[playerID].Grenade = 3;
+  	else if (attackType === 'S') tempBuffCDs[playerID].SprayBullets = 4;
+  	else if (attackType === 'A') tempBuffCDs[playerID].AirStrike = 5;
+  	else if (attackType === 'F') tempBuffCDs[playerID].Fortify = 5;
+  	return tempBuffCDs;
+  }
+
+  export function checkCD(attackType: string, buffCDs: BuffCDs[], playerID: number): number {
+  	if (attackType === '') return 0;
+  	else if (attackType === 'G') return buffCDs[playerID].Grenade;
+  	else if (attackType === 'S') return buffCDs[playerID].SprayBullets;
+  	else if (attackType === 'A') return buffCDs[playerID].AirStrike;
+  	else if (attackType === 'F') return buffCDs[playerID].Fortify;
+  }
+
   function getWinner(row: number, col: number, turnIndexBeforeMove: number, boards: Board[], attackType: string): string[] {
     let opponentMoveBoard: number = (1 - turnIndexBeforeMove + 2);
-    if (attackType === '') {
-      if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (turnIndexBeforeMove + 1)), 'c'];
+    if (attackType === '' || attackType === 'F') {
+      if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (turnIndexBeforeMove + 1)), ('' + (col))];
     }
-    else if (attackType === 'grenade') {
+    else if (attackType === 'G') {
       if (boards[opponentMoveBoard][row][col-1] === 'P') return [('P' + (turnIndexBeforeMove + 1)), ('' + (col-1))];
       else if (boards[opponentMoveBoard][row][col] === 'P') return [('P' + (turnIndexBeforeMove + 1)), ('' + (col))];
       else if (boards[opponentMoveBoard][row][col+1] === 'P') return [('P' + (turnIndexBeforeMove + 1)), ('' + (col+1))];
     }
-    else if (attackType === 'air strike') {
+    else if (attackType === 'A') {
       for (let i = 0; i < ROWS; i++) {
         if (boards[opponentMoveBoard][i][col] === 'P') return [('P' + (turnIndexBeforeMove + 1)), ('' + i)];  
       }
+    }
+    else if (attackType === 'S') {
+      let returnArray: string[] = [];
+      returnArray[0] = returnArray[1] = returnArray[2] = '';
+      let attackPos: string[] = [];
+      attackPos[0] = row + ',' + col;
+      for (let i = 1; i < 4; i++) {		// number of additional "sprayed" shots designated here
+        let randPos: number[] = getRandomPosition();
+        attackPos[i] = randPos[0] + ',' + randPos[1];
+      }
+      for (let i = 0; i < attackPos.length; i++) {
+        let r: number = Number(attackPos[i].split(',')[0]);
+        let c: number = Number(attackPos[i].split(',')[1]);
+        if (boards[opponentMoveBoard][r][c] === 'P') {
+          returnArray[0] = ('P' + (turnIndexBeforeMove + 1));
+          returnArray[1] = attackPos[i];
+        }
+        else {
+          returnArray[2] += (attackPos[i] + ';');
+        }
+      }
+      returnArray[2] = returnArray[2].substring(0, (returnArray[2].length - 1));
+      return returnArray;
     }
     return ['', ''];
   }
@@ -96,52 +183,6 @@ module gameLogic {
    * with index turnIndexBeforeMove makes a move in cell row X col.
    */
   
-  export function spawnPowerUps(boards: Board[], turnIndexBeforeMove: number, keepSpawningBuffs: boolean): boolean {
-    if (turnIndexBeforeMove === -1) return;
-    let safe_guard_counter: number = 0;
-    let buff_type_num: number  = getRandomIntInclusive(2);  
-    let buff_type: string = '';
-
-    if (buff_type_num == 0) buff_type = 'grenade';       
-    else if (buff_type_num == 1) buff_type = 'air strike';  
-    // else if (buff_type_num == 2) buff_type = 'X';   // placeholder buff
-    else {
-      //toDo: Throw an error if this shouldn't happen
-      log.info("spawnPowerUps() buff_type_num out of range.");
-      return;
-    }
-
-    let move_board: number = (2 + turnIndexBeforeMove);    // move board where buff is visible
-    let buff_pos: number[] = getRandomPosition();
-    let found_free_pos: boolean = false;
-
-    while (boards[move_board][buff_pos[0]][buff_pos[1]] !== '') {
-      buff_pos = getRandomPosition();
-      
-      if (safe_guard_counter > 30) {                    // Brute force check for a free cell
-        for (let i = 0; i < ROWS; i++) {
-          for (let j = 0; j < COLS; j++) {
-            if (boards[move_board][i][j] === '') {
-              buff_pos[0] = i;
-              buff_pos[1] = j;
-              found_free_pos = true;
-              break;
-            }
-          }
-          if (found_free_pos) break;
-        }
-        if (!found_free_pos) {               
-          keepSpawningBuffs = false;
-        }
-      }
-      if (found_free_pos) break;
-      safe_guard_counter += 1;
-    }
-
-    boards[move_board][buff_pos[0]][buff_pos[1]] = buff_type;
-  }
-
-
   export function createMove(
       stateBeforeMove: IState, row: number, col: number, moveType: string, turnIndexBeforeMove: number): IMove {
     
@@ -166,22 +207,27 @@ module gameLogic {
     if (row > ROWS || row < 0 || col > COLS || col < 0) throw new Error("Cannot move outside of board!");
     if (board[row][col] == 'P' || board[row][col] == 'B') throw new Error("One can only make a move in an empty position!");
     if (stateBeforeMove.gameOver) throw new Error("Game Over!");
-    if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
+    // if ((playerTurnCount[turnIndexBeforeMove] === 0) && ('attack' === moveType)) throw new Error("Must place position on first move!");
+
         
     // CHECK IF KILL SHOT
     let current_buffs: string[] = stateBeforeMove.currentBuffs;
-    let buffsEnabled: boolean = stateBeforeMove.buffsEnabled;
     let attackType: string = current_buffs[playerID];
+    // IF CD ISN'T UP, SET ATTACK TO NORMAL ATTACK
+    if (checkCD(attackType, stateBeforeMove.buffCDs, playerID) !== 0) {
+      attackType = '';
+      stateBeforeMove.currentBuffs[playerID] = '';
+    }
     let winner = getWinner(row, col, turnIndexBeforeMove, boards, attackType);
     let endMatchScores: number[];
     endMatchScores = null;
     let turnIndex: number;
     let isGameOver: boolean = false;
-    if (moveType === 'attack' && winner[0] !== '') {
+    if (moveType === 'attack' && winner[0] !== '' && (current_buffs[1 - playerID] !== 'F')) {
       // Game over
       log.info("Game over! Winner is: ", winner[0]);
       turnIndex = -1;
-      endMatchScores = winner[0] === 'P1' ? [1, 0] : winner[0] === 'P2' ? [0, 1] : [0, 0];
+      endMatchScores = (winner[0] === 'P1') ? [1, 0] : [0, 1];
       isGameOver = true;
     }
 
@@ -191,46 +237,58 @@ module gameLogic {
     let boardMarker = winner[0] !== '' ? 'D' : 'B';
     let hit_location: number = Number(winner[1]);
     let buffsAfterMove = angular.copy(current_buffs);
-    let keepSpawningBuffs: boolean = stateBeforeMove.buffsEnabled;
-
+    let buffCDs: BuffCDs[] = updateBuffCDs(stateBeforeMove.buffCDs, playerID);
     if (moveType === 'attack') {
-      if (attackType === 'grenade') {
-        boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
+      buffCDs = triggerCD(attackType, buffCDs, playerID);
+      if (buffsAfterMove[(1 - playerID)] === 'F') {
+      	buffsAfterMove[playerID] = buffsAfterMove[(1 - playerID)] = '';
+      }	
+      else if (attackType === 'G') {
+        if ((col - 1) < COLS && (col - 1) >= 0) boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
-        boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
+        if ((col + 1) < COLS && (col + 1) >= 0) boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
         buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
       }
-      else if (attackType === 'air strike') {
+      else if (attackType === 'A') {
         for (let i = 0; i < ROWS; i++) boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
         buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][hit_location][col] = boardsAfterMove[(1 - playerID) + 2][hit_location][col] = boardMarker;
       }
+      else if (attackType === 'S') {
+        let hitList: string[] = winner[2].split(';');
+        for (let i = 0; i < hitList.length; i++) {
+          let r: number = Number(hitList[i].split(',')[0]);
+          let c: number = Number(hitList[i].split(',')[1]);
+          boardsAfterMove[playerID][r][c] = boardsAfterMove[(1 - playerID) + 2][r][c] = 'B';
+        }
+        if (winner[1] !== '') {
+          let r: number = Number(winner[1].split(',')[0]);
+          let c: number = Number(winner[1].split(',')[1]);
+          boardsAfterMove[playerID][r][c] = boardsAfterMove[(1 - playerID) + 2][r][c] = 'D';
+        }
+        buffsAfterMove[playerID] = '';
+      }
       else {
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
       }
-
     }
     else if (moveType === 'move') {
-      if (isABuff(boardsAfterMove[playerID + 2][row][col])) 
-        buffsAfterMove[playerID] = boardsAfterMove[playerID + 2][row][col];
       assignNewPosition(boardsAfterMove[playerID + 2], row, col);
     }
 
-    let my_turn_count: number = playerTurnCount[turnIndexBeforeMove];
-    if ((my_turn_count > 0) && (my_turn_count % 3 == 0) && buffsEnabled) {
-      spawnPowerUps(boardsAfterMove, turnIndexBeforeMove, keepSpawningBuffs);
-    }
     playerTurnCount[turnIndexBeforeMove] += 1;
 
     let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
-    let state: IState = {delta: delta, board: boardsAfterMove, gameOver: isGameOver, turnCounts: playerTurnCount, currentBuffs: buffsAfterMove, buffsEnabled: keepSpawningBuffs};
+    let state: IState = {
+      delta: delta, 
+      board: boardsAfterMove, 
+      gameOver: isGameOver, 
+      turnCounts: playerTurnCount, 
+      currentBuffs: buffsAfterMove, 
+      buffCDs: buffCDs
+    };
     return {endMatchScores: endMatchScores, turnIndex: turnIndex, state: state};
-  }
-
-  export function isABuff(cellValue: string): boolean {
-    if (cellValue === 'grenade' || cellValue === 'air strike') return true;
-    return false;
   }
 
   function assignNewPosition(board: Board, row: number, col: number): void {
@@ -250,7 +308,7 @@ module gameLogic {
   }
 
   export function forSimpleTestHtml() {
-    var move = createMove(null, 0, 0, 'attack', 0);
+    var move = createMove(null, 0, 0, 'move', 0);
     log.log("move=", move);
   }
 }
