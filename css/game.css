@@ -402,8 +402,11 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 40%;
-  padding: 25% 0%;
+  padding: 18% 0%;
   background-color: darkgrey;
+  font-weight: bold;
+  font-family: sans-serif;
+  font-size: x-large;
 }
 /*CD TIMERS*/
 .btn-buff.t1{
@@ -439,6 +442,7 @@ body {
 .buffControls{
   padding: 1%;
   overflow: auto;
+  height: 63%;
 }
 /*BUFF ICONS*/
 

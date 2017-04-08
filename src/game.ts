@@ -368,9 +368,11 @@ module game {
 
       if (cdRemaining > 0) {
         thisEle.className = "btn btn-buff " + buffCSSClass + " t" + cdRemaining;
+        thisEle.innerHTML = "" + cdRemaining;
       }
       else {
         thisEle.className = "btn btn-buff " + buffCSSClass;
+        thisEle.innerHTML = "&nbsp;";
       }
     }
   }
