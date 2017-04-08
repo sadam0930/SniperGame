@@ -241,7 +241,10 @@ module gameLogic {
     if (moveType === 'attack') {
       buffCDs = triggerCD(attackType, buffCDs, playerID);
       if (buffsAfterMove[(1 - playerID)] === 'F') {
-      	buffsAfterMove[playerID] = buffsAfterMove[(1 - playerID)] = '';
+        buffsAfterMove[1 - playerID] = '';
+        if (buffsAfterMove[playerID] !== 'F') {
+          buffsAfterMove[playerID] = '';
+        }
       }	
       else if (attackType === 'G') {
         if ((col - 1) < COLS && (col - 1) >= 0) boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';

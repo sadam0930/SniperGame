@@ -221,7 +221,10 @@ var gameLogic;
         if (moveType === 'attack') {
             buffCDs = triggerCD(attackType, buffCDs, playerID);
             if (buffsAfterMove[(1 - playerID)] === 'F') {
-                buffsAfterMove[playerID] = buffsAfterMove[(1 - playerID)] = '';
+                buffsAfterMove[1 - playerID] = '';
+                if (buffsAfterMove[playerID] !== 'F') {
+                    buffsAfterMove[playerID] = '';
+                }
             }
             else if (attackType === 'G') {
                 if ((col - 1) < gameLogic.COLS && (col - 1) >= 0)
