@@ -266,7 +266,7 @@ var game;
     game.shouldShowImage = shouldShowImage;
     function isPiece(board, row, col, pieceKind) {
         var board_number = (board + yourPlayerIndex());
-        if (yourPlayerIndex() === -2)
+        if (yourPlayerIndex() == -2)
             return;
         if (game.currentUpdateUI.playMode === 'playAgainstTheComputer')
             board_number = board;

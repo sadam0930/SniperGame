@@ -283,7 +283,7 @@ module game {
   function isPiece(board: number, row: number, col: number, pieceKind: string): boolean {
 
     let board_number: number = (board + yourPlayerIndex());
-    if (yourPlayerIndex() === -2) return;
+    if (yourPlayerIndex() == -2) return;
     if (currentUpdateUI.playMode === 'playAgainstTheComputer') board_number = board;
     if (yourPlayerIndex() === -1) {
       if (gameWinner != null) board_number = (board + gameWinner - 1);
