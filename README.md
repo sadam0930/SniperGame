@@ -3,3 +3,5 @@
 
 
 Authors: Steven Adam, Michael Corso
+
+Available to play at [snipe.city](snipe.city)
