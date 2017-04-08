@@ -45,7 +45,8 @@ module.exports = function(config) {
             'karma-chrome-launcher',
             'karma-jasmine',
             'karma-coverage'
-            ]
+            ],
+    
     // This is the new content for your travis-ci configuration test
     //  Custom launcher for Travis-CI
     customLaunchers: {
