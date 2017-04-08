@@ -216,7 +216,7 @@ body {
 
 /* Helicopter */
 .helimation {
-    animation: traverse_screen 5s ease-in-out; 
+    animation: traverse_screen 10s ease-in-out infinite; 
 }
 .helicopterContainer{
   height: 10%;
@@ -350,10 +350,21 @@ body {
   100% { transform: rotate(360deg); } 
 }
 @keyframes traverse_screen {
-  0% { transform: translate(0%, -250%); } 
-  30% { transform: translate(0%, 250%); }
+  /*0% { transform: translate(0%, -250%); } 
+  15% { transform: translate(0%, 250%); }
   45% { transform: translate(0%, 150%); }
-  100% { transform: translate(-600%, 150%); } 
+  100% { transform: translate(-600%, 150%); } */
+  0% { 
+    transform: translate(200%, 150%);
+  }
+  50% { 
+    transform: translate(-600%, 150%) 
+               rotateY(180deg);
+  }
+  100% {
+    transform: translate(200%, 150%) 
+               rotateY(0deg);
+  }
 }
 /* End Helicopter */
 #hint{
