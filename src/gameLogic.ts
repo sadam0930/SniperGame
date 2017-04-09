@@ -104,6 +104,26 @@ module gameLogic {
     return Math.floor(Math.random() * (maxVal)); // returns 0 to maxVal - 1
   }
 
+  function getIntWithRange(min: number, max: number): number {
+    return (Math.floor(Math.random() * (max - min + 1)) + min);
+  }
+
+  function getRandomSprayPosition(origin: number[]): number[] {
+    // RANGE OF SPRAY
+    let range: number = 1;
+    // GET ROW
+    let min: number = ((origin[0] - range) >= 0) ? (origin[0] - range) : 0;
+    let max: number = ((origin[0] + range) < ROWS) ? (origin[0] + range) : (ROWS - 1);
+    let row: number = getIntWithRange(min, max);
+    // GET COL
+    min = ((origin[1] - range) >= 0) ? (origin[1] - range) : 0;
+    max = ((origin[1] + range) < COLS) ? (origin[1] + range) : (COLS - 1);
+    let col: number = getIntWithRange(min, max);
+
+    return [row, col];
+  }
+
+
   /**
    * Return the winner (either 'P1' or 'P2') or '' if there is no winner.
    * Compares the coordinates the player attacked 
@@ -158,7 +178,7 @@ module gameLogic {
       let attackPos: string[] = [];
       attackPos[0] = row + ',' + col;
       for (let i = 1; i < 4; i++) {		// number of additional "sprayed" shots designated here
-        let randPos: number[] = getRandomPosition();
+        let randPos: number[] = getRandomSprayPosition([row, col]);
         attackPos[i] = randPos[0] + ',' + randPos[1];
       }
       for (let i = 0; i < attackPos.length; i++) {

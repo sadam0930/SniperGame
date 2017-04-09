@@ -76,6 +76,22 @@ var gameLogic;
         return Math.floor(Math.random() * (maxVal)); // returns 0 to maxVal - 1
     }
     gameLogic.getRandomIntInclusive = getRandomIntInclusive;
+    function getIntWithRange(min, max) {
+        return (Math.floor(Math.random() * (max - min + 1)) + min);
+    }
+    function getRandomSprayPosition(origin) {
+        // RANGE OF SPRAY
+        var range = 1;
+        // GET ROW
+        var min = ((origin[0] - range) >= 0) ? (origin[0] - range) : 0;
+        var max = ((origin[0] + range) < gameLogic.ROWS) ? (origin[0] + range) : (gameLogic.ROWS - 1);
+        var row = getIntWithRange(min, max);
+        // GET COL
+        min = ((origin[1] - range) >= 0) ? (origin[1] - range) : 0;
+        max = ((origin[1] + range) < gameLogic.COLS) ? (origin[1] + range) : (gameLogic.COLS - 1);
+        var col = getIntWithRange(min, max);
+        return [row, col];
+    }
     /**
      * Return the winner (either 'P1' or 'P2') or '' if there is no winner.
      * Compares the coordinates the player attacked
@@ -142,7 +158,7 @@ var gameLogic;
             var attackPos = [];
             attackPos[0] = row + ',' + col;
             for (var i = 1; i < 4; i++) {
-                var randPos = getRandomPosition();
+                var randPos = getRandomSprayPosition([row, col]);
                 attackPos[i] = randPos[0] + ',' + randPos[1];
             }
             for (var i = 0; i < attackPos.length; i++) {
