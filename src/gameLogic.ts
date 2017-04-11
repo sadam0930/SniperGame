@@ -11,6 +11,7 @@ interface BoardDelta {
   col: number;
   moveType: string;
   attackType: string;
+  cellsHit: number[][];
 }
 type IProposalData = BoardDelta;
 interface IState {
@@ -258,6 +259,7 @@ module gameLogic {
     let hit_location: number = Number(winner[1]);
     let buffsAfterMove = angular.copy(current_buffs);
     let buffCDs: BuffCDs[] = updateBuffCDs(stateBeforeMove.buffCDs, playerID);
+    let cellsHit: number[][] = [];
     if (moveType === 'attack') {
       buffCDs = triggerCD(attackType, buffCDs, playerID);
       if (buffsAfterMove[(1 - playerID)] === 'F') {
@@ -265,16 +267,27 @@ module gameLogic {
         if (buffsAfterMove[playerID] !== 'F') {
           buffsAfterMove[playerID] = '';
         }
+        cellsHit.push([row, col]);
       }	
       else if (attackType === 'G') {
-        if ((col - 1) < COLS && (col - 1) >= 0) boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
+        if ((col - 1) < COLS && (col - 1) >= 0) {
+          boardsAfterMove[playerID][row][col-1] = boardsAfterMove[(1 - playerID) + 2][row][col-1] = 'B';
+          cellsHit.push([row, (col - 1)]);
+        }
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
-        if ((col + 1) < COLS && (col + 1) >= 0) boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
+        cellsHit.push([row, col]);
+        if ((col + 1) < COLS && (col + 1) >= 0) {
+          boardsAfterMove[playerID][row][col+1] = boardsAfterMove[(1 - playerID) + 2][row][col+1] = 'B';
+          cellsHit.push([row, (col + 1)]);
+        }
         buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
       }
       else if (attackType === 'A') {
-        for (let i = 0; i < ROWS; i++) boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
+        for (let i = 0; i < ROWS; i++) {
+          boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
+          cellsHit.push([i, col]);
+        }
         buffsAfterMove[playerID] = '';
         if (winner[1] != '') boardsAfterMove[playerID][hit_location][col] = boardsAfterMove[(1 - playerID) + 2][hit_location][col] = boardMarker;
       }
@@ -284,6 +297,7 @@ module gameLogic {
           let r: number = Number(hitList[i].split(',')[0]);
           let c: number = Number(hitList[i].split(',')[1]);
           boardsAfterMove[playerID][r][c] = boardsAfterMove[(1 - playerID) + 2][r][c] = 'B';
+          cellsHit.push([r, c]);
         }
         if (winner[1] !== '') {
           let r: number = Number(winner[1].split(',')[0]);
@@ -294,6 +308,7 @@ module gameLogic {
       }
       else {
         boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+        cellsHit.push([row, col]);
       }
     }
     else if (moveType === 'move') {
@@ -302,7 +317,13 @@ module gameLogic {
 
     playerTurnCount[turnIndexBeforeMove] += 1;
 
-    let delta: BoardDelta = {row: row, col: col, moveType: moveType, attackType: attackType};
+    let delta: BoardDelta = {
+      row: row, 
+      col: col, 
+      moveType: moveType, 
+      attackType: attackType,
+      cellsHit: cellsHit
+    };
     let state: IState = {
       delta: delta, 
       board: boardsAfterMove, 

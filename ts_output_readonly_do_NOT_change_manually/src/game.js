@@ -278,6 +278,24 @@ var game;
         }
         return game.state.board[board_number][row][col] === pieceKind;
     }
+    function cellWasHit(row, col) {
+        if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1)
+            return;
+        // if (!isMyTurn()) return;
+        if (game.state === null)
+            return;
+        if (game.state.delta === null)
+            return;
+        if (game.state.delta.cellsHit === null)
+            return;
+        for (var i = 0; i < game.state.delta.cellsHit.length; i++) {
+            var cell = game.state.delta.cellsHit[i];
+            if ((cell[0] === row) && (cell[1] === col))
+                return true;
+        }
+        return false;
+    }
+    game.cellWasHit = cellWasHit;
     function isPos(board, row, col) {
         return isPiece(board, row, col, 'P');
     }

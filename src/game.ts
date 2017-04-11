@@ -292,6 +292,19 @@ module game {
     return state.board[board_number][row][col] === pieceKind;
   }
 
+  export function cellWasHit(row: number, col: number): boolean {
+    if (yourPlayerIndex() !== 0 && yourPlayerIndex() !== 1) return;
+    // if (!isMyTurn()) return;
+    if (state === null) return;
+    if (state.delta === null) return;
+    if (state.delta.cellsHit === null) return;
+    for (let i = 0; i < state.delta.cellsHit.length; i++) {
+      let cell: number[] = state.delta.cellsHit[i];
+      if ((cell[0] === row) && (cell[1] === col)) return true;
+    }
+    return false;
+  }
+
   export function isPos(board: number, row: number, col: number): boolean {
     return isPiece(board, row, col, 'P');
   }
