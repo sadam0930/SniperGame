@@ -131,13 +131,12 @@
         		<div class="turnDisplay">
         			<!-- INTRODUCTION -->
         			<text class="introduction" ng-if="show_intro">
-        				Welcome to Snipe City.<br/><br/>
-        				Your mission is to locate and kill the 
-        				enemy sniper located in the building across from
-        				yours. <br/>
-        				Reposition yourself in your building hideout to 
-        				avoid being hit and to pick up buffs when they spawn. <br/><br/>
-        				Good luck, Sergeant!
+        				<ul>
+	        				<li><b><i>Grenade:</b></i> attacks area to the left and right of the window selected.</li>
+	        				<li><b><i>Air Strike:</b></i> attacks the entire column of windows.</li>
+	        				<li><b><i>Shotgun:</b></i> randomly attacks area adjacent to the window selected.</li>
+	        				<li><b><i>Barrier:</b></i> protect all of your windows from the next shot</li>
+        				</ul>
         			</text>
         			<!-- BUFF INFO -->
         			<text class="buff_info" ng-if="show_buff_info">
