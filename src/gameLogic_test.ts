@@ -140,7 +140,8 @@ describe("gameLogic_test", function() {
 	                row: 1, 
 	                col: 2, 
 	                moveType: 'attack', 
-	                attackType: 'G' 
+	                attackType: 'G',
+	                cellsHit: [[1,1], [1,2], [1,3]]
 	            },
 	            gameOver: false,
 	            turnCounts: [4,3],
@@ -267,7 +268,8 @@ describe("gameLogic_test", function() {
 	                row: 0, 
 	                col: 3, 
 	                moveType: 'attack', 
-	                attackType: 'G' 
+	                attackType: 'G',
+	                cellsHit: [[0,2], [0,3], [0,4]]
 	            },
 	            gameOver: true,
 	            turnCounts: [4,3],
@@ -394,7 +396,8 @@ describe("gameLogic_test", function() {
 	                row: 0, 
 	                col: 1, 
 	                moveType: 'attack', 
-	                attackType: 'G' 
+	                attackType: 'G',
+	                cellsHit: [[0,0], [0,1], [0,2]] 
 	            },
 	            gameOver: true,
 	            turnCounts: [4,3],
@@ -787,7 +790,8 @@ describe("gameLogic_test", function() {
 	                row: 0, 
 	                col: 2, 
 	                moveType: 'attack', 
-	                attackType: '' 
+	                attackType: '',
+	                cellsHit: [[0,2]]
 	            },
 	            gameOver: false,
 	            turnCounts: [4,3],
@@ -811,132 +815,6 @@ describe("gameLogic_test", function() {
 	    expectMove(uiBefore, uiAfter, true, false);
 	});
 
-	it("Move to new position", function() {
-	    uiBefore = {
-	        endMatchScores: null,
-	        turnIndex: 0,          
-	        state: {
-	            board: 
-	                [
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ],
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ],
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','P','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ],
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','P','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ]
-	                ],
-	            delta: null,
-	            gameOver: false,
-	            turnCounts: [3,3],
-	            currentBuffs: ['', ''],
-	            buffCDs: [
-	                {
-	                    Grenade: 0,
-	                    SprayBullets: 0,
-	                    AirStrike: 0,
-	                    Fortify: 0
-	                },
-	                {
-	                    Grenade: 0,
-	                    SprayBullets: 0,
-	                    AirStrike: 0,
-	                    Fortify: 0
-	                }
-	            ]
-	        }
-	    };
-	    uiAfter = {
-	        endMatchScores: null,
-	        turnIndex: 1,          
-	        state: {
-	            board: 
-	                [
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ],
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ],
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','P','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ],
-	                    [
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','P','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                        ['','','','','',],
-	                    ]
-	                ],
-	            delta: {
-	                row: 2, 
-	                col: 1, 
-	                moveType: 'move', 
-	                attackType: '' 
-	            },
-	            gameOver: false,
-	            turnCounts: [4,3],
-	            currentBuffs: ['', ''],
-	            buffCDs: [
-	                {
-	                    Grenade: 0,
-	                    SprayBullets: 0,
-	                    AirStrike: 0,
-	                    Fortify: 0
-	                },
-	                {
-	                    Grenade: 0,
-	                    SprayBullets: 0,
-	                    AirStrike: 0,
-	                    Fortify: 0
-	                }
-	            ]
-	        }
-	    };
-	    expectMove(uiBefore, uiAfter, true, false);
-	});
 
 	it("gameLogic.createInitialMove() test", function() {
 		let move: IMove = gameLogic.createInitialMove();

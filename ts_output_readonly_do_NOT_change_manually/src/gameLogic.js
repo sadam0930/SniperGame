@@ -234,6 +234,7 @@ var gameLogic;
         var hit_location = Number(winner[1]);
         var buffsAfterMove = angular.copy(current_buffs);
         var buffCDs = updateBuffCDs(stateBeforeMove.buffCDs, playerID);
+        var cellsHit = [];
         if (moveType === 'attack') {
             buffCDs = triggerCD(attackType, buffCDs, playerID);
             if (buffsAfterMove[(1 - playerID)] === 'F') {
@@ -241,20 +242,28 @@ var gameLogic;
                 if (buffsAfterMove[playerID] !== 'F') {
                     buffsAfterMove[playerID] = '';
                 }
+                cellsHit.push([row, col]);
             }
             else if (attackType === 'G') {
-                if ((col - 1) < gameLogic.COLS && (col - 1) >= 0)
+                if ((col - 1) < gameLogic.COLS && (col - 1) >= 0) {
                     boardsAfterMove[playerID][row][col - 1] = boardsAfterMove[(1 - playerID) + 2][row][col - 1] = 'B';
+                    cellsHit.push([row, (col - 1)]);
+                }
                 boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = 'B';
-                if ((col + 1) < gameLogic.COLS && (col + 1) >= 0)
+                cellsHit.push([row, col]);
+                if ((col + 1) < gameLogic.COLS && (col + 1) >= 0) {
                     boardsAfterMove[playerID][row][col + 1] = boardsAfterMove[(1 - playerID) + 2][row][col + 1] = 'B';
+                    cellsHit.push([row, (col + 1)]);
+                }
                 buffsAfterMove[playerID] = '';
                 if (winner[1] != '')
                     boardsAfterMove[playerID][row][hit_location] = boardsAfterMove[(1 - playerID) + 2][row][hit_location] = boardMarker;
             }
             else if (attackType === 'A') {
-                for (var i = 0; i < gameLogic.ROWS; i++)
+                for (var i = 0; i < gameLogic.ROWS; i++) {
                     boardsAfterMove[playerID][i][col] = boardsAfterMove[(1 - playerID) + 2][i][col] = 'B';
+                    cellsHit.push([i, col]);
+                }
                 buffsAfterMove[playerID] = '';
                 if (winner[1] != '')
                     boardsAfterMove[playerID][hit_location][col] = boardsAfterMove[(1 - playerID) + 2][hit_location][col] = boardMarker;
@@ -265,6 +274,7 @@ var gameLogic;
                     var r = Number(hitList[i].split(',')[0]);
                     var c = Number(hitList[i].split(',')[1]);
                     boardsAfterMove[playerID][r][c] = boardsAfterMove[(1 - playerID) + 2][r][c] = 'B';
+                    cellsHit.push([r, c]);
                 }
                 if (winner[1] !== '') {
                     var r = Number(winner[1].split(',')[0]);
@@ -275,13 +285,20 @@ var gameLogic;
             }
             else {
                 boardsAfterMove[playerID][row][col] = boardsAfterMove[(1 - playerID) + 2][row][col] = boardMarker;
+                cellsHit.push([row, col]);
             }
         }
         else if (moveType === 'move') {
             assignNewPosition(boardsAfterMove[playerID + 2], row, col);
         }
         playerTurnCount[turnIndexBeforeMove] += 1;
-        var delta = { row: row, col: col, moveType: moveType, attackType: attackType };
+        var delta = {
+            row: row,
+            col: col,
+            moveType: moveType,
+            attackType: attackType,
+            cellsHit: cellsHit
+        };
         var state = {
             delta: delta,
             board: boardsAfterMove,
